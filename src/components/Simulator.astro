@@ -365,7 +365,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   // «Θέλω κάτι τέτοιο»: συμπληρώνει τη φόρμα επικοινωνίας και πηγαίνει εκεί
   $('simwant').addEventListener('click', () => {
     const msg = document.getElementById('cf-msg') as HTMLTextAreaElement | null;
-    const what = state.mode === 'site' ? 'ιστοσελίδα' : 'εφαρμογή';
+    const what = state.mode === 'site' ? 'ιστοσελίδα' : 'εφαρμογή κινητού';
     const text =
       `Γεια σας! Θα ήθελα ${what} για «${name()}» (${presets[state.kind].label}).\n` +
       `Από το simulator μου άρεσε το ύφος «${styleLabel()}» με χρώμα ${color()}.`;
