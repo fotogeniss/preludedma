@@ -1,0 +1,39 @@
+---
+import { pipeline } from '../data/services';
+---
+<section class="s" id="process" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="mono"><b>[ SYS.03 ]</b> Pipeline</span>
+        <h2 class="h2">Από την ιδέα<br />στο launch</h2>
+      </div>
+      <p>Τέσσερα στάδια με ξεκάθαρο χρόνο. Σε κάθε στάδιο βλέπεις live την πρόοδο.</p>
+    </div>
+    <div class="pipe" id="pipe">
+      <div class="line"><span id="pipeFill"></span></div>
+      {pipeline.map((st, i) => (
+        <div class="stage">
+          <i class="node"></i>
+          <span class="mono"><b>{String(i + 1).padStart(2, '0')}</b> · {st.when}</span>
+          <h3>{st.title}</h3>
+          <p>{st.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const pipe = document.getElementById('pipe')!;
+  const fill = document.getElementById('pipeFill')!;
+  const stages = [...pipe.querySelectorAll('.stage')];
+  function update() {
+    const r = pipe.getBoundingClientRect();
+    const f = Math.min(Math.max((innerHeight * 0.75 - r.top) / (r.height + 200), 0), 1);
+    fill.style.transform = `scaleX(${f})`;
+    stages.forEach((s, i) => s.classList.toggle('on', f > i / stages.length + 0.02));
+  }
+  addEventListener('scroll', update, { passive: true });
+  update();
+</script>

@@ -1,0 +1,50 @@
+[
+  {
+    "icon": "web",
+    "title": "Κατασκευή ιστοσελίδων",
+    "text": "Εταιρικά sites και landing pages με δικό τους σχεδιασμό, animations και 3D. Φορτώνουν σε κάτω από ένα δευτερόλεπτο και είναι έτοιμα για Google.",
+    "stack": "Astro · Next.js · WordPress",
+    "time": "3–5 εβδ.",
+    "wide": true
+  },
+  {
+    "icon": "app",
+    "title": "Εφαρμογές κινητού",
+    "text": "Μία εφαρμογή για iPhone και Android, με κρατήσεις, παραγγελίες και ειδοποιήσεις.",
+    "stack": "iOS · Android",
+    "time": "8–12 εβδ.",
+    "wide": false
+  },
+  {
+    "icon": "shop",
+    "title": "Ηλεκτρονικά καταστήματα",
+    "text": "Κατάστημα με πληρωμές, courier και σύνδεση με το ERP σου.",
+    "stack": "Viva · Stripe · BoxNow",
+    "time": "5–8 εβδ.",
+    "wide": false
+  },
+  {
+    "icon": "core",
+    "title": "Custom λογισμικό & CRM",
+    "text": "CRM, πλατφόρμες κρατήσεων και εσωτερικά εργαλεία, για ό,τι σήμερα γίνεται σε Excel.",
+    "stack": "Web apps · API",
+    "time": "Κατά εκτίμηση",
+    "wide": true
+  },
+  {
+    "icon": "ai",
+    "title": "Εφαρμογές AI",
+    "text": "Chatbots, αυτόματες απαντήσεις και έξυπνη αναζήτηση μέσα στο site ή την εφαρμογή σου.",
+    "stack": "LLM · Automation",
+    "time": "2–4 εβδ.",
+    "wide": false
+  },
+  {
+    "icon": "growth",
+    "title": "SEO & Digital Marketing",
+    "text": "SEO, social media και διαφημίσεις, με μηνιαία αναφορά για το τι έφερε αποτέλεσμα.",
+    "stack": "Google · Meta",
+    "time": "Μηνιαία",
+    "wide": true
+  }
+]

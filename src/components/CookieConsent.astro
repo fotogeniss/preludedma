@@ -1,0 +1,92 @@
+---
+// Μήνυμα συγκατάθεσης για Google Analytics.
+// Το Analytics φορτώνει ΜΟΝΟ αν ο επισκέπτης πατήσει «Αποδοχή». Αν αρνηθεί, δεν μπαίνει κανένα cookie.
+// Εμφανίζεται μόνο όταν έχει συμπληρωθεί το analytics.gaId στο src/data/site.ts.
+import { site } from '../data/site';
+const { gaId } = site.analytics;
+---
+{gaId && (
+  <div class="cc" id="cc" role="dialog" aria-modal="false" aria-labelledby="cc-title" aria-describedby="cc-text" data-ga={gaId} hidden>
+    <div class="cc-head mono"><span class="live"></span><span id="cc-title">Cookies // στατιστικά</span></div>
+    <p id="cc-text">
+      Θα θέλαμε να χρησιμοποιήσουμε το Google Analytics για να βλέπουμε ανώνυμα πόσοι επισκέπτονται το site και ποιες σελίδες
+      διαβάζουν. Βάζει cookies μόνο αν το δεχτείς. <a href="/aporrito/#cookies">Περισσότερα</a>
+    </p>
+    <div class="cc-actions">
+      <button type="button" class="btn btn-g" data-cc="denied">Όχι, ευχαριστώ</button>
+      <button type="button" class="btn btn-p" data-cc="granted">Αποδοχή</button>
+    </div>
+  </div>
+)}
+
+<script>
+  const KEY = 'prelude-consent-v1';
+  const box = document.getElementById('cc');
+
+  function read(): string | null {
+    try { return localStorage.getItem(KEY); } catch { return null; }
+  }
+  function save(v: string) {
+    try { localStorage.setItem(KEY, v); } catch { /* ιδιωτική περιήγηση: απλώς δεν θυμόμαστε την επιλογή */ }
+  }
+
+  let loaded = false;
+  function loadAnalytics(id: string) {
+    if (loaded) return;
+    loaded = true;
+    const w = window as any;
+    w.dataLayer = w.dataLayer || [];
+    w.gtag = function () { w.dataLayer.push(arguments); };
+    w.gtag('js', new Date());
+    w.gtag('config', id);
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+    document.head.appendChild(s);
+  }
+
+  function clearGaCookies() {
+    document.cookie.split(';').map((c) => c.trim().split('=')[0]).filter((n) => n.startsWith('_ga')).forEach((n) => {
+      const host = location.hostname.replace(/^www\./, '');
+      for (const d of ['', `; domain=${host}`, `; domain=.${host}`]) {
+        document.cookie = `${n}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${d}`;
+      }
+    });
+  }
+
+  function show() {
+    if (!box) return;
+    box.hidden = false;
+    requestAnimationFrame(() => box.classList.add('in'));
+  }
+  function hide() {
+    if (!box) return;
+    box.classList.remove('in');
+    setTimeout(() => (box.hidden = true), 400);
+  }
+
+  if (box) {
+    const id = box.dataset.ga!;
+    const choice = read();
+    if (choice === 'granted') loadAnalytics(id);
+    else if (choice !== 'denied') setTimeout(show, 1200);
+
+    box.querySelectorAll<HTMLButtonElement>('[data-cc]').forEach((b) =>
+      b.addEventListener('click', () => {
+        const v = b.dataset.cc!;
+        save(v);
+        if (v === 'granted') loadAnalytics(id);
+        else {
+          clearGaCookies();
+          if (loaded) location.reload(); // σταματά το Analytics που ήδη έτρεχε
+        }
+        hide();
+      }),
+    );
+
+    // Σύνδεσμος «Ρυθμίσεις cookies» (footer / πολιτική απορρήτου)
+    document.querySelectorAll('[data-cc-open]').forEach((a) =>
+      a.addEventListener('click', (e) => { e.preventDefault(); show(); }),
+    );
+  }
+</script>

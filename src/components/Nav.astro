@@ -1,0 +1,176 @@
+---
+import { sections, site } from '../data/site';
+const links = sections.filter((s) => !['top', 'contact'].includes(s.id));
+const mobileLinks = sections.filter((s) => s.id !== 'top');
+---
+<header class="nav" id="nav">
+  <a href="/" class="logo" aria-label="Prelude, αρχική"><svg aria-hidden="true"><use href="#st" /></svg>PRELUDE</a>
+  <nav class="links" aria-label="Κύριο μενού">
+    {links.map((l) => <a href={`/#${l.id}`} data-sec={l.id}>{l.label}</a>)}
+    <span class="nav-ind" id="navind" aria-hidden="true"></span>
+  </nav>
+  <a href="/#contact" class="btn btn-p nav-cta"><span class="t">Ξεκίνα project</span><span class="k" aria-hidden="true">↗</span></a>
+
+  <!-- Κουμπί mobile μενού -->
+  <button class="mtoggle" id="mtoggle" type="button" aria-expanded="false" aria-controls="mmenu" aria-label="Άνοιγμα μενού">
+    <span class="mt-label" id="mtlabel" aria-hidden="true">MENU</span>
+    <span class="mt-icon" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+  <span class="nav-prog" aria-hidden="true"><span id="navprog"></span></span>
+</header>
+
+<!-- Mobile μενού: ανοίγει από μια φωτεινή γραμμή στο κέντρο της οθόνης -->
+<div class="mm-line" id="mmline" aria-hidden="true"></div>
+<div class="mmenu" id="mmenu" aria-hidden="true" inert>
+  <div class="mm-grid" aria-hidden="true"></div>
+  <div class="mm-inner">
+    <div class="mm-head mono" aria-hidden="true">
+      <span><b>SYS.NAV</b> // {mobileLinks.length} nodes</span>
+      <span><span class="live"></span>Online</span>
+    </div>
+
+    <nav aria-label="Μενού κινητού">
+      <ol class="mm-list">
+        {mobileLinks.map((l, i) => (
+          <li style={`--i:${i}`}>
+            <a href={`/#${l.id}`} data-close>
+              <span class="mm-idx mono">{String(i + 1).padStart(2, '0')}</span>
+              <span class="mm-lbl" data-label={l.label}>{l.label}</span>
+              <span class="mm-arr" aria-hidden="true">↗</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <div class="mm-foot" style={`--i:${mobileLinks.length}`}>
+      <a href="/#contact" class="btn btn-p" data-close>Ξεκίνα project <span class="k" aria-hidden="true">↗</span></a>
+      <div class="mm-contact">
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+      </div>
+      <div class="mm-meta mono" aria-hidden="true">
+        <span>37.98°N 23.72°E</span>
+        <span id="mmclock">--:--:--</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const html = document.documentElement;
+  const nav = document.getElementById('nav')!;
+  const toggle = document.getElementById('mtoggle') as HTMLButtonElement;
+  const label = document.getElementById('mtlabel')!;
+  const menu = document.getElementById('mmenu')!;
+  const line = document.getElementById('mmline')!;
+  const clock = document.getElementById('mmclock')!;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const glyphs = '!<>-_\\/[]{}=+*^?#01ABCDEFX';
+  let open = false;
+  let clockTimer: ReturnType<typeof setInterval> | undefined;
+  let lineTimer: ReturnType<typeof setTimeout> | undefined;
+
+  // Κείμενο που «αποκωδικοποιείται» από τυχαίους χαρακτήρες
+  function decode(el: HTMLElement, text: string, delay = 0) {
+    if (reduce) { el.textContent = text; return; }
+    let frame = -Math.round(delay / 16);
+    const q = [...text].map((c, i) => ({ c, end: 8 + i * 1.6 + Math.random() * 8 }));
+    const run = () => {
+      let out = '';
+      let done = 0;
+      for (const it of q) {
+        if (frame >= it.end || it.c === ' ') { out += it.c; done++; }
+        else out += frame >= 0 ? glyphs[(Math.random() * glyphs.length) | 0] : ' ';
+      }
+      el.textContent = out;
+      frame++;
+      if (done < q.length) requestAnimationFrame(run);
+    };
+    run();
+  }
+
+  const tick = () => {
+    clock.textContent = new Date().toLocaleTimeString('el-GR', { hour12: false, timeZone: 'Europe/Athens' });
+  };
+
+  function setOpen(next: boolean) {
+    if (next === open) return;
+    open = next;
+    clearTimeout(lineTimer);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Κλείσιμο μενού' : 'Άνοιγμα μενού');
+    menu.setAttribute('aria-hidden', String(!open));
+    html.classList.toggle('menu-open', open);
+    decode(label, open ? 'CLOSE' : 'MENU');
+
+    if (open) {
+      menu.removeAttribute('inert');
+      line.classList.remove('closing');
+      line.classList.add('opening');
+      menu.classList.add('open');
+      menu.querySelectorAll<HTMLElement>('.mm-lbl').forEach((el, i) => decode(el, el.dataset.label || '', 380 + i * 70));
+      tick();
+      clockTimer = setInterval(tick, 1000);
+      setTimeout(() => menu.querySelector<HTMLElement>('.mm-list a')?.focus({ preventScroll: true }), reduce ? 0 : 450);
+    } else {
+      menu.setAttribute('inert', '');
+      menu.classList.remove('open');
+      line.classList.remove('opening');
+      // η γραμμή εμφανίζεται ξανά όταν το μενού έχει «κλείσει» σε μια γραμμή και μετά σβήνει
+      lineTimer = setTimeout(() => line.classList.add('closing'), reduce ? 0 : 380);
+      clearInterval(clockTimer);
+      toggle.focus({ preventScroll: true });
+    }
+  }
+
+  toggle.addEventListener('click', () => setOpen(!open));
+  menu.querySelectorAll('[data-close]').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && open) setOpen(false);
+    // κρατά το Tab μέσα στο μενού όσο είναι ανοιχτό
+    if (e.key === 'Tab' && open) {
+      const items = [toggle, ...menu.querySelectorAll<HTMLElement>('a')];
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  // αν μεγαλώσει η οθόνη σε desktop, κλείνει
+  matchMedia('(min-width: 1001px)').addEventListener('change', (m) => { if (m.matches) setOpen(false); });
+
+  // Με το scroll η μπάρα μαζεύεται σε αιωρούμενη κονσόλα, δείχνει την πρόοδο και την ενεργή ενότητα
+  const prog = document.getElementById('navprog')!;
+  const ind = document.getElementById('navind')!;
+  const deskLinks = [...nav.querySelectorAll<HTMLAnchorElement>('.links a[data-sec]')];
+  let activeId = '';
+
+  function moveIndicator() {
+    const a = deskLinks.find((l) => l.dataset.sec === activeId);
+    if (!a) { ind.style.opacity = '0'; return; }
+    ind.style.opacity = '1';
+    ind.style.width = `${a.offsetWidth - 28}px`;
+    ind.style.transform = `translateX(${a.offsetLeft + 14}px)`;
+  }
+
+  function onScroll() {
+    nav.classList.toggle('scrolled', scrollY > 40);
+    const max = document.documentElement.scrollHeight - innerHeight;
+    prog.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    let current = '';
+    for (const l of deskLinks) {
+      const sec = document.getElementById(l.dataset.sec!);
+      if (sec && sec.getBoundingClientRect().top < innerHeight * 0.45) current = l.dataset.sec!;
+    }
+    if (current !== activeId) {
+      activeId = current;
+      deskLinks.forEach((l) => l.classList.toggle('active', l.dataset.sec === activeId));
+      moveIndicator();
+    }
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', moveIndicator);
+  // η μπάρα αλλάζει πλάτος όταν μαζεύεται, οπότε ξαναμετράμε μετά τη μετάβαση
+  nav.addEventListener('transitionend', (e) => { if (e.propertyName === 'padding-left' || e.propertyName === 'left') moveIndicator(); });
+  onScroll();
+</script>

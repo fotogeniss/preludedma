@@ -1,0 +1,14 @@
+---
+// Στοιχεία της επιχείρησης για τις νομικές σελίδες. Τα κενά πεδία στο site.ts δεν εμφανίζονται.
+import { site } from '../data/site';
+const { entity, vat, taxOffice } = site.legal;
+const addr = [site.address.streetAddress, site.address.postalCode, site.address.addressLocality].filter(Boolean).join(', ');
+---
+<ul class="doc-card">
+  <li><b>Επωνυμία:</b> {entity || site.legalName}{entity && ` (διακριτικός τίτλος: ${site.legalName})`}</li>
+  {vat && <li><b>ΑΦΜ:</b> {vat}{taxOffice && `, ΔΟΥ ${taxOffice}`}</li>}
+  {addr && <li><b>Διεύθυνση:</b> {addr}</li>}
+  <li><b>Email:</b> <a href={`mailto:${site.email}`}>{site.email}</a></li>
+  <li><b>Τηλέφωνο:</b> <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a></li>
+  <li><b>Ιστοσελίδα:</b> <a href={site.url}>{site.url.replace('https://', '')}</a></li>
+</ul>

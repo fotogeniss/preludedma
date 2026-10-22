@@ -1,0 +1,41 @@
+---
+import { sections } from '../data/site';
+---
+<div class="hud" aria-hidden="true">
+  <i></i><i></i><i></i><i></i>
+  <div class="bl"><span class="live"></span>Athens 37.98°N 23.72°E · <span id="clock">--:--:--</span></div>
+  <div class="br">Scroll <span id="pct">000%</span><div class="bar"><span id="bar"></span></div></div>
+  <div class="rail" id="rail" data-ids={sections.map((s) => s.id).join(',')}>
+    {sections.map(() => <span></span>)}
+  </div>
+</div>
+
+<script>
+  const clock = document.getElementById('clock')!;
+  const tick = () => {
+    clock.textContent = new Date().toLocaleTimeString('el-GR', { hour12: false, timeZone: 'Europe/Athens' });
+  };
+  tick();
+  setInterval(tick, 1000);
+
+  const rail = document.getElementById('rail')!;
+  const ids = (rail.dataset.ids || '').split(',');
+  const dots = [...rail.children] as HTMLElement[];
+  const pct = document.getElementById('pct')!;
+  const bar = document.getElementById('bar')!;
+
+  function onScroll() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? scrollY / max : 0;
+    pct.textContent = String(Math.round(p * 100)).padStart(3, '0') + '%';
+    bar.style.transform = `scaleX(${p})`;
+    let active = 0;
+    ids.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < innerHeight * 0.5) active = i;
+    });
+    dots.forEach((d, i) => d.classList.toggle('on', i === active));
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>

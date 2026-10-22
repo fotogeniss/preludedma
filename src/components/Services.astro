@@ -1,0 +1,36 @@
+---
+import { services } from '../data/services';
+
+const icons: Record<string, string> = {
+  web: '<rect x="4" y="8" width="40" height="30" rx="2"/><path d="M4 15h40M14 44h20M24 38v6"/><path d="M18 24l-4 4 4 4M30 24l4 4-4 4M26 22l-4 12"/>',
+  app: '<rect x="13" y="3" width="22" height="42" rx="4"/><path d="M21 39h6"/><circle cx="24" cy="20" r="5"/>',
+  shop: '<path d="M6 8h6l5 22h21l4-14H14"/><circle cx="20" cy="38" r="3"/><circle cx="35" cy="38" r="3"/>',
+  core: '<circle cx="24" cy="24" r="7"/><path d="M24 4v8M24 36v8M4 24h8M36 24h8M10 10l6 6M32 32l6 6M38 10l-6 6M16 32l-6 6"/>',
+  ai: '<path d="M24 4l4 10 10 1-8 7 3 10-9-6-9 6 3-10-8-7 10-1z"/><path d="M8 44h32"/>',
+  growth: '<path d="M4 40l12-14 9 8 17-22"/><path d="M34 12h8v8"/>',
+};
+---
+<section class="s" id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="mono"><b>[ SYS.01 ]</b> Υπηρεσίες</span>
+        <h2 class="h2">Modules για<br />κάθε ανάγκη</h2>
+      </div>
+      <p>Κατασκευή ιστοσελίδων, e-shop, εφαρμογών κινητού και custom λογισμικού. Κάθε project συναρμολογείται από τα modules που χρειάζεται η επιχείρησή σου, χωρίς έτοιμα themes.</p>
+    </div>
+    <div class="mods">
+      {services.map((s) => (
+        <div class:list={['mod', { wide: s.wide }]}>
+          <div class="top">
+            <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" set:html={icons[s.icon]}></svg>
+            <span class="mono">MOD/{s.icon.toUpperCase()}</span>
+          </div>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+          <div class="spec"><span class="mono">{s.stack}</span><span class="mono"><b>{s.time}</b></span></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

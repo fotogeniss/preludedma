@@ -1,0 +1,24 @@
+---
+import { faq } from '../data/services';
+---
+<section class="s" id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="mono"><b>[ SYS.05 ]</b> FAQ</span>
+        <h2 class="h2">Συχνές<br />ερωτήσεις</h2>
+      </div>
+      <p>Όσα ρωτούν συνήθως οι πελάτες μας πριν ξεκινήσουμε. Για οτιδήποτε άλλο, γράψε μας.</p>
+    </div>
+    <div class="faq-wrap">
+      <div class="faq">
+        {faq.map((item, i) => (
+          <details open={i === 0}>
+            <summary><h3 style="font:inherit">{item.q}</h3></summary>
+            <p>{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

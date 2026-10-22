@@ -1,0 +1,32 @@
+---
+import { hero } from '../data/hero';
+// Το φωτισμένο κομμάτι της εισαγωγής (π.χ. «ιστοσελίδες, εφαρμογές και πλατφόρμες») εμφανίζεται με έντονα γράμματα.
+const i = hero.highlight ? hero.intro.indexOf(hero.highlight) : -1;
+const introParts = i >= 0 ? [hero.intro.slice(0, i), hero.highlight, hero.intro.slice(i + hero.highlight.length)] : [hero.intro, '', ''];
+---
+<header class="hero" id="top">
+  <!-- Το h1 είναι η φράση που ψάχνει ο κόσμος στη Google. Ο μεγάλος αγγλικός τίτλος είναι οπτικός. -->
+  <h1 class="kicker-h1"><span class="live"></span>{hero.kicker}</h1>
+  <p class="h1 display">
+    <span data-scramble>{hero.line1}</span>
+    <span class="ol" data-scramble>{hero.line2}</span>
+    <span data-scramble>{hero.line3}</span>
+  </p>
+  <div class="hero-sub">
+    <p>{introParts[0]}{introParts[1] && <strong>{introParts[1]}</strong>}{introParts[2]}</p>
+    <div class="ctas">
+      <a href="#contact" class="btn btn-p">Ζήτα πρόταση <span class="k" aria-hidden="true">↗</span></a>
+      <a href="#lab" class="btn btn-g">Δοκίμασε το simulator</a>
+    </div>
+  </div>
+  {hero.readouts.length > 0 && (
+    <div class="readouts">
+      {hero.readouts.map((r) => (
+        <div>
+          <span class="mono">{r.label}</span>
+          <strong><span data-count={r.value} data-dec={r.decimals}>{r.value}</span><small>{r.unit}</small></strong>
+        </div>
+      ))}
+    </div>
+  )}
+</header>

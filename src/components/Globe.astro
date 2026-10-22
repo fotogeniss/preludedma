@@ -1,0 +1,290 @@
+---
+// Ολογραφική 3D υδρόγειος στο φόντο. Αλλάζει θέση ανά ενότητα (δες το `poses` στο script).
+---
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<script>
+  // Το Three.js φορτώνει αφού εμφανιστεί η σελίδα, ώστε να μην καθυστερεί το πρώτο φόρτωμα (καλό για Google / Core Web Vitals)
+  type Three = typeof import('three');
+  let THREE: Three;
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canvas = document.getElementById('gl') as HTMLCanvasElement;
+
+  async function start() {
+    THREE = await import('three');
+    let R: import('three').WebGLRenderer;
+    try {
+      R = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    } catch {
+      return; // χωρίς WebGL το site δουλεύει κανονικά, απλώς χωρίς υδρόγειο
+    }
+    // Ίδια απόδοση χρωμάτων με το mockup
+    THREE.ColorManagement.enabled = false;
+    R.outputColorSpace = THREE.LinearSRGBColorSpace;
+    R.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+    const scene = new THREE.Scene();
+    const cam = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    cam.position.set(0, 0, 10);
+
+    const bh = getComputedStyle(document.documentElement).getPropertyValue('--brand').trim() || '#7B3FE4';
+    const brand = new THREE.Color(bh);
+    const lite = brand.clone().lerp(new THREE.Color('#ffffff'), 0.5);
+    const A = { transparent: true, blending: THREE.AdditiveBlending, depthWrite: false } as const;
+
+    const world = new THREE.Group();
+    const globe = new THREE.Group();
+    scene.add(world);
+    world.add(globe);
+    const RAD = 2.3;
+
+    // Επιφάνεια από σωματίδια (fibonacci sphere)
+    const NP = 2600;
+    const pp = new Float32Array(NP * 3);
+    const pts: import('three').Vector3[] = [];
+    for (let i = 0; i < NP; i++) {
+      const y = 1 - (i / (NP - 1)) * 2;
+      const r = Math.sqrt(1 - y * y);
+      const th = i * 2.399963;
+      const v = new THREE.Vector3(Math.cos(th) * r, y, Math.sin(th) * r).multiplyScalar(RAD);
+      pts.push(v);
+      pp.set([v.x, v.y, v.z], i * 3);
+    }
+    const pgeo = new THREE.BufferGeometry();
+    pgeo.setAttribute('position', new THREE.BufferAttribute(pp, 3));
+    const dotMat = new THREE.ShaderMaterial({
+      ...A,
+      uniforms: { c: { value: lite }, scanY: { value: 0 }, s: { value: R.getPixelRatio() } },
+      vertexShader: `
+        uniform float scanY; uniform float s; varying float vA;
+        void main(){
+          vec4 mv = modelViewMatrix * vec4(position, 1.);
+          float face = clamp(dot(normalize(normalMatrix * position), vec3(0,0,1)) * .8 + .35, 0., 1.);
+          float d = abs(position.y - scanY);
+          vA = face * .55 + smoothstep(.35, 0., d) * 1.2;
+          gl_PointSize = (1.8 + smoothstep(.35, 0., d) * 2.2) * s;
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        uniform vec3 c; varying float vA;
+        void main(){ gl_FragColor = vec4(c * vA, vA); }`,
+    });
+    globe.add(new THREE.Points(pgeo, dotMat));
+
+    // Σκοτεινός πυρήνας + φωτεινό περίγραμμα
+    globe.add(new THREE.Mesh(
+      new THREE.SphereGeometry(RAD * 0.97, 64, 64),
+      new THREE.MeshBasicMaterial({ color: 0x04050a, transparent: true, opacity: 0.75 }),
+    ));
+    const rim = new THREE.Mesh(
+      new THREE.SphereGeometry(RAD * 1.04, 64, 64),
+      new THREE.ShaderMaterial({
+        ...A,
+        uniforms: { c: { value: brand } },
+        vertexShader: `
+          varying vec3 n; varying vec3 v;
+          void main(){
+            vec4 mv = modelViewMatrix * vec4(position, 1.);
+            n = normalize(normalMatrix * normal); v = normalize(-mv.xyz);
+            gl_Position = projectionMatrix * mv;
+          }`,
+        fragmentShader: `
+          uniform vec3 c; varying vec3 n; varying vec3 v;
+          void main(){ float f = pow(1. - clamp(dot(n, v), 0., 1.), 3.); gl_FragColor = vec4(c * f * 2., f); }`,
+      }),
+    );
+    world.add(rim);
+
+    // Δακτύλιος σάρωσης
+    const scanRing = new THREE.Mesh(
+      new THREE.TorusGeometry(1, 0.008, 6, 160),
+      new THREE.MeshBasicMaterial({ color: lite, ...A }),
+    );
+    scanRing.rotation.x = Math.PI / 2;
+    globe.add(scanRing);
+
+    // Τόξα δεδομένων με παλμούς
+    const arcs: { curve: import('three').QuadraticBezierCurve3; pulse: import('three').Mesh; o: number; sp: number }[] = [];
+    let tries = 0;
+    while (arcs.length < 14 && tries++ < 500) {
+      const a = pts[(Math.random() * NP) | 0];
+      const b = pts[(Math.random() * NP) | 0];
+      const dist = a.distanceTo(b);
+      if (dist < 1.4) continue;
+      const mid = a.clone().add(b).multiplyScalar(0.5).normalize().multiplyScalar(RAD + dist * 0.45);
+      const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+      const line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(curve.getPoints(60)),
+        new THREE.LineBasicMaterial({ color: brand, ...A, opacity: 0.45 }),
+      );
+      const pulse = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, ...A }));
+      globe.add(line, pulse);
+      arcs.push({ curve, pulse, o: Math.random(), sp: 0.15 + Math.random() * 0.25 });
+    }
+
+    // Τροχιές
+    const orbits = new THREE.Group();
+    world.add(orbits);
+    ([[3.05, 1.25, 0.25, 0.006, 1], [3.4, 1.6, -0.4, 0.004, 0.6], [2.75, 1.05, 0.9, 0.01, 0.9]] as const).forEach(([r, x, z, t, o], i) => {
+      const g = new THREE.Group();
+      g.add(new THREE.Mesh(
+        new THREE.TorusGeometry(r, t, 4, 256, i === 1 ? Math.PI * 2 : Math.PI * 1.4),
+        new THREE.MeshBasicMaterial({ color: i === 2 ? lite : brand, ...A, opacity: o }),
+      ));
+      if (i === 1) {
+        for (let k = 0; k < 72; k++) {
+          const ang = (k / 72) * Math.PI * 2;
+          const tk = new THREE.Mesh(
+            new THREE.BoxGeometry(0.012, k % 6 ? 0.06 : 0.16, 0.012),
+            new THREE.MeshBasicMaterial({ color: lite, ...A, opacity: 0.7 }),
+          );
+          tk.position.set(Math.cos(ang) * r, Math.sin(ang) * r, 0);
+          tk.rotation.z = ang;
+          g.add(tk);
+        }
+      }
+      g.rotation.set(x, 0, z);
+      orbits.add(g);
+    });
+
+    // Αλυσίδα από φωτεινά εξάγωνα
+    const glowTex = (() => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 64;
+      const x = c.getContext('2d')!;
+      const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g;
+      x.fillRect(0, 0, 64, 64);
+      return new THREE.CanvasTexture(c);
+    })();
+    const chain = new THREE.Group();
+    scene.add(chain);
+    const hexes: import('three').Group[] = [];
+    for (let i = 0; i < 5; i++) {
+      const h = new THREE.Group();
+      h.add(new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.035, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffffff, ...A })));
+      h.add(new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.09, 6, 6), new THREE.MeshBasicMaterial({ color: brand, ...A, opacity: 0.6 })));
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: brand, ...A, opacity: 0.7 }));
+      sp.scale.set(1.2, 1.2, 1);
+      h.add(sp);
+      chain.add(h);
+      hexes.push(h);
+    }
+
+    // Αστέρια / pixels
+    const NS = 220;
+    const spos = new Float32Array(NS * 3);
+    for (let i = 0; i < NS; i++) spos.set([(Math.random() - 0.5) * 26, (Math.random() - 0.5) * 16, -Math.random() * 12], i * 3);
+    const sg = new THREE.BufferGeometry();
+    sg.setAttribute('position', new THREE.BufferAttribute(spos, 3));
+    const stars = new THREE.Points(sg, new THREE.PointsMaterial({ color: lite, size: 0.05, ...A, opacity: 0.6 }));
+    scene.add(stars);
+
+    // Θέση ανά ενότητα: [id, x, y, κλίμακα, γωνία]
+    const poses: [string, number, number, number, number][] = [
+      ['top', 2.7, 0.1, 1, 0],
+      ['services', -3.2, 0, 0.85, 1],
+      ['lab', 3.4, 0.2, 0.75, 2],
+      ['process', 0, -0.2, 1.35, 3],
+      ['work', -3, 0, 0.8, 4],
+      ['contact', 0, 0.1, 1.15, 5],
+    ];
+    let marks: number[] = [];
+    const measure = () => {
+      marks = poses.map(([id]) => {
+        const el = document.getElementById(id);
+        return el ? el.getBoundingClientRect().top + scrollY : 0;
+      });
+    };
+    const resize = () => {
+      const w = innerWidth, h = innerHeight;
+      R.setSize(w, h, false);
+      cam.aspect = w / h;
+      cam.position.z = w < 700 ? 15 : 10;
+      cam.updateProjectionMatrix();
+      measure();
+    };
+    addEventListener('resize', resize);
+    
+    resize();
+    setTimeout(measure, 800);
+
+    const ss = (t: number) => t * t * (3 - 2 * t);
+    const cur = { x: 2.7, y: 0.1, s: 1, a: 0 };
+    const mouse = { x: 0, y: 0 };
+    addEventListener('pointermove', (e) => {
+      mouse.x = e.clientX / innerWidth - 0.5;
+      mouse.y = e.clientY / innerHeight - 0.5;
+    });
+
+    function target() {
+      const y = scrollY + innerHeight * 0.5;
+      let i = 0;
+      while (i < marks.length - 1 && y >= marks[i + 1]) i++;
+      const j = Math.min(i + 1, poses.length - 1);
+      const f = j === i ? 0 : ss(Math.min(Math.max((y - marks[i]) / (marks[j] - marks[i]), 0), 1));
+      const P = poses[i], Q = poses[j];
+      const lerp = (a: number, b: number) => a + (b - a) * f;
+      const w = innerWidth;
+      if (w < 1000) {
+        // Κινητό / tablet: η υδρόγειος μένει σταθερά δεξιά, μισή έξω από την οθόνη, ώστε να μην κρύβει κείμενα.
+        // Με το scroll αλλάζει μόνο μέγεθος και περιστροφή.
+        const halfW = Math.tan((cam.fov / 2) * Math.PI / 180) * cam.position.z * cam.aspect;
+        return { x: halfW * 0.92, y: lerp(P[2], Q[2]) + 0.6, s: lerp(P[3], Q[3]) * 0.8, a: lerp(P[4], Q[4]) };
+      }
+      return { x: lerp(P[1], Q[1]), y: lerp(P[2], Q[2]), s: lerp(P[3], Q[3]), a: lerp(P[4], Q[4]) };
+    }
+
+    const timer = new THREE.Clock();
+    const loop = () => {
+      const t = reduce ? 2 : timer.getElapsedTime();
+      const T = target();
+      const k = reduce ? 1 : 0.055;
+      cur.x += (T.x - cur.x) * k; cur.y += (T.y - cur.y) * k; cur.s += (T.s - cur.s) * k; cur.a += (T.a - cur.a) * k;
+
+      world.position.set(cur.x + mouse.x * 0.4, cur.y - mouse.y * 0.3, 0);
+      world.scale.setScalar(cur.s);
+      globe.rotation.y = t * 0.07 + cur.a * 0.7;
+      globe.rotation.x = 0.3 + mouse.y * 0.2;
+
+      const sy = Math.sin(t * 0.6) * RAD * 0.95;
+      dotMat.uniforms.scanY.value = sy;
+      scanRing.position.y = sy;
+      scanRing.scale.setScalar(Math.sqrt(Math.max(RAD * RAD - sy * sy, 0.01)) * 1.01);
+
+      arcs.forEach((a) => {
+        const u = (t * a.sp + a.o) % 1;
+        a.pulse.position.copy(a.curve.getPoint(u));
+        a.pulse.visible = u < 0.97;
+      });
+      orbits.children.forEach((o, i) => {
+        if (!reduce) o.rotation.z += 0.0016 * (i % 2 ? -1 : 1) * (i + 1);
+        o.rotation.y = cur.a * 0.25 + mouse.x * 0.3;
+      });
+      chain.position.copy(world.position);
+      chain.scale.setScalar(cur.s);
+      hexes.forEach((h, i) => {
+        const ang = cur.a * 1.3 + t * 0.3 - i * 0.22, r = 3.05;
+        h.position.set(Math.cos(ang) * r, Math.sin(ang * 1.2 + 0.6) * 1.1, Math.sin(ang) * r);
+        h.quaternion.copy(cam.quaternion);
+        h.rotation.z = t * 0.5 + i * 0.4;
+      });
+      stars.rotation.y = t * 0.01 + cur.a * 0.05;
+      stars.position.y = -scrollY * 0.0006;
+
+      R.render(scene, cam);
+      if (!reduce) requestAnimationFrame(loop);
+    };
+    loop();
+    if (reduce) addEventListener('scroll', () => requestAnimationFrame(loop), { passive: true });
+  }
+
+  const idle = (cb: () => void) =>
+    'requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 2000 }) : setTimeout(cb, 600);
+  // Σε πολύ παλιές / αδύναμες συσκευές μπορείς να το απενεργοποιήσεις εδώ
+  if (document.readyState === 'complete') idle(start);
+  else addEventListener('load', () => idle(start), { once: true });
+</script>

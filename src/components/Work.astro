@@ -1,0 +1,25 @@
+---
+import { projects } from '../data/projects';
+---
+<section class="s" id="work" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="mono"><b>[ SYS.04 ]</b> Archive</span>
+        <h2 class="h2">Πρόσφατα<br />έργα</h2>
+      </div>
+    </div>
+    <div class="work">
+      {projects.map((p) => (
+        <a href={p.url ?? '#'} class="wk" target={p.url ? '_blank' : undefined} rel={p.url ? 'noopener' : undefined}>
+          {p.image && <img src={p.image} alt={`${p.title}: ${p.type}`} loading="lazy" decoding="async" width="900" height="1200" />}
+          <span class="id mono"><b>{p.id}</b></span>
+          <div class="meta">
+            <span class="mono">{p.type} · {p.year}</span>
+            <h3>{p.title}</h3>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

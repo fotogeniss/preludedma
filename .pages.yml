@@ -1,0 +1,256 @@
+# Ρυθμίσεις διαχειριστικού Pages CMS (https://app.pagescms.org)
+# Κάθε «Αποθήκευση» στο διαχειριστικό κάνει commit στο GitHub και το GitHub Action ανεβάζει το site αυτόματα.
+
+settings:
+  commit:
+    identity: user # στο ιστορικό του GitHub φαίνεται ποιος έκανε κάθε αλλαγή
+
+media:
+  - name: projects
+    label: Εικόνες έργων
+    input: public/projects
+    output: /projects
+    categories: [image]
+
+content:
+  # ------------------------------------------------------------------
+  - name: projects
+    label: Έργα
+    type: file
+    path: src/content/projects.json
+    format: json
+    list: true
+    fields:
+      - name: id
+        label: Κωδικός
+        type: string
+        description: Μικρή ετικέτα πάνω αριστερά στην κάρτα, π.χ. PRJ.027
+      - name: title
+        label: Τίτλος έργου
+        type: string
+        required: true
+      - name: type
+        label: Είδος
+        type: string
+        description: π.χ. Ιστοσελίδα, E-shop, Mobile app
+      - name: year
+        label: Έτος
+        type: number
+      - name: image
+        label: Εικόνα
+        type: image
+        description: Κάθετη εικόνα (περίπου 900×1200). Αν μείνει κενό, εμφανίζεται gradient.
+        options:
+          media: projects
+          extensions: [jpg, jpeg, png, webp]
+      - name: url
+        label: Σύνδεσμος (προαιρετικό)
+        type: string
+        description: Ολόκληρη διεύθυνση, π.χ. https://pelatis.gr
+
+  # ------------------------------------------------------------------
+  - name: services
+    label: Υπηρεσίες
+    type: file
+    path: src/content/services.json
+    format: json
+    list: true
+    fields:
+      - name: title
+        label: Τίτλος
+        type: string
+        required: true
+      - name: text
+        label: Περιγραφή
+        type: text
+      - name: icon
+        label: Εικονίδιο
+        type: select
+        options:
+          values:
+            - name: web
+              label: Ιστοσελίδα
+            - name: app
+              label: Κινητό
+            - name: shop
+              label: Καλάθι
+            - name: core
+              label: Γρανάζι
+            - name: ai
+              label: Αστέρι (AI)
+            - name: growth
+              label: Γράφημα
+      - name: stack
+        label: Τεχνολογίες (μικρό κείμενο κάτω αριστερά)
+        type: string
+      - name: time
+        label: Χρόνος (κάτω δεξιά)
+        type: string
+        description: π.χ. 3–5 εβδ. Χωρίς τιμές.
+      - name: wide
+        label: Φαρδιά κάρτα
+        type: boolean
+        description: Πιάνει δύο στήλες. Για ωραία διάταξη, 3 από τις 6 κάρτες φαρδιές, εναλλάξ.
+
+  # ------------------------------------------------------------------
+  - name: faq
+    label: Συχνές ερωτήσεις
+    type: file
+    path: src/content/faq.json
+    format: json
+    list: true
+    fields:
+      - name: q
+        label: Ερώτηση
+        type: string
+        required: true
+      - name: a
+        label: Απάντηση
+        type: text
+        required: true
+
+  # ------------------------------------------------------------------
+  - name: hero
+    label: "Αρχική: hero"
+    type: file
+    path: src/content/hero.json
+    format: json
+    fields:
+      - name: kicker
+        label: Μικρή φράση πάνω από τον τίτλο
+        type: string
+        description: Είναι το κύριο h1 για τη Google. Κράτα τις λέξεις «κατασκευή ιστοσελίδων».
+      - name: line1
+        label: Τίτλος, γραμμή 1
+        type: string
+      - name: line2
+        label: Τίτλος, γραμμή 2 (κούφια γράμματα)
+        type: string
+      - name: line3
+        label: Τίτλος, γραμμή 3
+        type: string
+      - name: intro
+        label: Κείμενο εισαγωγής
+        type: text
+      - name: highlight
+        label: Κομμάτι του κειμένου με έντονα
+        type: string
+        description: Πρέπει να υπάρχει αυτούσιο μέσα στο κείμενο εισαγωγής.
+      - name: readouts
+        label: Νούμερα κάτω από το hero
+        type: object
+        list: true
+        fields:
+          - name: label
+            label: Ετικέτα
+            type: string
+          - name: value
+            label: Τιμή
+            type: number
+          - name: decimals
+            label: Δεκαδικά
+            type: number
+          - name: unit
+            label: Μονάδα
+            type: string
+
+  # ------------------------------------------------------------------
+  - name: pipeline
+    label: Διαδικασία (pipeline)
+    type: file
+    path: src/content/pipeline.json
+    format: json
+    list: true
+    fields:
+      - name: when
+        label: Πότε
+        type: string
+      - name: title
+        label: Τίτλος
+        type: string
+      - name: text
+        label: Περιγραφή
+        type: text
+
+  # ------------------------------------------------------------------
+  - name: stack
+    label: Τεχνολογίες (κυλιόμενη λωρίδα)
+    type: file
+    path: src/content/stack.json
+    format: json
+    list: true
+    fields:
+      - name: name
+        label: Τεχνολογία
+        type: string
+
+  # ------------------------------------------------------------------
+  - name: company
+    label: Στοιχεία εταιρείας
+    type: file
+    path: src/content/company.json
+    format: json
+    fields:
+      - name: email
+        label: Email
+        type: string
+        required: true
+      - name: phone
+        label: Τηλέφωνο (για κλήση)
+        type: string
+        description: Με κωδικό χώρας, π.χ. +302109993346
+      - name: phoneDisplay
+        label: Τηλέφωνο (όπως εμφανίζεται)
+        type: string
+      - name: seoTitle
+        label: Τίτλος για τη Google
+        type: string
+        description: Εμφανίζεται στα αποτελέσματα αναζήτησης. Έως ~60 χαρακτήρες.
+      - name: description
+        label: Περιγραφή για τη Google
+        type: text
+        description: Έως ~155 χαρακτήρες.
+      - name: address
+        label: Διεύθυνση
+        type: object
+        fields:
+          - name: streetAddress
+            label: Οδός και αριθμός
+            type: string
+          - name: postalCode
+            label: Τ.Κ.
+            type: string
+          - name: addressLocality
+            label: Πόλη
+            type: string
+          - name: addressRegion
+            label: Περιφέρεια
+            type: string
+      - name: legal
+        label: Νομικά στοιχεία
+        type: object
+        fields:
+          - name: entity
+            label: Επίσημη επωνυμία
+            type: string
+          - name: vat
+            label: ΑΦΜ
+            type: string
+          - name: taxOffice
+            label: ΔΟΥ
+            type: string
+          - name: lastUpdated
+            label: Ημερομηνία τελευταίας ενημέρωσης Όρων/Απορρήτου
+            type: string
+      - name: analytics
+        label: Google
+        type: object
+        fields:
+          - name: gaId
+            label: Google Analytics Measurement ID
+            type: string
+            description: Μορφή G-XXXXXXXXXX. Κενό = χωρίς Analytics και χωρίς μήνυμα cookies.
+          - name: searchConsole
+            label: Κωδικός επιβεβαίωσης Search Console (HTML tag)
+            type: string
+            description: Μόνο η τιμή μέσα στο content="...". Προαιρετικό.

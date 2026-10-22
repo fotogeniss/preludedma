@@ -1,0 +1,17 @@
+---
+import { site } from '../data/site';
+const year = new Date().getFullYear();
+---
+<footer>
+  <div class="wrap foot">
+    <a href="/" class="logo"><svg aria-hidden="true"><use href="#st" /></svg>PRELUDE</a>
+    <nav aria-label="Footer">
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+      <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+      <a href="/oroi/">Όροι</a>
+      <a href="/aporrito/">Απόρρητο</a>
+      {site.analytics.gaId && <a href="#" data-cc-open>Cookies</a>}
+    </nav>
+    <span class="mono">© {year} {site.legalName}</span>
+  </div>
+</footer>

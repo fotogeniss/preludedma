@@ -1,0 +1,59 @@
+---
+import { site } from '../data/site';
+---
+<section class="cta" id="contact">
+  <div class="wrap">
+    <span class="mono"><b>[ SYS.06 ]</b> Επικοινωνία</span>
+    <h2 class="h1" style="margin-top:22px"><span data-scramble>Initiate</span><span class="ol" data-scramble>project</span></h2>
+    <p>Πες μας τι έχεις στο μυαλό σου και θα σου στείλουμε πρόταση μέσα σε 24 ώρες.</p>
+
+    <form class="cform" id="cform" action="/contact.php" method="post" novalidate>
+      <div><label for="cf-name">Όνομα</label><input id="cf-name" name="name" required maxlength="120" autocomplete="name" /></div>
+      <div><label for="cf-contact">Email ή τηλέφωνο</label><input id="cf-contact" name="contact" required maxlength="160" autocomplete="email" /></div>
+      <div class="full"><label for="cf-msg">Τι θέλεις να φτιάξουμε;</label><textarea id="cf-msg" name="message" rows="4" required maxlength="4000"></textarea></div>
+      <!-- Παγίδα για bots: οι άνθρωποι δεν τη βλέπουν -->
+      <div class="hp" aria-hidden="true"><label for="cf-web">Website</label><input id="cf-web" name="website" tabindex="-1" autocomplete="off" /></div>
+      <div class="full row">
+        <span class="status" id="cf-status" role="status"></span>
+        <button type="submit" class="btn btn-p">Στείλε μήνυμα <span class="k" aria-hidden="true">↗</span></button>
+      </div>
+    </form>
+
+    <div class="ctas">
+      <a href={`mailto:${site.email}`} class="btn btn-g">{site.email}</a>
+      <a href={`tel:${site.phone}`} class="btn btn-g">{site.phoneDisplay}</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('cform') as HTMLFormElement;
+  const status = document.getElementById('cf-status')!;
+  const button = form.querySelector('button[type=submit]') as HTMLButtonElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    if (!String(data.get('name')).trim() || !String(data.get('contact')).trim() || !String(data.get('message')).trim()) {
+      status.className = 'status err';
+      status.textContent = 'Συμπλήρωσε όνομα, στοιχεία επικοινωνίας και μήνυμα.';
+      return;
+    }
+    button.disabled = true;
+    status.className = 'status';
+    status.textContent = 'Αποστολή…';
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: data });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || 'send_failed');
+      form.reset();
+      status.className = 'status ok';
+      status.textContent = 'Στάλθηκε. Θα σου απαντήσουμε μέσα σε 24 ώρες.';
+    } catch {
+      status.className = 'status err';
+      status.textContent = 'Δεν στάλθηκε. Δοκίμασε ξανά ή γράψε μας στο info@preludedma.gr.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>

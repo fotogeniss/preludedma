@@ -1,0 +1,38 @@
+---
+// Απλή σελίδα κειμένου (όροι, απόρρητο κ.λπ.) με το ίδιο στυλ, χωρίς την υδρόγειο.
+import Base from './Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  noindex?: boolean;
+}
+const { title, description, noindex = false } = Astro.props;
+---
+<Base title={`${title} · Prelude`} description={description} globe={false} noindex={noindex}>
+  <div class="wrap">
+    <Nav />
+    <article class="doc">
+      <h1 class="h2">{title}</h1>
+      <slot />
+    </article>
+  </div>
+  <Footer />
+</Base>
+
+<style>
+  .doc { max-width: 760px; padding: 170px 0 140px; }
+  .doc :global(h2) { font-family: var(--disp); font-weight: 500; font-size: 1.2rem; text-transform: uppercase; margin: 44px 0 12px; }
+  .doc :global(p), .doc :global(li) { color: var(--dim); font-weight: 300; margin-bottom: 14px; }
+  .doc :global(ul) { padding-left: 20px; }
+  .doc :global(a) { color: var(--lite); }
+  .doc .h2 { margin-bottom: 12px; }
+  .doc :global(.doc-meta) { font-family: var(--mono); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--lite); margin-bottom: 36px; }
+  .doc :global(.doc-card) { list-style: none; padding: 20px 22px; margin: 6px 0 18px; border: 1px solid var(--edge-2); background: rgba(255,255,255,.03); clip-path: var(--cut); }
+  .doc :global(.doc-card li) { margin-bottom: 6px; }
+  .doc :global(.doc-card li:last-child) { margin-bottom: 0; }
+  .doc :global(b) { color: var(--text); font-weight: 600; }
+  .doc :global(li) { margin-bottom: 10px; }
+</style>

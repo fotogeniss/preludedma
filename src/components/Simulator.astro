@@ -1,0 +1,378 @@
+---
+import { presets, swatches, styles, type Kind } from '../data/simulator';
+const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
+---
+<section class="s" id="lab" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <span class="mono"><b>[ SYS.02 ]</b> Simulator</span>
+        <h2 class="h2">Δες το δικό σου<br /><span class="ol">πριν υπάρξει</span></h2>
+      </div>
+      <p>Γράψε το όνομα της επιχείρησής σου, διάλεξε κλάδο, ύφος και χρώμα, και δες ένα πρώτο σκίτσο του site ή της εφαρμογής σου. Πάτα και τα μενού μέσα στο preview.</p>
+    </div>
+
+    <div class="sim-note" role="note">
+      <span class="sim-badge mono">Demo</span>
+      <p><strong>Είναι απλώς ένα παιχνίδι για να πάρεις μια ιδέα.</strong> Το πραγματικό σου site ή η εφαρμογή σου σχεδιάζεται από το μηδέν, μαζί σου, και δεν θα μοιάζει με αυτό το σκίτσο.</p>
+    </div>
+
+    <div class="sim">
+      <div class="ctrl">
+        <div>
+          <label for="biz">Input // όνομα επιχείρησης</label>
+          <input id="biz" value="Φούρνος Ελένη" maxlength="26" autocomplete="off" />
+        </div>
+
+        <div>
+          <span class="lbl" id="lbl-kind">Input // κλάδος</span>
+          <div class="opts" id="kinds" role="group" aria-labelledby="lbl-kind">
+            {kinds.map(([key, p], i) => (
+              <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-k={key}>{p.label}</button>
+            ))}
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <div>
+            <span class="lbl" id="lbl-mode">Output // τύπος</span>
+            <div class="opts" id="mode" role="group" aria-labelledby="lbl-mode">
+              <button type="button" aria-pressed="true" data-m="site">Ιστοσελίδα</button>
+              <button type="button" aria-pressed="false" data-m="app">Εφαρμογή</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <span class="lbl" id="lbl-style">Input // ύφος</span>
+          <div class="opts opts-3" id="styles" role="group" aria-labelledby="lbl-style">
+            {styles.map((s, i) => (
+              <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-s={s.id}>{s.label}</button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <span class="lbl" id="lbl-color">Input // χρώμα</span>
+          <div class="swatches" id="swatches" role="group" aria-labelledby="lbl-color">
+            {swatches.map((c, i) => (
+              <button
+                type="button"
+                class:list={['sw', { auto: c === 'auto' }]}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+                data-c={c}
+                style={c === 'auto' ? undefined : `--sw:${c}`}
+                aria-label={c === 'auto' ? 'Χρώμα του κλάδου' : `Χρώμα ${c}`}
+                title={c === 'auto' ? 'Του κλάδου' : c}
+              ></button>
+            ))}
+            <label class="sw sw-custom" title="Δικό σου χρώμα">
+              <input type="color" id="swcustom" value="#7B3FE4" aria-label="Διάλεξε δικό σου χρώμα" />
+            </label>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-g sim-random" id="simrandom">Έκπληξη <span class="k" aria-hidden="true">⟳</span></button>
+
+        <div>
+          <span class="lbl">Console</span>
+          <div class="log" id="log" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="view">
+        <span class="corner mono" style="top:18px;left:22px">Preview // live</span>
+        <span class="corner mono" style="top:18px;right:22px" id="res">1440 × 900</span>
+        <span class="corner mono demo-mark" style="bottom:16px;left:22px">Demo · ενδεικτικό σκίτσο</span>
+
+        <!-- Ιστοσελίδα -->
+        <div class="mock mock-site" id="mSite" data-style="modern">
+          <div class="mk-url"><i></i><i></i><i></i><span id="url"></span></div>
+          <div class="mk-nav">
+            <span class="mk-brand"><span class="mk-mark" id="sMark"></span><b id="sName"></b></span>
+            <nav class="mk-links" id="sNav"></nav>
+          </div>
+          <div class="mk-page" data-page="0">
+            <div class="mk-hero">
+              <div>
+                <div class="mk-h" id="sHead"></div>
+                <p class="mk-sub" id="sSub"></p>
+                <button type="button" class="mk-btn" id="sCta" data-go="1"></button>
+              </div>
+              <div class="mk-pic"></div>
+            </div>
+            <div class="mk-feats" id="sFeats"></div>
+          </div>
+          <div class="mk-page" data-page="1" hidden>
+            <div class="mk-h mk-h2" id="sItemsTitle"></div>
+            <div class="mk-items" id="sItems"></div>
+          </div>
+          <div class="mk-page" data-page="2" hidden>
+            <div class="mk-h mk-h2">Επικοινωνία</div>
+            <div class="mk-contact">
+              <div class="mk-map"><span></span></div>
+              <div>
+                <p><b>Ωράριο</b><br /><span id="sHours"></span></p>
+                <p><b>Διεύθυνση</b><br />Οδός Παραδείγματος 12</p>
+                <button type="button" class="mk-btn">Κάλεσε τώρα</button>
+              </div>
+            </div>
+          </div>
+          <div class="mk-foot"><span id="sFoot"></span><span>Made by Prelude</span></div>
+        </div>
+
+        <!-- Εφαρμογή -->
+        <div class="mock mock-app hide" id="mApp" data-style="modern">
+          <div class="ap-status"><span>9:41</span><span class="ap-isl"></span><span>▮▮▮</span></div>
+          <div class="ap-top">
+            <span class="mk-mark" id="pMark"></span>
+            <div><small id="pHi"></small><b id="pName"></b></div>
+          </div>
+          <div class="ap-screen" data-tab="0">
+            <div class="ap-card">
+              <small id="pCardSmall"></small>
+              <b id="pCardTitle"></b>
+              <button type="button" class="mk-btn" id="pAction" data-tab-go="1"></button>
+            </div>
+            <div class="ap-sub">Δημοφιλή</div>
+            <ul class="ap-list" id="pTop"></ul>
+          </div>
+          <div class="ap-screen" data-tab="1" hidden>
+            <div class="ap-sub" id="pItemsTitle"></div>
+            <ul class="ap-list" id="pList"></ul>
+          </div>
+          <div class="ap-screen" data-tab="2" hidden>
+            <div class="ap-sub">Πληροφορίες</div>
+            <div class="ap-info"><b>Ωράριο</b><span id="pHours"></span></div>
+            <div class="ap-info"><b>Διεύθυνση</b><span>Οδός Παραδείγματος 12</span></div>
+            <button type="button" class="mk-btn">Κάλεσε τώρα</button>
+          </div>
+          <div class="ap-tabs" id="pTabs">
+            <button type="button" data-tab-go="0" aria-pressed="true"><i class="t-home"></i>Αρχική</button>
+            <button type="button" data-tab-go="1" aria-pressed="false"><i class="t-list"></i><span id="pTabList"></span></button>
+            <button type="button" data-tab-go="2" aria-pressed="false"><i class="t-info"></i>Εμείς</button>
+          </div>
+        </div>
+
+        <div class="sim-cta">
+          <button type="button" class="btn btn-p" id="simwant">Θέλω κάτι τέτοιο <span class="k" aria-hidden="true">↗</span></button>
+          <span class="mono">Συμπληρώνει τη φόρμα με τις επιλογές σου</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { presets, swatches, styles, type Kind } from '../data/simulator';
+
+  type Mode = 'site' | 'app';
+  const state = { kind: 'bakery' as Kind, mode: 'site' as Mode, style: 'modern', color: 'auto', page: 0, tab: 0 };
+  const $ = (id: string) => document.getElementById(id)!;
+  const mSite = $('mSite');
+  const mApp = $('mApp');
+  const input = $('biz') as HTMLInputElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Ελληνικά → λατινικά για το domain
+  const gr: Record<string, string> = {
+    'α':'a','ά':'a','β':'v','γ':'g','δ':'d','ε':'e','έ':'e','ζ':'z','η':'i','ή':'i','θ':'th','ι':'i','ί':'i','ϊ':'i','ΐ':'i',
+    'κ':'k','λ':'l','μ':'m','ν':'n','ξ':'x','ο':'o','ό':'o','π':'p','ρ':'r','σ':'s','ς':'s','τ':'t','υ':'y','ύ':'y','ϋ':'y',
+    'φ':'f','χ':'ch','ψ':'ps','ω':'o','ώ':'o',
+  };
+  const slug = (t: string) =>
+    t.toLowerCase().split('').map((c) => gr[c] ?? c).join('')
+      .replace(/oy/g, 'ou').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'to-site-sou';
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  const name = () => input.value.trim() || 'Η επιχείρησή σου';
+  const initials = (n: string) => n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'P';
+  const color = () => (state.color === 'auto' ? presets[state.kind].color : state.color);
+  const styleLabel = () => styles.find((s) => s.id === state.style)?.label ?? '';
+
+  // Κονσόλα
+  const logEl = $('log');
+  let logTimer: ReturnType<typeof setTimeout>;
+  function log(lines: string[]) {
+    clearTimeout(logTimer);
+    let i = 0;
+    const next = () => {
+      if (i >= lines.length) return;
+      const d = document.createElement('div');
+      d.innerHTML = lines[i++];
+      logEl.appendChild(d);
+      while (logEl.children.length > 7) logEl.firstChild!.remove();
+      logTimer = setTimeout(next, 150);
+    };
+    next();
+  }
+
+  // Αλλάζει το HTML μόνο αν όντως άλλαξε, ώστε να μην ξαναπαίζουν τα animations σε κάθε πάτημα πλήκτρου
+  function setHTML(el: HTMLElement, html: string) {
+    if (el.dataset.h !== html) { el.innerHTML = html; el.dataset.h = html; }
+  }
+
+  function showPage(root: HTMLElement, attr: 'page' | 'tab', idx: number) {
+    root.querySelectorAll<HTMLElement>(`[data-${attr}]`).forEach((p) => (p.hidden = Number(p.dataset[attr]) !== idx));
+  }
+
+  // Ομαλή αλλαγή: σβήνει σιγά-σιγά το παλιό, γεμίζει το νέο και το «φέρνει» μέσα με animation
+  let swapTimer: ReturnType<typeof setTimeout>;
+  function render(opts: { log?: boolean; flash?: boolean } = {}) {
+    if (!opts.flash || reduce) return paint(opts);
+    const el = state.mode === 'site' ? mSite : mApp;
+    const other = state.mode === 'site' ? mApp : mSite;
+    clearTimeout(swapTimer);
+    // το mock που φεύγει (αν αλλάζει ο τύπος) σβήνει κι αυτό
+    const leaving = [mSite, mApp].find((m) => !m.classList.contains('hide'));
+    (leaving ?? el).classList.add('out');
+    swapTimer = setTimeout(() => {
+      [mSite, mApp].forEach((m) => m.classList.remove('out', 'in'));
+      paint(opts);
+      void el.offsetWidth;
+      el.classList.add('in');
+      other.classList.remove('in');
+      setTimeout(() => el.classList.remove('in'), 600);
+    }, 190);
+  }
+
+  function paint(opts: { log?: boolean; flash?: boolean } = {}) {
+    const p = presets[state.kind];
+    const n = name();
+    const c = color();
+    const ini = initials(n);
+
+    for (const m of [mSite, mApp]) {
+      m.style.setProperty('--k', c);
+      m.dataset.style = state.style;
+    }
+
+    // Ιστοσελίδα
+    $('url').textContent = slug(n) + '.gr';
+    $('sName').textContent = n;
+    $('sMark').textContent = ini;
+    $('sHead').textContent = p.headline;
+    $('sSub').textContent = p.sub;
+    $('sCta').textContent = p.cta;
+    $('sItemsTitle').textContent = p.itemsTitle;
+    $('sHours').textContent = p.hours;
+    $('sFoot').textContent = `© ${n}`;
+    const navLabels = ['Αρχική', p.itemsTitle, 'Επικοινωνία'];
+    setHTML($('sNav'), navLabels
+      .map((l, i) => `<button type="button" data-go="${i}" aria-pressed="${i === state.page}">${esc(l)}</button>`)
+      .join(''));
+    setHTML($('sFeats'), p.features.map((f) => `<div><i></i>${esc(f)}</div>`).join(''));
+    setHTML($('sItems'), p.items.map((it) => `<div class="mk-item"><span class="mk-thumb"></span><b>${esc(it.n)}</b><small>${esc(it.m)}</small></div>`).join(''));
+    showPage(mSite, 'page', state.page);
+
+    // Εφαρμογή
+    $('pMark').textContent = ini;
+    $('pName').textContent = n;
+    $('pHi').textContent = p.greeting;
+    $('pCardSmall').textContent = p.hours;
+    $('pCardTitle').textContent = p.headline;
+    $('pAction').textContent = p.appAction;
+    $('pItemsTitle').textContent = p.itemsTitle;
+    $('pTabList').textContent = p.itemsTitle;
+    $('pHours').textContent = p.hours;
+    const li = (it: { n: string; m: string }) => `<li><span class="mk-thumb"></span><b>${esc(it.n)}</b><small>${esc(it.m)}</small></li>`;
+    setHTML($('pTop'), p.items.slice(0, 3).map(li).join(''));
+    setHTML($('pList'), p.items.map(li).join(''));
+    $('pTabs').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.tabGo) === state.tab)));
+    showPage(mApp, 'tab', state.tab);
+
+    mSite.classList.toggle('hide', state.mode !== 'site');
+    mApp.classList.toggle('hide', state.mode !== 'app');
+    $('res').textContent = state.mode === 'site' ? '1440 × 900' : '390 × 844';
+
+    if (opts.log !== false) {
+      log([
+        `&gt; build <span class="hl">${esc(slug(n))}</span> --${state.mode}`,
+        `&gt; layout ${state.kind} · style ${state.style}`,
+        `&gt; theme ${c}`,
+        '&gt; compiling components…',
+        `<span class="ok">✓ ready in ${(0.25 + Math.random() * 0.5).toFixed(2)}s</span>`,
+      ]);
+    }
+  }
+
+  // Ομάδες κουμπιών (κλάδος, τύπος, ύφος)
+  function group(id: string, onPick: (b: HTMLButtonElement) => void) {
+    const buttons = [...document.querySelectorAll<HTMLButtonElement>(`#${id} > button`)];
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => {
+        buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+        onPick(b);
+        render({ flash: true });
+      }),
+    );
+    return buttons;
+  }
+  const kindBtns = group('kinds', (b) => { state.kind = b.dataset.k as Kind; state.page = 0; state.tab = 0; });
+  group('mode', (b) => { state.mode = b.dataset.m as Mode; });
+  const styleBtns = group('styles', (b) => { state.style = b.dataset.s!; });
+
+  // Χρώματα
+  const swBtns = [...document.querySelectorAll<HTMLButtonElement>('#swatches > button')];
+  const custom = $('swcustom') as HTMLInputElement;
+  const customLabel = custom.parentElement!;
+  function pickColor(c: string, fromCustom = false) {
+    state.color = c;
+    swBtns.forEach((x) => x.setAttribute('aria-pressed', String(!fromCustom && x.dataset.c === c)));
+    customLabel.classList.toggle('on', fromCustom);
+    if (fromCustom) customLabel.style.setProperty('--sw', c);
+  }
+  swBtns.forEach((b) => b.addEventListener('click', () => { pickColor(b.dataset.c!); render(); }));
+  custom.addEventListener('input', () => { pickColor(custom.value, true); render({ log: false }); });
+  custom.addEventListener('change', () => render());
+
+  // Πλοήγηση μέσα στα mockups
+  mSite.addEventListener('click', (e) => {
+    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-go]');
+    if (!t) return;
+    state.page = Number(t.dataset.go);
+    render({ log: false });
+  });
+  mApp.addEventListener('click', (e) => {
+    const t = (e.target as HTMLElement).closest<HTMLElement>('[data-tab-go]');
+    if (!t) return;
+    state.tab = Number(t.dataset.tabGo);
+    render({ log: false });
+  });
+
+  // Όνομα
+  let debounce: ReturnType<typeof setTimeout>;
+  input.addEventListener('input', () => {
+    render({ log: false });
+    clearTimeout(debounce);
+    debounce = setTimeout(() => render(), 500);
+  });
+
+  // Έκπληξη: τυχαίος κλάδος, ύφος και χρώμα
+  const pick = <T,>(a: T[]) => a[(Math.random() * a.length) | 0];
+  $('simrandom').addEventListener('click', () => {
+    const kb = pick(kindBtns.filter((b) => b.dataset.k !== state.kind));
+    const sb = pick(styleBtns);
+    kindBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === kb)));
+    styleBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === sb)));
+    state.kind = kb.dataset.k as Kind;
+    state.style = sb.dataset.s!;
+    state.page = 0;
+    state.tab = 0;
+    pickColor(pick(swatches));
+    render({ flash: true });
+  });
+
+  // «Θέλω κάτι τέτοιο»: συμπληρώνει τη φόρμα επικοινωνίας και πηγαίνει εκεί
+  $('simwant').addEventListener('click', () => {
+    const msg = document.getElementById('cf-msg') as HTMLTextAreaElement | null;
+    const what = state.mode === 'site' ? 'ιστοσελίδα' : 'εφαρμογή κινητού';
+    const text =
+      `Γεια σας! Θα ήθελα ${what} για «${name()}» (${presets[state.kind].label}).\n` +
+      `Από το simulator μου άρεσε το ύφος «${styleLabel()}» με χρώμα ${color()}.`;
+    if (msg) msg.value = text;
+    document.getElementById('contact')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+    setTimeout(() => (document.getElementById('cf-name') as HTMLInputElement | null)?.focus({ preventScroll: true }), reduce ? 0 : 700);
+  });
+
+  render();
+</script>

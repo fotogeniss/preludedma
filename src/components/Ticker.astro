@@ -1,0 +1,10 @@
+---
+import { stack } from '../data/services';
+// Η λίστα επαναλαμβάνεται δύο φορές για να κυλάει χωρίς κενό
+const items = [...stack, ...stack];
+---
+<div class="ticker" aria-hidden="true">
+  <div class="t">
+    {items.map((s) => <span><b>●</b> {s}</span>)}
+  </div>
+</div>

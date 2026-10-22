@@ -1,0 +1,39 @@
+# Σε κάθε push στο main: build και ανέβασμα του dist/ στο hosting μέσω FTP.
+# Στο GitHub → Settings → Secrets and variables → Actions, πρόσθεσε:
+#   FTP_SERVER    π.χ. ftp.preludedma.gr
+#   FTP_USERNAME  ο χρήστης FTP από το cPanel
+#   FTP_PASSWORD  ο κωδικός FTP
+#   FTP_DIR       ο φάκελος του site στον server, π.χ. /public_html/  (πρέπει να τελειώνει σε /)
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Αν υπάρχει package-lock.json στο repo, εγκαθιστά ακριβώς αυτές τις εκδόσεις
+      - run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - run: npm run build
+
+      - name: Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_DIR }}
+          # Μην σβήσεις τίποτα στον server που δεν προέρχεται από το dist/ (π.χ. τον φάκελο old-wp/)
+          dangerous-clean-slate: false
