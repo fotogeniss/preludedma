@@ -24,12 +24,16 @@ export const site = {
 };
 
 // Οι ενότητες της αρχικής, με τη σειρά. Χρησιμοποιούνται από το μενού και τον δείκτη HUD.
+import projectsJson from '../content/projects.json';
+
+export const hasProjects = (projectsJson as unknown[]).length > 0;
+
 export const sections = [
   { id: 'top', label: 'Αρχή' },
   { id: 'services', label: 'Υπηρεσίες' },
   { id: 'lab', label: 'Simulator' },
   { id: 'process', label: 'Pipeline' },
-  { id: 'work', label: 'Έργα' },
+  ...(hasProjects ? [{ id: 'work', label: 'Έργα' }] : []),
   { id: 'faq', label: 'Ερωτήσεις' },
   { id: 'contact', label: 'Επικοινωνία' },
 ];
