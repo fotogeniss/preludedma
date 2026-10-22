@@ -5,30 +5,5 @@
   "line3": "web & apps",
   "intro": "Σχεδιάζουμε και γράφουμε από το μηδέν ιστοσελίδες, εφαρμογές και πλατφόρμες με την τεχνολογία που θα χρησιμοποιούν όλοι σε πέντε χρόνια. Εσύ την έχεις από σήμερα.",
   "highlight": "ιστοσελίδες, εφαρμογές και πλατφόρμες",
-  "readouts": [
-    {
-      "label": "Load time",
-      "value": 0.8,
-      "decimals": 1,
-      "unit": "sec"
-    },
-    {
-      "label": "Lighthouse",
-      "value": 100,
-      "decimals": 0,
-      "unit": "/100"
-    },
-    {
-      "label": "Projects shipped",
-      "value": 50,
-      "decimals": 0,
-      "unit": "+"
-    },
-    {
-      "label": "Uptime",
-      "value": 99.9,
-      "decimals": 1,
-      "unit": "%"
-    }
-  ]
+  "readouts": []
 }
