@@ -14,7 +14,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
     <div class="sim-note" role="note">
       <span class="sim-badge mono">Demo</span>
-      <p><strong>Είναι απλώς ένα παιχνίδι για να πάρεις μια ιδέα.</strong> Το πραγματικό σου site ή η εφαρμογή σου σχεδιάζεται από το μηδέν, μαζί σου, και δεν θα μοιάζει με αυτό το σκίτσο.</p>
+      <p><strong>Διαδραστικό demo για μια πρώτη ιδέα.</strong> Δεν είναι πρόταση σχεδιασμού. Κάθε site και κάθε εφαρμογή που αναλαμβάνουμε σχεδιάζεται από το μηδέν, μαζί σου, γύρω από την επιχείρησή σου.</p>
     </div>
 
     <div class="sim">
@@ -365,7 +365,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   // «Θέλω κάτι τέτοιο»: συμπληρώνει τη φόρμα επικοινωνίας και πηγαίνει εκεί
   $('simwant').addEventListener('click', () => {
     const msg = document.getElementById('cf-msg') as HTMLTextAreaElement | null;
-    const what = state.mode === 'site' ? 'ιστοσελίδα' : 'εφαρμογή κινητού';
+    const what = state.mode === 'site' ? 'ιστοσελίδα' : 'εφαρμογή';
     const text =
       `Γεια σας! Θα ήθελα ${what} για «${name()}» (${presets[state.kind].label}).\n` +
       `Από το simulator μου άρεσε το ύφος «${styleLabel()}» με χρώμα ${color()}.`;
