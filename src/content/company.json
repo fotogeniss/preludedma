@@ -2,16 +2,22 @@
   "email": "info@preludedma.gr",
   "phone": "+302109993346",
   "phoneDisplay": "+30 2109993346",
-  "seoTitle": "Κατασκευή Ιστοσελίδων, E-shop & Εφαρμογών στην Αθήνα | Prelude",
-  "description": "Η Prelude σχεδιάζει και κατασκευάζει custom ιστοσελίδες, e-shop και εφαρμογές κινητού για επιχειρήσεις στην Αθήνα και σε όλη την Ελλάδα. Γρήγορα, έτοιμα για Google, χωρίς έτοιμα themes.",
+  "seoTitle": "Κατασκευή Ιστοσελίδων, E-shops & Εφαρμογών στην Αθήνα | Prelude",
+  "description": "Η Prelude σχεδιάζει και κατασκευάζει custom ιστοσελίδες, e-shops και εφαρμογές για επιχειρήσεις στην Αθήνα και σε όλη την Ελλάδα. Γρήγορα, έτοιμα για Google, χωρίς έτοιμα themes.",
   "address": {
+    "streetAddress": "",
+    "postalCode": "",
     "addressLocality": "Αθήνα",
     "addressRegion": "Αττική"
   },
   "legal": {
+    "entity": "",
+    "vat": "",
+    "taxOffice": "",
     "lastUpdated": "22 Οκτωβρίου 2026"
   },
   "analytics": {
-    "gaId": "G-6K64EZ6447"
+    "gaId": "",
+    "searchConsole": ""
   }
 }

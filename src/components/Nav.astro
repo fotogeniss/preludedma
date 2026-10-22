@@ -125,7 +125,22 @@ const mobileLinks = sections.filter((s) => s.id !== 'top');
   }
 
   toggle.addEventListener('click', () => setOpen(!open));
-  menu.querySelectorAll('[data-close]').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  // Πάτημα σε σύνδεσμο του μενού: κλείνει το μενού και μετά πάει στην ενότητα.
+  // Η κύλιση γίνεται αφού αφαιρεθεί το κλείδωμα της σελίδας (overflow:hidden), αλλιώς σε κινητά δεν κινείται.
+  menu.querySelectorAll<HTMLAnchorElement>('[data-close]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      const href = a.getAttribute('href') || '';
+      const m = href.match(/^\/#([\w-]+)$/);
+      const target = m && location.pathname === '/' ? document.getElementById(m[1]) : null;
+      setOpen(false);
+      if (!target) return; // άλλη σελίδα: κανονική πλοήγηση
+      e.preventDefault();
+      history.replaceState(null, '', href);
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })),
+      );
+    }),
+  );
   addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && open) setOpen(false);
     // κρατά το Tab μέσα στο μενού όσο είναι ανοιχτό

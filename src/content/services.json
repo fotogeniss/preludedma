@@ -9,7 +9,7 @@
   },
   {
     "icon": "app",
-    "title": "Εφαρμογές κινητού",
+    "title": "Εφαρμογές",
     "text": "Μία εφαρμογή για iPhone και Android, με κρατήσεις, παραγγελίες και ειδοποιήσεις.",
     "stack": "iOS · Android",
     "time": "8–12 εβδ.",
@@ -17,7 +17,7 @@
   },
   {
     "icon": "shop",
-    "title": "Ηλεκτρονικά καταστήματα",
+    "title": "E-shops",
     "text": "Κατάστημα με πληρωμές, courier και σύνδεση με το ERP σου.",
     "stack": "Viva · Stripe · BoxNow",
     "time": "5–8 εβδ.",
