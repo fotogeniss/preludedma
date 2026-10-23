@@ -23,6 +23,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <button type="button" role="tab" data-g="kind" aria-selected="true">Κλάδος</button>
           <button type="button" role="tab" data-g="mode" aria-selected="false">Τύπος</button>
           <button type="button" role="tab" data-g="style" aria-selected="false">Ύφος</button>
+          <button type="button" role="tab" data-g="font" aria-selected="false">Font & γωνίες</button>
           <button type="button" role="tab" data-g="blocks" aria-selected="false">Ενότητες</button>
           <button type="button" role="tab" data-g="color" aria-selected="false">Χρώμα</button>
           <button type="button" role="tab" data-g="name" aria-selected="false">Όνομα</button>
@@ -59,6 +60,24 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
             {styles.map((s, i) => (
               <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-s={s.id}>{s.label}</button>
             ))}
+          </div>
+        </div>
+
+        <div class="cg" data-g="font">
+          <span class="lbl sub" id="lbl-font">Input // γραμματοσειρά</span>
+          <div class="opts chips" id="fonts" role="group" aria-labelledby="lbl-font">
+            <button type="button" aria-pressed="true" data-f="auto">Του ύφους</button>
+            <button type="button" aria-pressed="false" data-f="sans">Sans</button>
+            <button type="button" aria-pressed="false" data-f="serif">Serif</button>
+            <button type="button" aria-pressed="false" data-f="tech">Tech</button>
+            <button type="button" aria-pressed="false" data-f="mono">Mono</button>
+          </div>
+          <span class="lbl sub" id="lbl-corner">Input // γωνίες</span>
+          <div class="opts chips" id="corners" role="group" aria-labelledby="lbl-corner">
+            <button type="button" aria-pressed="true" data-r="auto">Του ύφους</button>
+            <button type="button" aria-pressed="false" data-r="square">Ίσιες</button>
+            <button type="button" aria-pressed="false" data-r="round">Στρογγυλές</button>
+            <button type="button" aria-pressed="false" data-r="pill">Πολύ στρογγυλές</button>
           </div>
         </div>
 
@@ -128,9 +147,9 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
               <div class="mk-hero">
                 <div class="blk-bar hero-bar"><span>Hero</span><button type="button" data-hero-cycle title="Άλλαξε διάταξη">⇄</button></div>
                 <div class="mk-copy">
-                  <span class="mk-kicker" id="sKicker"></span>
-                  <div class="mk-h" id="sHead" contenteditable="true" spellcheck="false" title="Γράψε τον δικό σου τίτλο"></div>
-                  <p class="mk-sub" id="sSub" contenteditable="true" spellcheck="false" title="Γράψε τη δική σου περιγραφή"></p>
+                  <span class="mk-kicker" id="sKicker" data-ed="k" contenteditable="true" spellcheck="false"></span>
+                  <div class="mk-h" id="sHead" data-ed="h" contenteditable="true" spellcheck="false" title="Γράψε τον δικό σου τίτλο"></div>
+                  <p class="mk-sub" id="sSub" data-ed="s" contenteditable="true" spellcheck="false" title="Γράψε τη δική σου περιγραφή"></p>
                   <div class="mk-ctas">
                     <button type="button" class="mk-btn" id="sCta"></button>
                     <span class="mk-hrs" id="sHoursMini"></span>
@@ -168,7 +187,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
               </form>
             </div>
             <footer class="mk-foot2">
-              <div class="mf-brand"><span class="mk-brand"><span class="mk-mark" id="fMark"></span><b id="fName"></b></span><p id="fTag"></p></div>
+              <div class="mf-brand"><span class="mk-brand"><span class="mk-mark" id="fMark"></span><b id="fName"></b></span><p id="fTag" data-ed="ft" contenteditable="true" spellcheck="false"></p></div>
               <div class="mf-col"><small>Σελίδες</small><span id="fLinks"></span></div>
               <div class="mf-col"><small>Επικοινωνία</small><span>210 000 0000</span><span id="fMail"></span><span id="fHours"></span></div>
               <div class="mf-col mf-news"><small>Newsletter</small><div><input type="text" placeholder="Το email σου" aria-label="Email (demo)" autocomplete="off" /><button type="button" class="mk-btn" data-news>OK</button></div></div>
@@ -218,7 +237,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
         </div>
 
         <span class="swipe-hint mono" id="swipeHint" aria-hidden="true">‹ σύρε το preview για άλλο ύφος ›</span>
-        <span class="build-hint mono" aria-hidden="true">✎ Γράψε πάνω στον τίτλο · μετακίνησε, σβήσε ή πρόσθεσε ενότητες</span>
+        <span class="build-hint mono" aria-hidden="true">✎ Πάτα σε οποιοδήποτε κείμενο για να το αλλάξεις · μετακίνησε, σβήσε ή πρόσθεσε ενότητες</span>
 
         <!-- Διαχείριση: τι βλέπει ο ιδιοκτήτης -->
         <div class="mock mock-adm hide" id="mAdm" data-style="modern">
@@ -264,7 +283,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   type Mode = 'site' | 'app' | 'admin';
   type Dev = 'desktop' | 'tablet' | 'phone';
   let dev: Dev = 'desktop';
-  const state = { kind: 'bakery' as Kind, mode: 'site' as Mode, style: 'modern', color: 'auto', page: 0, tab: 0, flip: false };
+  const state = { kind: 'bakery' as Kind, mode: 'site' as Mode, style: 'modern', color: 'auto', page: 0, tab: 0, flip: false, font: 'auto', corner: 'auto' };
   // Λειτουργίες μέσα στο preview: καλάθι, κράτηση, φόρμες
   const cart = new Map<number, number>();
   const booking = { item: -1, day: 0, slot: -1 };
@@ -306,7 +325,20 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   const initials = (n: string) => n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'P';
   const color = () => (state.color === 'auto' ? presets[state.kind].color : state.color);
   const styleLabel = () => styles.find((s) => s.id === state.style)?.label ?? '';
-  const preset = () => presets[state.kind];
+  const preset = () => {
+    const base = presets[state.kind];
+    const t = texts[state.kind];
+    if (!t) return base;
+    return {
+      ...base,
+      items: base.items.map((it, i) => (t['i' + i] ? { ...it, n: t['i' + i] } : it)),
+      features: base.features.map((f, i) => t['f' + i] ?? f),
+    };
+  };
+  // Κείμενα που άλλαξε ο επισκέπτης (ανά κλάδο)
+  const texts: Partial<Record<Kind, Record<string, string>>> = {};
+  const T = (key: string, def: string) => texts[state.kind]?.[key] ?? def;
+  const edA = (key: string) => ` data-ed="${key}" contenteditable="true" spellcheck="false"`;
 
   // Κονσόλα
   const logEl = $('log');
@@ -327,6 +359,9 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
   // Αλλάζει το HTML μόνο αν όντως άλλαξε, ώστε να μην ξαναπαίζουν τα animations σε κάθε πάτημα πλήκτρου
   function setHTML(el: HTMLElement, html: string) {
+    // δεν ξαναζωγραφίζει όσο ο επισκέπτης γράφει μέσα στο συγκεκριμένο κομμάτι
+    const a = document.activeElement as HTMLElement | null;
+    if (a && a.isContentEditable && el.contains(a)) return;
     if (el.dataset.h !== html) { el.innerHTML = html; el.dataset.h = html; }
   }
 
@@ -343,7 +378,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   }
   function rowHTML(tag: 'div' | 'li', cls: string, it: { n: string; m: string }, i: number) {
     const th = photosOn ? ` ph" style="background-image:url(${ph(1 + (i % 3))})` : '';
-    return `<${tag} class="${cls}"><span class="mk-n">${String(i + 1).padStart(2, '0')}</span><span class="mk-thumb${th}">${glyph(state.kind)}</span><div class="mk-it"><b>${esc(it.n)}</b><small>${esc(it.m)}</small></div>${actionBtn(it, i)}</${tag}>`;
+    return `<${tag} class="${cls}"><span class="mk-n">${String(i + 1).padStart(2, '0')}</span><span class="mk-thumb${th}">${glyph(state.kind)}</span><div class="mk-it"><b${edA('i' + i)}>${esc(it.n)}</b><small>${esc(it.m)}</small></div>${actionBtn(it, i)}</${tag}>`;
   }
 
   // ---------- Φύλλα (καλάθι / κράτηση) ----------
@@ -471,7 +506,6 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   const allBlocks = Object.keys(blockLabels) as Block[];
   const lay: Partial<Record<Kind, { hero: Hero; blocks: Block[] }>> = {};
   const curLay = () => (lay[state.kind] ??= { hero: layouts[state.kind].hero, blocks: [...layouts[state.kind].blocks] });
-  const texts: Partial<Record<Kind, { h?: string; s?: string }>> = {};
   let addOpen = false;
   let flashBlk: Block | null = null;
   const ctaAttr = () => (preset().flow === 'cart' ? 'data-go="1"' : 'data-book="-1"');
@@ -493,44 +527,44 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     const p = preset();
     const ex = extras[state.kind];
     const cart = p.flow === 'cart';
-    const h3 = (t: string) => `<div class="mk-h mk-h2 mk-h3">${esc(t)}</div>`;
+    const h3 = (key: string, def: string) => `<div class="mk-h mk-h2 mk-h3"${edA(key)}>${esc(T(key, def))}</div>`;
     switch (b) {
       case 'feats':
-        return `<div class="mk-feats">${p.features.map((f) => `<div><i></i>${esc(f)}</div>`).join('')}</div>`;
+        return `<div class="mk-feats">${p.features.map((f, i) => `<div><i></i><span${edA('f' + i)}>${esc(f)}</span></div>`).join('')}</div>`;
       case 'pop':
-        return h3(cart ? 'Δημοφιλή' : p.itemsTitle) + `<div class="mk-items">${p.items.slice(0, 4).map((it, i) => rowHTML('div', 'mk-item', it, i)).join('')}</div>`;
+        return h3('popT', cart ? 'Δημοφιλή' : p.itemsTitle) + `<div class="mk-items">${p.items.slice(0, 4).map((it, i) => rowHTML('div', 'mk-item', it, i)).join('')}</div>`;
       case 'cards':
-        return h3(cart ? 'Νέα στο κατάστημα' : p.itemsTitle) + `<div class="mk-cards">${p.items.slice(0, 3).map((it, i) =>
-          `<article class="mk-card"><div class="mc-img"${bgPh(1 + i)}><span class="mc-badge">${esc(it.m)}</span></div><div class="mc-body"><b>${esc(it.n)}</b><small>${esc(p.label)}</small>${actionBtn(it, i)}</div></article>`).join('')}</div>`;
+        return h3('cardsT', cart ? 'Νέα στο κατάστημα' : p.itemsTitle) + `<div class="mk-cards">${p.items.slice(0, 3).map((it, i) =>
+          `<article class="mk-card"><div class="mc-img"${bgPh(1 + i)}><span class="mc-badge">${esc(it.m)}</span></div><div class="mc-body"><b${edA('i' + i)}>${esc(it.n)}</b><small>${esc(p.label)}</small>${actionBtn(it, i)}</div></article>`).join('')}</div>`;
       case 'gal':
         return photosOn
-          ? `<div class="mk-gal">${[1, 2, 3].map((i, n) => `<figure><img src="${ph(i)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ok')"><figcaption>${esc(p.features[n] ?? '')}</figcaption></figure>`).join('')}</div>`
-          : `<div class="mk-gal">${[0, 1, 2].map((n) => `<figure><figcaption>${esc(p.features[n] ?? '')}</figcaption></figure>`).join('')}</div>`;
+          ? `<div class="mk-gal">${[1, 2, 3].map((i, n) => `<figure><img src="${ph(i)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ok')"><figcaption${edA('f' + n)}>${esc(p.features[n] ?? '')}</figcaption></figure>`).join('')}</div>`
+          : `<div class="mk-gal">${[0, 1, 2].map((n) => `<figure><figcaption${edA('f' + n)}>${esc(p.features[n] ?? '')}</figcaption></figure>`).join('')}</div>`;
       case 'menu':
-        return `<div class="mk-menu">${h3(p.itemsTitle)}${p.items.map((it) => `<div class="mm-row"><b>${esc(it.n)}</b><i></i><small>${esc(it.m)}</small></div>`).join('')}<button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
+        return `<div class="mk-menu">${h3('menuT', p.itemsTitle)}${p.items.map((it, i) => `<div class="mm-row"><b${edA('i' + i)}>${esc(it.n)}</b><i></i><small>${esc(it.m)}</small></div>`).join('')}<button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
       case 'tt': {
         const days = ['Δευ', 'Τρί', 'Τετ', 'Πέμ', 'Παρ'];
-        return h3('Εβδομαδιαίο πρόγραμμα') + `<div class="mk-tt">${days.map((d, di) => `<div><h4>${d}</h4>${[0, 1].map((j) => {
+        return h3('ttT', 'Εβδομαδιαίο πρόγραμμα') + `<div class="mk-tt">${days.map((d, di) => `<div><h4>${d}</h4>${[0, 1].map((j) => {
           const i = (di + j * 2) % p.items.length;
           return `<button type="button" data-book="${i}"><small>${slots[(di + j * 3) % slots.length]}</small><b>${esc(p.items[i].n)}</b></button>`;
         }).join('')}</div>`).join('')}</div>`;
       }
       case 'steps':
-        return h3('Πώς δουλεύουμε') + `<div class="mk-steps">${ex.steps.map(([t, d], i) => `<div><span>${i + 1}</span><b>${esc(t)}</b><p>${esc(d)}</p></div>`).join('')}</div>`;
+        return h3('stT', 'Πώς δουλεύουμε') + `<div class="mk-steps">${ex.steps.map(([t, d], i) => `<div><span>${i + 1}</span><b${edA('s' + i + 't')}>${esc(T('s' + i + 't', t))}</b><p${edA('s' + i + 'd')}>${esc(T('s' + i + 'd', d))}</p></div>`).join('')}</div>`;
       case 'prof': {
         const pr = ex.prof ?? { name: name(), role: p.label, points: p.features };
-        return `<div class="mk-prof"><div class="mp-img"${bgPh(state.kind === 'clinic' ? 0 : 1)}></div><div><small>Γνώρισέ μας</small><b>${esc(pr.name)}</b><span class="mp-role">${esc(pr.role)}</span><ul>${pr.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div></div>`;
+        return `<div class="mk-prof"><div class="mp-img"${bgPh(state.kind === 'clinic' ? 0 : 1)}></div><div><small>Γνώρισέ μας</small><b${edA('pN')}>${esc(T('pN', pr.name))}</b><span class="mp-role"${edA('pR')}>${esc(T('pR', pr.role))}</span><ul>${pr.points.map((x, i) => `<li${edA('pP' + i)}>${esc(T('pP' + i, x))}</li>`).join('')}</ul><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div></div>`;
       }
       case 'alert':
-        return `<div class="mk-alert"><i></i><span>${esc(ex.alert)}</span><button type="button" data-go="2">Περισσότερα →</button></div>`;
+        return `<div class="mk-alert"><i></i><span${edA('al')}>${esc(T('al', ex.alert))}</span><button type="button" data-go="2">Περισσότερα →</button></div>`;
       case 'band':
-        return `<div class="mk-band"><b>${cart ? 'Παράγγειλε online σε λίγα λεπτά.' : 'Κλείσε online σε λίγα λεπτά.'}</b><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
+        return `<div class="mk-band"><b${edA('bd')}>${esc(T('bd', cart ? 'Παράγγειλε online σε λίγα λεπτά.' : 'Κλείσε online σε λίγα λεπτά.'))}</b><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
       case 'faq':
-        return h3('Συχνές ερωτήσεις') + `<div class="mk-faq">${[
+        return h3('fqT', 'Συχνές ερωτήσεις') + `<div class="mk-faq">${[
           [cart ? 'Πώς κάνω παραγγελία;' : `Πώς κάνω ${p.bookTitle.replace('Κλείσε ', '').toLowerCase()};`, 'Online από εδώ, σε λίγα δευτερόλεπτα. Παίρνεις αμέσως επιβεβαίωση με email.'],
           ['Ποιο είναι το ωράριο;', p.hours],
           ['Πού θα σας βρω;', 'Οδός Παραδείγματος 12. Δες τον χάρτη στη σελίδα Επικοινωνία.'],
-        ].map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div>`;
+        ].map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary><span${edA('q' + i)}>${esc(T('q' + i, q))}</span></summary><p${edA('a' + i)}>${esc(T('a' + i, a))}</p></details>`).join('')}</div>`;
     }
   }
   function blockWrap(b: Block, i: number, n: number) {
@@ -651,8 +685,11 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       m.style.setProperty('--k', c);
       m.dataset.style = state.style;
       // το «Τολμηρό» είναι από φύση σκούρο, οπότε εκεί το κουμπί δίνει φωτεινό
-      const dark = state.style === 'bold' || state.style === 'neon' ? !state.flip : state.flip;
+      // τα σκούρα από φύση ύφη: εκεί το κουμπί δίνει φωτεινό
+      const dark = ['bold', 'neon', 'luxury'].includes(state.style) ? !state.flip : state.flip;
       m.dataset.mode = dark ? 'dark' : 'light';
+      m.dataset.font = state.font;
+      m.dataset.corner = state.corner;
     }
 
     // Φωτογραφίες
@@ -679,11 +716,11 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     $('sHours').textContent = p.hours;
     $('sFoot').textContent = `© ${new Date().getFullYear()} ${n}`;
     $('fName').textContent = n;
-    $('fTag').textContent = p.sub;
+    if (document.activeElement !== $('fTag')) $('fTag').textContent = T('ft', p.sub);
     $('fMail').textContent = `info@${slug(n)}.gr`;
     $('fHours').textContent = p.hours;
     $('sGlyph').innerHTML = icons[state.kind];
-    $('sKicker').textContent = p.label;
+    if (document.activeElement !== $('sKicker')) $('sKicker').textContent = T('k', p.label);
     $('sHoursMini').textContent = p.hours;
     $('sChip1').innerHTML = `<i></i>${esc(p.items[0].m)} · ${esc(p.items[0].n)}`;
     $('sChip2').textContent = p.hours;
@@ -786,6 +823,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   const kindBtns = group('kinds', (b) => { state.kind = b.dataset.k as Kind; state.page = 0; state.tab = 0; syncDemoName(); resetFlow(); });
   group('mode', (b) => { state.mode = b.dataset.m as Mode; sheet = null; });
   const styleBtns = group('styles', (b) => { state.style = b.dataset.s!; });
+  const fontBtns = group('fonts', (b) => { state.font = b.dataset.f!; });
+  const cornerBtns = group('corners', (b) => { state.corner = b.dataset.r!; });
 
   // Χρώματα
   const swBtns = [...document.querySelectorAll<HTMLButtonElement>('#swatches > button')];
@@ -817,6 +856,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     const q = <T extends HTMLElement = HTMLElement>(sel: string) => t.closest<T>(sel);
     let el: HTMLElement | null;
 
+    if (q('[contenteditable]')) { if (q('summary')) e.preventDefault(); return; }
     if (t.classList.contains('mk-sheet') || q('[data-sheet-close]')) { sheet = null; syncSheet(); return; }
     if (builderAction(t)) return;
     // σε οθόνες αφής η γραμμή εργαλείων εμφανίζεται με ένα άγγιγμα στην ενότητα
@@ -1145,22 +1185,32 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   const sBody = $('sBody');
   const seenBlk = new Set<string>();
 
-  // Ο επισκέπτης γράφει πάνω στον τίτλο και την περιγραφή
-  for (const [id, key] of [['sHead', 'h'], ['sSub', 's']] as const) {
-    const el = $(id);
-    el.addEventListener('input', () => {
-      const t = (texts[state.kind] ??= {});
-      t[key] = (el.textContent ?? '').slice(0, 110);
-      if (key === 'h') $('pCardTitle').textContent = t.h || preset().headline;
+  // Ο επισκέπτης γράφει πάνω σε οποιοδήποτε κείμενο του preview
+  const edOf = (e: Event) => ((e.target as HTMLElement).closest ? ((e.target as HTMLElement).closest('[data-ed]') as HTMLElement | null) : null);
+  for (const m of [mSite, mApp]) {
+    m.addEventListener('input', (e) => {
+      const el = edOf(e);
+      if (!el) return;
+      (texts[state.kind] ??= {})[el.dataset.ed!] = (el.textContent ?? '').slice(0, 140);
+      if (el.dataset.ed === 'h') $('pCardTitle').textContent = T('h', presets[state.kind].headline);
     });
-    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
-    el.addEventListener('paste', (e) => {
+    m.addEventListener('keydown', (e) => {
+      const el = edOf(e);
+      if (el && e.key === 'Enter') { e.preventDefault(); el.blur(); }
+    });
+    m.addEventListener('paste', (e) => {
+      if (!edOf(e)) return;
       e.preventDefault();
       document.execCommand('insertText', false, (e.clipboardData?.getData('text/plain') ?? '').replace(/\s+/g, ' '));
     });
-    el.addEventListener('blur', () => {
+    m.addEventListener('focusout', (e) => {
+      const el = edOf(e);
+      if (!el) return;
       const t = texts[state.kind];
-      if (t && !(t[key] ?? '').trim()) { delete t[key]; paint({ log: false }); }
+      const k = el.dataset.ed!;
+      if (t && !(t[k] ?? '').trim()) delete t[k];
+      // περνάει την αλλαγή παντού (λίστες, κάρτες, εφαρμογή, admin)
+      setTimeout(() => paint({ log: false }), 0);
       log(['&gt; content.edit', '<span class="ok">✓ το κείμενο άλλαξε</span>']);
     });
   }
@@ -1241,6 +1291,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       s: [state.kind, state.style, state.mode, state.color.replace('#', ''), state.flip ? 1 : 0, dev].join('.'),
       ...(nameTouched ? { n: name() } : {}),
       l: [curLay().hero, ...curLay().blocks].join('-'),
+      ...(state.font !== 'auto' || state.corner !== 'auto' ? { f: `${state.font}.${state.corner}` } : {}),
       ...(texts[state.kind]?.h ? { t: texts[state.kind]!.h! } : {}),
     });
     return `${location.origin}/?${q}#lab`;
@@ -1262,6 +1313,11 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       const bl = lq.slice(1).filter((x): x is Block => x in blockLabels);
       lay[state.kind] = { hero: lq[0] as Hero, blocks: bl.length ? [...new Set(bl)] : [...layouts[state.kind].blocks] };
     }
+    const [fq, rq] = (q.get('f') ?? '').split('.');
+    if (fontBtns.some((x) => x.dataset.f === fq)) state.font = fq;
+    if (cornerBtns.some((x) => x.dataset.r === rq)) state.corner = rq;
+    fontBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === state.font)));
+    cornerBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.r === state.corner)));
     const tq = q.get('t');
     if (tq) (texts[state.kind] ??= {}).h = tq.slice(0, 110);
     const nm = q.get('n');

@@ -182,6 +182,10 @@ export const styles = [
   { id: 'elegant', label: 'Κομψό' },
   { id: 'bold', label: 'Τολμηρό' },
   { id: 'neon', label: 'Νέον' },
+  { id: 'minimal', label: 'Minimal' },
+  { id: 'luxury', label: 'Luxury' },
+  { id: 'playful', label: 'Χαρούμενο' },
+  { id: 'nature', label: 'Φυσικό' },
 ] as const;
 
 // ---------- Δομή του site ανά κλάδο ----------
