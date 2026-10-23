@@ -439,7 +439,7 @@ section[id],header[id]{scroll-margin-top:96px}
 .mk-thumb svg{width:58%;height:58%;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 
 /* ιστοσελίδα */
-.mock-site{width:100%;max-width:640px;height:580px;display:flex;flex-direction:column;border-radius:10px;transform:perspective(1400px) rotateY(-8deg) rotateX(4deg)}
+.mock-site{width:100%;max-width:700px;height:580px;display:flex;flex-direction:column;border-radius:10px;transform:perspective(1400px) rotateY(-8deg) rotateX(4deg)}
 .mk-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--fg) 25%,transparent) transparent}
 .mock-site:hover{transform:none}
 .mk-url{display:flex;gap:6px;align-items:center;padding:10px 14px;background:color-mix(in srgb,var(--fg) 6%,var(--bg));font-size:.74rem;color:var(--mute)}
@@ -457,8 +457,6 @@ section[id],header[id]{scroll-margin-top:96px}
 .mk-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:center}
 .mk-hero .mk-h{font-size:1.85rem}
 .mk-sub{font-size:.84rem;color:var(--mute);margin:10px 0 16px}
-.mk-pic{display:grid;place-items:center;aspect-ratio:1;border-radius:calc(var(--r) * 1.2);background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.5),transparent 45%),linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 55%,#000))}
-.mock[data-style=bold] .mk-pic{clip-path:polygon(18% 0,100% 0,100% 82%,82% 100%,0 100%,0 18%)}
 .mk-feats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
 .mk-feats div{background:var(--soft);border-radius:var(--r);padding:12px;font-size:.78rem;font-weight:600}
 .mk-feats i{display:block;width:16px;height:16px;border-radius:calc(var(--r) / 2);background:var(--k);margin-bottom:8px}
@@ -509,7 +507,6 @@ section[id],header[id]{scroll-margin-top:96px}
 .sim-btns .sim-random[aria-pressed=true]{border-color:var(--lite);color:var(--lite)}
 
 /* εικόνα hero, ζώνη CTA, φόρμα */
-.mk-pic svg{width:44%;height:44%;fill:none;stroke:#fff;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round;opacity:.92;filter:drop-shadow(0 6px 14px rgba(0,0,0,.25))}
 .mk-h3{font-size:1.05rem;margin:26px 0 12px}
 .mk-band{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:22px;padding:18px;border-radius:calc(var(--r) * 1.4);background:linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 60%,#000));color:#fff}
 .mk-band b{font-family:var(--hf);font-weight:var(--hw);text-transform:var(--ht);font-size:1rem;line-height:1.15;max-width:22ch}
@@ -561,14 +558,153 @@ section[id],header[id]{scroll-margin-top:96px}
 .mock-app .mk-toast{top:64px}
 .mk-toast.on{opacity:1;transform:translate(-50%,0)}
 
+/* =========================================================
+   Preview v2: τρία εντελώς διαφορετικά sites (modern / elegant / bold)
+   ========================================================= */
+.mock{--se:"Noto Serif Display",Georgia,"Times New Roman",serif}
+.mock[data-style=elegant]{--hf:var(--se)}
+.mk-n{display:none}
+.mk-copy{min-width:0;animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.mk-kicker{display:inline-block;margin-bottom:12px;font-size:.62rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--k)}
+.mk-ctas{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.mk-hrs{font-size:.7rem;color:var(--mute)}
+.mk-marquee{display:none}
+.mk-pic{position:relative;aspect-ratio:1/1.05;display:block}
+.mk-pic .art-a,.mk-pic .art-b{position:absolute;inset:0;display:block;overflow:hidden}
+.mk-pic .art-glyph{position:absolute;left:50%;top:50%;width:46%;height:46%;translate:-50% -50%;fill:none;stroke:#fff;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 10px 22px rgba(0,0,0,.3));animation:floaty 7s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-8px) rotate(1.5deg)}}
+.mk-chip{position:absolute;z-index:2;display:inline-flex;align-items:center;gap:7px;max-width:86%;padding:8px 12px;font-size:.66rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:floaty 8s ease-in-out infinite}
+.mk-chip i{flex:none;width:7px;height:7px;border-radius:50%;background:#2DD38A;box-shadow:0 0 0 3px rgba(45,211,138,.25)}
+.mk-chip.c1{left:-7%;top:12%}
+.mk-chip.c2{right:-5%;bottom:11%;animation-delay:-3s}
+
+/* ---------- MODERN: «πρωτοπορία» με mesh gradient και γυάλινα στοιχεία ---------- */
+.mock[data-style=modern] .mk-hero{grid-template-columns:1.05fr .95fr;gap:26px}
+.mock[data-style=modern] .mk-hero .mk-h{font-size:2.15rem;letter-spacing:-.04em}
+.mock[data-style=modern] .mk-kicker{padding:5px 10px;border-radius:99px;background:color-mix(in srgb,var(--k) 12%,transparent)}
+.mock[data-style=modern] .mk-pic .art-a{border-radius:26px;
+  background:
+    radial-gradient(70% 55% at 18% 12%,color-mix(in srgb,var(--k) 38%,#fff) 0,transparent 62%),
+    radial-gradient(60% 60% at 92% 24%,color-mix(in srgb,var(--k) 55%,#ff7ad9) 0,transparent 64%),
+    radial-gradient(90% 70% at 40% 108%,color-mix(in srgb,var(--k) 70%,#1c0a3a) 0,transparent 70%),
+    linear-gradient(155deg,var(--k),color-mix(in srgb,var(--k) 45%,#000));
+  box-shadow:0 30px 60px -24px color-mix(in srgb,var(--k) 70%,#000)}
+.mock[data-style=modern] .mk-pic .art-b{border-radius:26px;
+  background:
+    repeating-radial-gradient(circle at 78% 26%,rgba(255,255,255,.22) 0 1px,transparent 1px 20px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  mix-blend-mode:soft-light;opacity:.9}
+.mock[data-style=modern] .mk-chip{border-radius:14px;background:rgba(255,255,255,.78);color:#14151B;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 12px 30px -10px rgba(10,12,30,.45)}
+.mock[data-style=modern][data-mode=dark] .mk-chip{background:rgba(24,26,36,.72);color:#fff;box-shadow:0 12px 30px -10px #000}
+.mock[data-style=modern] .mk-feats div{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:14px;transition:transform .25s,border-color .25s}
+.mock[data-style=modern] .mk-feats div:hover{transform:translateY(-3px);border-color:var(--k)}
+.mock[data-style=modern] .mk-feats i{width:26px;height:26px;border-radius:9px;background:linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 50%,#ff7ad9))}
+.mock[data-style=modern] .mk-item{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 8px 20px -14px color-mix(in srgb,var(--fg) 50%,transparent);transition:transform .25s}
+.mock[data-style=modern] .mk-item:hover{transform:translateY(-2px)}
+.mock[data-style=modern] .mk-thumb{border-radius:12px}
+.mock[data-style=modern] .mk-band{border-radius:22px;background:
+  radial-gradient(60% 120% at 100% 0,color-mix(in srgb,var(--k) 50%,#ff7ad9),transparent 60%),
+  linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 50%,#000))}
+
+/* ---------- ELEGANT: εκδοτικό, με αψίδα, serif και λεπτές γραμμές ---------- */
+.mock[data-style=elegant]{--r:2px}
+.mock[data-style=elegant] .mk-nav{justify-content:space-between;padding:16px 26px;border-bottom:1px solid var(--line)}
+.mock[data-style=elegant] .mk-brand b{font-family:var(--se);font-weight:400;font-size:1.05rem;letter-spacing:.01em}
+.mock[data-style=elegant] .mk-links button{border-radius:0;background:transparent!important;font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid transparent}
+.mock[data-style=elegant] .mk-links button[aria-pressed=true]{border-bottom-color:var(--k);color:var(--k)}
+.mock[data-style=elegant] .mk-page{padding:34px 30px 30px}
+.mock[data-style=elegant] .mk-hero{grid-template-columns:1fr .72fr;gap:40px}
+.mock[data-style=elegant] .mk-hero .mk-h{font-size:2.3rem;font-weight:400;letter-spacing:-.015em;line-height:1.08}
+.mock[data-style=elegant] .mk-kicker{display:flex;align-items:center;gap:10px;letter-spacing:.24em;font-weight:500}
+.mock[data-style=elegant] .mk-kicker::before{content:"";width:28px;height:1px;background:var(--k)}
+.mock[data-style=elegant] .mk-sub{font-size:.9rem;line-height:1.6;max-width:34ch}
+.mock[data-style=elegant] .mk-pic{aspect-ratio:3/4.1}
+.mock[data-style=elegant] .mk-pic::after{content:"";position:absolute;inset:-9px;border:1px solid var(--k);border-radius:999px 999px 0 0;opacity:.55;pointer-events:none}
+.mock[data-style=elegant] .mk-pic .art-a{border-radius:999px 999px 0 0;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--k) 18%,#fbe9d3) 0,color-mix(in srgb,var(--k) 52%,#fff) 52%,color-mix(in srgb,var(--k) 85%,#000) 100%)}
+.mock[data-style=elegant] .mk-pic .art-b{border-radius:999px 999px 0 0;
+  background:
+    radial-gradient(circle at 50% 36%,rgba(255,255,255,.95) 0 15%,rgba(255,255,255,.28) 16% 27%,transparent 28%),
+    repeating-linear-gradient(180deg,transparent 0 9px,rgba(255,255,255,.16) 9px 10px) 0 62%/100% 38% no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E")}
+.mock[data-style=elegant] .mk-pic .art-glyph{stroke:var(--k);stroke-width:.9;top:38%;width:30%;height:30%;filter:none;animation:none}
+.mock[data-style=elegant] .mk-chip.c1{display:none}
+.mock[data-style=elegant] .mk-chip.c2{left:50%;right:auto;bottom:6%;translate:-50% 0;animation:none;background:transparent;color:#fff;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500}
+.mock[data-style=elegant] .mk-feats{grid-template-columns:repeat(3,1fr);gap:0;margin-top:34px;border-block:1px solid var(--line)}
+.mock[data-style=elegant] .mk-feats div{background:transparent;border-radius:0;padding:18px 10px;text-align:center;font-family:var(--se);font-weight:400;font-size:.9rem;border-left:1px solid var(--line)}
+.mock[data-style=elegant] .mk-feats div:first-child{border-left:0}
+.mock[data-style=elegant] .mk-feats i{width:7px;height:7px;margin:0 auto 10px;border-radius:0;rotate:45deg}
+.mock[data-style=elegant] .mk-h3,.mock[data-style=elegant] .mk-h2{font-weight:400;font-size:1.45rem;text-align:center;margin:34px 0 18px}
+.mock[data-style=elegant] .mk-h3::after,.mock[data-style=elegant] .mk-h2::after{content:"";display:block;width:34px;height:1px;background:var(--k);margin:10px auto 0}
+.mock[data-style=elegant] .mk-items{grid-template-columns:1fr;gap:0}
+.mock[data-style=elegant] .mk-item{grid-template-columns:auto 1fr auto;background:transparent;border-radius:0;padding:14px 4px;border-bottom:1px dotted color-mix(in srgb,var(--fg) 35%,transparent)}
+.mock[data-style=elegant] .mk-item .mk-thumb{display:none}
+.mock[data-style=elegant] .mk-item .mk-n{display:block;font-family:var(--se);font-style:italic;color:var(--k);font-size:1rem;min-width:26px}
+.mock[data-style=elegant] .mk-it b{font-family:var(--se);font-weight:400;font-size:1rem}
+.mock[data-style=elegant] .mk-it small{color:var(--mute);font-weight:400;letter-spacing:.06em}
+.mock[data-style=elegant] .mk-band{background:transparent;color:var(--fg);border:1px solid var(--k);border-radius:0;justify-content:center;text-align:center;flex-direction:column;padding:28px}
+.mock[data-style=elegant] .mk-band b{font-weight:400;font-size:1.25rem;max-width:none}
+.mock[data-style=elegant] .mk-band .mk-btn{background:transparent;color:var(--k);box-shadow:0 0 0 1px var(--k) inset}
+.mock[data-style=elegant] .mk-foot{justify-content:center;gap:24px;letter-spacing:.14em;text-transform:uppercase;font-size:.58rem;padding:18px}
+
+/* ---------- BOLD: brutalist, τεράστιοι τίτλοι, ταινία, σκληρές σκιές ---------- */
+.mock[data-style=bold] .mk-nav{border-bottom:3px solid var(--fg);padding:12px 18px}
+.mock[data-style=bold] .mk-brand b{font-family:var(--disp);text-transform:uppercase;letter-spacing:.02em}
+.mock[data-style=bold] .mk-links button{border:2px solid transparent;border-radius:0;font-family:var(--disp);text-transform:uppercase;font-weight:700;font-size:.68rem;letter-spacing:.04em;background:transparent!important;color:var(--fg)}
+.mock[data-style=bold] .mk-links button[aria-pressed=true]{background:var(--fg)!important;color:var(--bg)}
+.mock[data-style=bold] .mk-page{padding:24px 20px 26px}
+.mock[data-style=bold] .mk-hero{grid-template-columns:1fr;gap:20px}
+.mock[data-style=bold] .mk-hero .mk-h{font-size:3.1rem;line-height:.92;letter-spacing:-.01em}
+.mock[data-style=bold] .mk-kicker{background:var(--k);color:#fff;padding:4px 9px;font-family:var(--disp);letter-spacing:.08em;transform:rotate(-2deg)}
+.mock[data-style=bold] .mk-sub{font-size:.86rem;max-width:40ch;color:color-mix(in srgb,var(--fg) 75%,transparent)}
+.mock[data-style=bold] .mk-pic{aspect-ratio:2.5/1;border:3px solid var(--fg);box-shadow:9px 9px 0 var(--k)}
+.mock[data-style=bold] .mk-pic .art-a{background:
+  radial-gradient(circle,rgba(0,0,0,.32) 1.6px,transparent 2.2px) 0 0/11px 11px,
+  repeating-linear-gradient(-45deg,transparent 0 22px,rgba(255,255,255,.1) 22px 44px),
+  var(--k)}
+.mock[data-style=bold] .mk-pic .art-b{background:linear-gradient(90deg,transparent 55%,color-mix(in srgb,var(--bg) 90%,transparent) 55% 100%)}
+.mock[data-style=bold] .mk-pic .art-glyph{left:77%;width:21%;height:auto;aspect-ratio:1;stroke:var(--k);stroke-width:1.8;filter:none;animation:none}
+.mock[data-style=bold] .mk-chip{border-radius:0;background:var(--fg);color:var(--bg);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;font-size:.6rem;box-shadow:4px 4px 0 var(--k)}
+.mock[data-style=bold] .mk-chip.c1{left:3%;top:-16px;rotate:-3deg;animation:none}
+.mock[data-style=bold] .mk-chip.c2{right:4%;bottom:-14px;rotate:2deg;animation:none}
+.mock[data-style=bold] .mk-marquee{display:block;overflow:hidden;margin:8px -20px 4px;rotate:-1.6deg;background:var(--k);color:#fff;border-block:3px solid var(--fg);padding:9px 0;font-family:var(--disp);font-weight:900;text-transform:uppercase;font-size:.95rem;letter-spacing:.04em;white-space:nowrap}
+.mock[data-style=bold] .mk-marquee>div{display:flex;width:max-content;animation:marq 16s linear infinite}
+.mock[data-style=bold] .mk-marquee span{padding-right:0}
+@keyframes marq{to{transform:translateX(-50%)}}
+.mock[data-style=bold] .mk-feats div{background:var(--soft);border:3px solid var(--fg);border-radius:0;padding:12px;font-family:var(--disp);text-transform:uppercase;font-size:.74rem;box-shadow:5px 5px 0 var(--k);transition:transform .15s,box-shadow .15s}
+.mock[data-style=bold] .mk-feats div:hover{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--k)}
+.mock[data-style=bold] .mk-feats i{border-radius:0;width:14px;height:14px}
+.mock[data-style=bold] .mk-h3,.mock[data-style=bold] .mk-h2{font-size:1.7rem;margin:28px 0 14px}
+.mock[data-style=bold] .mk-item{background:var(--bg);border:3px solid var(--fg);border-radius:0;box-shadow:5px 5px 0 var(--k);grid-template-columns:auto 1fr auto;padding:10px 12px}
+.mock[data-style=bold] .mk-item .mk-thumb{display:none}
+.mock[data-style=bold] .mk-item .mk-n{display:block;font-family:var(--disp);font-weight:900;font-size:1.5rem;line-height:1;color:var(--k)}
+.mock[data-style=bold] .mk-it b{font-family:var(--disp);text-transform:uppercase;font-size:.8rem}
+.mock[data-style=bold] .mk-band{border-radius:0;border:3px solid var(--fg);box-shadow:8px 8px 0 var(--fg);background:var(--k)}
+.mock[data-style=bold] .mk-band b{font-size:1.25rem}
+.mock[data-style=bold] .mk-foot{border-top:3px solid var(--fg);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.ap-list .mk-n{display:none!important}
+.mock-app .mk-copy{animation:none}
+
 @media (max-width:1000px){
   .mock-site{transform:none}
   .view{min-height:auto}
 }
 @media (max-width:640px){
   .sim-note{flex-direction:column;gap:10px;padding:14px 16px}
-  .mk-hero{grid-template-columns:1fr}
-  .mk-pic{aspect-ratio:2.4/1}
+  .mk-hero,.mock[data-style=elegant] .mk-hero,.mock[data-style=modern] .mk-hero{grid-template-columns:1fr;gap:22px}
+  .mock[data-style=modern] .mk-pic{aspect-ratio:1.5/1}
+  .mock[data-style=elegant] .mk-pic{aspect-ratio:3/3.4;width:74%;justify-self:center}
+  .mock[data-style=bold] .mk-hero .mk-h{font-size:2.3rem}
+  .mk-chip.c1{left:2%}
+  .mk-chip.c2{right:2%}
+  .mock[data-style=elegant] .mk-page{padding:26px 18px}
+  .mk-brand{flex:none}
+  .mk-links{min-width:0;gap:0}
+  .mock[data-style=elegant] .mk-nav{padding:14px 14px}
+  .mock[data-style=elegant] .mk-links button{letter-spacing:.05em;font-size:.56rem;padding:5px 4px}
+  .mock[data-style=bold] .mk-nav{padding:10px 12px;gap:8px}
+  .mock[data-style=bold] .mk-links button{font-size:.58rem;padding:4px 5px;letter-spacing:0}
   .mk-brand b{display:none}
   .mk-links button{padding:5px 7px;font-size:.7rem}
   .mk-nav{padding:12px 14px}

@@ -233,7 +233,7 @@
         // Κινητό / tablet: η υδρόγειος μένει σταθερά δεξιά, μισή έξω από την οθόνη, ώστε να μην κρύβει κείμενα.
         // Με το scroll αλλάζει μόνο μέγεθος και περιστροφή.
         const halfW = Math.tan((cam.fov / 2) * Math.PI / 180) * cam.position.z * cam.aspect;
-        return { x: halfW * 0.92, y: lerp(P[2], Q[2]) + 0.6, s: lerp(P[3], Q[3]) * 0.8, a: lerp(P[4], Q[4]) };
+        return { x: halfW * 1.02, y: lerp(P[2], Q[2]) + 0.6, s: lerp(P[3], Q[3]) * 0.8, a: lerp(P[4], Q[4]) };
       }
       return { x: lerp(P[1], Q[1]), y: lerp(P[2], Q[2]), s: lerp(P[3], Q[3]), a: lerp(P[4], Q[4]) };
     }
@@ -264,6 +264,7 @@
         if (!reduce) o.rotation.z += 0.0016 * (i % 2 ? -1 : 1) * (i + 1);
         o.rotation.y = cur.a * 0.25 + mouse.x * 0.3;
       });
+      chain.visible = innerWidth >= 1000; // στο κινητό τα εξάγωνα κάλυπταν τα κείμενα
       chain.position.copy(world.position);
       chain.scale.setScalar(cur.s);
       hexes.forEach((h, i) => {
