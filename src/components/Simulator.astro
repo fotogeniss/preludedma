@@ -29,7 +29,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
         </div>
         <div class="cg" data-g="name">
           <label for="biz">Input // όνομα επιχείρησης</label>
-          <input id="biz" value="Φούρνος Ελένη" maxlength="26" autocomplete="off" />
+          <input id="biz" value={presets.bakery.demo} maxlength="26" autocomplete="off" placeholder="π.χ. Φούρνος Ελένη" />
         </div>
 
         <div class="cg on" data-g="kind">
@@ -299,7 +299,10 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     t.toLowerCase().split('').map((c) => gr[c] ?? c).join('')
       .replace(/oy/g, 'ou').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'to-site-sou';
   const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-  const name = () => input.value.trim() || 'Η επιχείρησή σου';
+  // Αν ο επισκέπτης δεν έχει γράψει δικό του όνομα, το όνομα ακολουθεί τον κλάδο (π.χ. «Gym»)
+  let nameTouched = false;
+  const name = () => input.value.trim() || presets[state.kind].demo;
+  const syncDemoName = () => { if (!nameTouched) input.value = presets[state.kind].demo; };
   const initials = (n: string) => n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'P';
   const color = () => (state.color === 'auto' ? presets[state.kind].color : state.color);
   const styleLabel = () => styles.find((s) => s.id === state.style)?.label ?? '';
@@ -649,7 +652,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     );
     return buttons;
   }
-  const kindBtns = group('kinds', (b) => { state.kind = b.dataset.k as Kind; state.page = 0; state.tab = 0; resetFlow(); });
+  const kindBtns = group('kinds', (b) => { state.kind = b.dataset.k as Kind; state.page = 0; state.tab = 0; syncDemoName(); resetFlow(); });
   group('mode', (b) => { state.mode = b.dataset.m as Mode; sheet = null; });
   const styleBtns = group('styles', (b) => { state.style = b.dataset.s!; });
 
@@ -1002,7 +1005,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
   // Όνομα
   let debounce: ReturnType<typeof setTimeout>;
-  input.addEventListener('input', () => {
+  input.addEventListener('input', (e) => {
+    if (e.isTrusted) nameTouched = input.value.trim() !== '';
     render({ log: false });
     clearTimeout(debounce);
     debounce = setTimeout(() => render(), 500);
@@ -1016,6 +1020,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     kindBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === kb)));
     styleBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === sb)));
     state.kind = kb.dataset.k as Kind;
+    syncDemoName();
     state.style = sb.dataset.s!;
     state.page = 0;
     state.tab = 0;
@@ -1041,7 +1046,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   function shareURL() {
     const q = new URLSearchParams({
       s: [state.kind, state.style, state.mode, state.color.replace('#', ''), state.flip ? 1 : 0, dev].join('.'),
-      n: name(),
+      ...(nameTouched ? { n: name() } : {}),
     });
     return `${location.origin}/?${q}#lab`;
   }
@@ -1058,7 +1063,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     state.flip = f === '1';
     if (d === 'tablet' || d === 'phone') dev = d;
     const nm = q.get('n');
-    if (nm) input.value = nm.slice(0, 26);
+    if (nm && nm !== presets[state.kind].demo) { input.value = nm.slice(0, 26); nameTouched = true; } else syncDemoName();
     kindBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.k === state.kind)));
     styleBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.s === state.style)));
     document.querySelectorAll<HTMLButtonElement>('#mode > button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.m === state.mode)));

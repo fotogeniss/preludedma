@@ -8,6 +8,7 @@ export type Item = { n: string; m: string };
 
 export type KindPreset = {
   label: string;
+  demo: string; // όνομα όταν ο επισκέπτης δεν έχει γράψει δικό του
   color: string;
   headline: string;
   sub: string;
@@ -25,6 +26,7 @@ export type KindPreset = {
 
 export const presets: Record<Kind, KindPreset> = {
   bakery: {
+    demo: 'Φούρνος',
     label: 'Φούρνος / Καφέ', color: '#C8553D',
     headline: 'Ζεστό ψωμί από τις 6 το πρωί.', sub: 'Παράγγειλε online και παράλαβε χωρίς ουρά.', cta: 'Δες τον κατάλογο',
     itemsTitle: 'Κατάλογος',
@@ -34,6 +36,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'cart', bookTitle: '', bookOk: '',
   },
   restaurant: {
+    demo: 'Ταβέρνα',
     label: 'Εστιατόριο', color: '#B4532A',
     headline: 'Κουζίνα με ιστορία, τραπέζι για σένα.', sub: 'Κλείσε τραπέζι σε 20 δευτερόλεπτα.', cta: 'Κράτηση τραπεζιού',
     itemsTitle: 'Μενού',
@@ -43,6 +46,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε τραπέζι', bookOk: 'Το τραπέζι κρατήθηκε',
   },
   gym: {
+    demo: 'Gym',
     label: 'Γυμναστήριο', color: '#1F8A6B',
     headline: 'Προπόνηση στο δικό σου ρυθμό.', sub: 'Κλείσε θέση σε τμήμα σε δύο κλικ.', cta: 'Δες το πρόγραμμα',
     itemsTitle: 'Πρόγραμμα',
@@ -52,6 +56,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε θέση', bookOk: 'Η θέση κρατήθηκε',
   },
   beauty: {
+    demo: 'Beauty Studio',
     label: 'Κομμωτήριο / Beauty', color: '#B5477A',
     headline: 'Η ώρα σου, όποτε τη θέλεις.', sub: 'Διάλεξε υπηρεσία και κλείσε ραντεβού online.', cta: 'Κλείσε ραντεβού',
     itemsTitle: 'Υπηρεσίες',
@@ -61,6 +66,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε ραντεβού', bookOk: 'Το ραντεβού κλείστηκε',
   },
   clinic: {
+    demo: 'Ιατρείο',
     label: 'Ιατρείο', color: '#2B5BD7',
     headline: 'Ραντεβού χωρίς αναμονή στο τηλέφωνο.', sub: 'Δες διαθεσιμότητα και κλείσε ώρα online.', cta: 'Κλείσε ραντεβού',
     itemsTitle: 'Υπηρεσίες',
@@ -70,6 +76,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε ραντεβού', bookOk: 'Το ραντεβού κλείστηκε',
   },
   shop: {
+    demo: 'Boutique',
     label: 'Κατάστημα', color: '#7B3FE4',
     headline: 'Η νέα συλλογή μόλις ήρθε.', sub: 'Δωρεάν αποστολή σε όλη την Ελλάδα.', cta: 'Αγόρασε τώρα',
     itemsTitle: 'Προϊόντα',
@@ -79,6 +86,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'cart', bookTitle: '', bookOk: '',
   },
   office: {
+    demo: 'Λογιστικό Γραφείο',
     label: 'Γραφείο / Λογιστικό', color: '#2F4A6B',
     headline: 'Τα οικονομικά σου, σε καλά χέρια.', sub: 'Λογιστική, μισθοδοσία και φορολογικά με ένα τηλεφώνημα.', cta: 'Κλείσε συνάντηση',
     itemsTitle: 'Υπηρεσίες',
@@ -88,6 +96,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε συνάντηση', bookOk: 'Η συνάντηση κλείστηκε',
   },
   hotel: {
+    demo: 'Hotel',
     label: 'Ξενοδοχείο / Rooms', color: '#1C7C8C',
     headline: 'Ξύπνα με θέα στο Αιγαίο.', sub: 'Απευθείας κράτηση, χωρίς ενδιάμεσους, με επιβεβαίωση σε δευτερόλεπτα.', cta: 'Δες διαθεσιμότητα',
     itemsTitle: 'Δωμάτια',
@@ -97,6 +106,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κράτηση δωματίου', bookOk: 'Η κράτηση στάλθηκε',
   },
   law: {
+    demo: 'Δικηγορικό Γραφείο',
     label: 'Δικηγορικό γραφείο', color: '#7A5C2E',
     headline: 'Νομική υποστήριξη με σαφήνεια.', sub: 'Μιλάμε απλά, σε ενημερώνουμε σε κάθε βήμα.', cta: 'Κλείσε συνάντηση',
     itemsTitle: 'Τομείς',
@@ -106,6 +116,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε συνάντηση', bookOk: 'Η συνάντηση κλείστηκε',
   },
   estate: {
+    demo: 'Real Estate',
     label: 'Μεσιτικό / Ακίνητα', color: '#2E7D5B',
     headline: 'Το επόμενο σπίτι σου είναι εδώ.', sub: 'Επιλεγμένα ακίνητα, ξενάγηση όποτε σε βολεύει.', cta: 'Δες τα ακίνητα',
     itemsTitle: 'Ακίνητα',
@@ -115,6 +126,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε ξενάγηση', bookOk: 'Η ξενάγηση κλείστηκε',
   },
   physio: {
+    demo: 'Physio Center',
     label: 'Φυσικοθεραπευτήριο', color: '#2B8FB3',
     headline: 'Κινήσου ξανά χωρίς πόνο.', sub: 'Εξατομικευμένο πρόγραμμα αποκατάστασης.', cta: 'Κλείσε συνεδρία',
     itemsTitle: 'Θεραπείες',
@@ -124,6 +136,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε συνεδρία', bookOk: 'Η συνεδρία κλείστηκε',
   },
   vet: {
+    demo: 'Κτηνιατρείο',
     label: 'Κτηνιατρείο', color: '#D9822B',
     headline: 'Φροντίδα για τον καλύτερό σου φίλο.', sub: 'Εμβόλια, εξετάσεις και επείγοντα, με αγάπη.', cta: 'Κλείσε ραντεβού',
     itemsTitle: 'Υπηρεσίες',
@@ -133,6 +146,7 @@ export const presets: Record<Kind, KindPreset> = {
     flow: 'book', bookTitle: 'Κλείσε ραντεβού', bookOk: 'Το ραντεβού κλείστηκε',
   },
   garage: {
+    demo: 'Auto Service',
     label: 'Συνεργείο αυτοκινήτων', color: '#C23B22',
     headline: 'Το αυτοκίνητό σου σε σωστά χέρια.', sub: 'Service, διάγνωση και ελαστικά, με ενημέρωση στο κινητό.', cta: 'Κλείσε service',
     itemsTitle: 'Υπηρεσίες',
