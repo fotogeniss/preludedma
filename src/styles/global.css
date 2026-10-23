@@ -1107,3 +1107,212 @@ section[id],header[id]{scroll-margin-top:96px}
   .sim .log{height:118px}
 }
 .sim[data-mode=admin] .own-note{display:none}
+
+/* =========================================================
+   Simulator v7: δομή ανά κλάδο + builder
+   ========================================================= */
+/* ---------- Ενότητες ---------- */
+#sBlocks .blk{position:relative;margin-top:24px;border-radius:calc(var(--r) * 1.2);transition:box-shadow .2s}
+.mock[data-style=elegant] #sBlocks .blk{margin-top:34px}
+#sBlocks .blk>:nth-child(2){margin-top:0!important}
+.blk.flash{animation:blkFlash 1.3s ease}
+@keyframes blkFlash{0%{box-shadow:0 0 0 0 rgba(123,63,228,0)}20%{box-shadow:0 0 0 3px rgba(123,63,228,.9),0 0 30px rgba(123,63,228,.35)}100%{box-shadow:0 0 0 0 rgba(123,63,228,0)}}
+
+/* εργαλεία builder (στο χρώμα της Prelude, ώστε να ξεχωρίζουν από το site) */
+.mk-hero{position:relative}
+.blk-bar{position:absolute;z-index:6;top:-13px;right:6px;display:flex;align-items:center;gap:2px;padding:3px;background:#14151B;color:#fff;border-radius:8px;
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;opacity:0;transform:translateY(4px);pointer-events:none;
+  transition:opacity .18s,transform .18s;box-shadow:0 8px 20px -6px rgba(0,0,0,.55)}
+.blk-bar span{padding:0 6px;opacity:.75;white-space:nowrap}
+.blk-bar button{display:grid;place-items:center;border:0;background:rgba(255,255,255,.1);color:#fff;width:22px;height:20px;border-radius:5px;cursor:pointer;font:inherit;font-size:.74rem;line-height:1}
+.blk-bar button:hover:not(:disabled){background:#7B3FE4}
+.blk-bar button:disabled{opacity:.3;cursor:default}
+.hero-bar{top:6px;right:6px}
+.blk:hover,.blk.hot{box-shadow:0 0 0 2px rgba(123,63,228,.75)}
+.blk:hover>.blk-bar,.blk.hot>.blk-bar,.mk-hero:hover>.hero-bar,.mk-hero.hot>.hero-bar{opacity:1;transform:none;pointer-events:auto}
+.mock [contenteditable]{outline:none;border-radius:4px;cursor:text;transition:box-shadow .2s,background .2s}
+.mock [contenteditable]:hover,.mock .editing{box-shadow:0 0 0 2px rgba(123,63,228,.6)}
+.mock [contenteditable]:focus,.mock .editing{box-shadow:0 0 0 2px #7B3FE4;background:rgba(123,63,228,.08)}
+.mock #sHead:hover::after{content:" ✎";font-size:.45em;opacity:.55;-webkit-text-fill-color:currentColor;font-family:Commissioner,sans-serif}
+.blk-add{margin:24px 0 6px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.blk-add-btn{width:100%;border:1.5px dashed color-mix(in srgb,var(--fg) 28%,transparent);background:transparent;color:var(--mute);font:inherit;font-size:.74rem;font-weight:600;padding:10px 16px;border-radius:99px;cursor:pointer;transition:border-color .2s,color .2s}
+.blk-add-btn:hover,.blk-add.open .blk-add-btn{border-color:#7B3FE4;color:#7B3FE4}
+.blk-menu{display:none;flex-wrap:wrap;justify-content:center;gap:6px}
+.blk-add.open .blk-menu{display:flex;animation:pageIn .3s both}
+.blk-menu button{border:0;background:#14151B;color:#fff;font:inherit;font-size:.7rem;padding:7px 11px;border-radius:99px;cursor:pointer}
+.blk-menu button:hover{background:#7B3FE4}
+.blk-menu small{font-size:.7rem;color:var(--mute)}
+.build-hint{display:block;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:-8px;text-align:center}
+@media (max-width:1000px){.build-hint{display:none}}
+
+/* ενότητες στα controls */
+.blk-ctl{display:flex;flex-wrap:wrap;gap:6px}
+.blk-ctl .bc{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--edge-2);padding:3px 3px 3px 10px;font-family:var(--mono);font-size:.64rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text)}
+.blk-ctl .bc b{font-weight:500;margin-right:4px;white-space:nowrap}
+.blk-ctl .bc button{border:0;background:rgba(255,255,255,.06);color:var(--dim);width:22px;height:22px;cursor:pointer;font:inherit}
+.blk-ctl .bc button:hover:not(:disabled){color:#fff;background:color-mix(in srgb,var(--brand) 45%,transparent)}
+.blk-ctl .bc button:disabled{opacity:.3;cursor:default}
+.blk-ctl .bc-add{border:1px dashed var(--edge-2);background:transparent;color:var(--dim);font-family:var(--mono);font-size:.64rem;text-transform:uppercase;letter-spacing:.05em;padding:6px 10px;cursor:pointer;white-space:nowrap}
+.blk-ctl .bc-add:hover{color:#fff;border-color:var(--lite)}
+.blk-ctl .bc-hero{width:100%;text-align:left;border:1px solid var(--lite);background:color-mix(in srgb,var(--brand) 18%,transparent);color:#fff;font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;cursor:pointer}
+@media (max-width:1000px){
+  .sim .cg .blk-ctl{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+  .sim .cg .blk-ctl::-webkit-scrollbar{display:none}
+  .sim .cg .blk-ctl>*{flex:none}
+  .sim .cg .blk-ctl .bc-hero{width:auto}
+}
+
+/* ---------- Κάρτες με φωτογραφία ---------- */
+.mk-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mk-card{border-radius:calc(var(--r) * 1.4);overflow:hidden;background:var(--soft);display:flex;flex-direction:column;transition:transform .25s}
+.mk-card:hover{transform:translateY(-3px)}
+.mc-img{position:relative;aspect-ratio:4/3;background:linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 45%,#000));background-size:cover;background-position:center}
+.mc-badge{position:absolute;left:8px;top:8px;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.92);color:#14151B;font-size:.58rem;font-weight:700}
+.mc-body{padding:10px 12px 12px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 8px}
+.mc-body b{font-size:.78rem;grid-column:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc-body small{font-size:.64rem;color:var(--mute);grid-column:1}
+.mc-body .mk-add{grid-column:2;grid-row:1 / 3}
+.mock[data-style=modern] .mk-card{border:1px solid var(--line);background:var(--bg);border-radius:18px;box-shadow:0 10px 24px -16px color-mix(in srgb,var(--fg) 60%,transparent)}
+.mock[data-style=elegant] .mk-card{background:transparent;border-radius:0}
+.mock[data-style=elegant] .mk-card:nth-child(2) .mc-img{border-radius:999px 999px 0 0}
+.mock[data-style=elegant] .mc-body{padding:10px 2px;text-align:center;grid-template-columns:1fr}
+.mock[data-style=elegant] .mc-body b{font-family:var(--se);font-weight:400;font-size:.95rem}
+.mock[data-style=elegant] .mc-body .mk-add{grid-column:1;grid-row:auto;justify-self:center;margin-top:6px}
+.mock[data-style=elegant] .mc-badge{background:var(--bg);color:var(--k);border-radius:0;letter-spacing:.12em;text-transform:uppercase}
+.mock[data-style=bold] .mk-card{border:3px solid var(--fg);border-radius:0;box-shadow:6px 6px 0 var(--k);background:var(--bg)}
+.mock[data-style=bold] .mc-img{filter:grayscale(1) contrast(1.15);border-bottom:3px solid var(--fg)}
+.mock[data-style=bold] .mk-card:hover .mc-img{filter:none}
+.mock[data-style=bold] .mc-badge{border-radius:0;background:var(--k);color:#fff;font-family:var(--disp);text-transform:uppercase}
+.mock[data-style=bold] .mc-body b{font-family:var(--disp);text-transform:uppercase}
+.mock[data-style=neon] .mk-card{background:color-mix(in srgb,var(--fg) 4%,transparent);border:1px solid var(--line);border-radius:16px}
+.mock[data-style=neon] .mk-card:hover{box-shadow:0 0 28px -8px color-mix(in srgb,var(--k) 75%,transparent);border-color:color-mix(in srgb,var(--k) 60%,transparent)}
+.mock[data-style=neon] .mc-badge{background:color-mix(in srgb,var(--bg) 55%,transparent);color:var(--fg);backdrop-filter:blur(6px);font-family:var(--mono)}
+
+/* ---------- Κατάλογος ---------- */
+.mk-menu{background:var(--soft);border-radius:calc(var(--r) * 1.4);padding:20px 22px}
+.mk-menu .mk-h3{margin-top:0}
+.mm-row{display:flex;align-items:baseline;gap:10px;padding:8px 0}
+.mm-row b{font-size:.86rem;font-family:var(--hf);font-weight:600;text-transform:var(--ht)}
+.mm-row i{flex:1;border-bottom:1px dotted color-mix(in srgb,var(--fg) 35%,transparent);transform:translateY(-3px)}
+.mm-row small{font-size:.62rem;color:var(--k);font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.mk-menu .mk-btn{margin-top:14px}
+.mock[data-style=elegant] .mk-menu{background:transparent;border:1px solid var(--k);outline:1px solid color-mix(in srgb,var(--k) 40%,transparent);outline-offset:-7px;border-radius:0;padding:28px 30px;text-align:center}
+.mock[data-style=elegant] .mm-row b{font-family:var(--se);font-weight:400;font-size:1rem}
+.mock[data-style=bold] .mk-menu{background:var(--bg);border:3px solid var(--fg);border-radius:0;box-shadow:8px 8px 0 var(--k)}
+.mock[data-style=bold] .mm-row b{font-family:var(--disp);font-weight:800}
+.mock[data-style=neon] .mk-menu{background:color-mix(in srgb,var(--fg) 4%,transparent);border:1px solid var(--line);border-radius:18px;box-shadow:0 0 40px -18px color-mix(in srgb,var(--k) 70%,transparent)}
+
+/* ---------- Εβδομαδιαίο πρόγραμμα ---------- */
+.mk-tt{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.mk-tt>div{display:grid;gap:6px;align-content:start}
+.mk-tt h4{font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:var(--mute);text-align:center;padding-bottom:6px;border-bottom:2px solid var(--line)}
+.mk-tt button{display:grid;gap:2px;text-align:left;border:0;cursor:pointer;font:inherit;padding:8px;border-radius:var(--r);background:var(--soft);color:var(--fg);border-left:3px solid var(--k);transition:transform .15s,background .15s}
+.mk-tt button:hover{transform:translateY(-2px);background:color-mix(in srgb,var(--k) 14%,var(--soft))}
+.mk-tt b{font-size:.64rem;line-height:1.2;overflow:hidden;text-overflow:ellipsis}
+.mk-tt small{font-size:.58rem;color:var(--k);font-weight:700}
+.mock[data-style=bold] .mk-tt button{border:2px solid var(--fg);border-left-width:6px;border-left-color:var(--k);border-radius:0;font-family:var(--disp);text-transform:uppercase}
+.mock[data-style=bold] .mk-tt h4{border-bottom:3px solid var(--fg);color:var(--fg);font-family:var(--disp)}
+.mock[data-style=elegant] .mk-tt button{background:transparent;border:1px solid var(--line);border-radius:0;text-align:center}
+.mock[data-style=elegant] .mk-tt b{font-family:var(--se);font-weight:400;font-size:.74rem}
+.mock[data-style=neon] .mk-tt button{background:color-mix(in srgb,var(--fg) 4%,transparent);border:1px solid var(--line);border-left:3px solid var(--k);box-shadow:-6px 0 14px -10px var(--k)}
+
+/* ---------- Πώς δουλεύουμε ---------- */
+.mk-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mk-steps>div{padding:16px 14px;border-radius:calc(var(--r) * 1.4);background:var(--soft)}
+.mk-steps span{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--k);color:#fff;font-weight:800;font-size:.76rem;margin-bottom:10px}
+.mk-steps b{display:block;font-size:.84rem;margin-bottom:4px;font-family:var(--hf);font-weight:var(--hw);text-transform:var(--ht)}
+.mk-steps p{font-size:.72rem;color:var(--mute);line-height:1.5}
+.mock[data-style=elegant] .mk-steps>div{background:transparent;border-top:1px solid var(--k);border-radius:0;padding:16px 4px;text-align:center}
+.mock[data-style=elegant] .mk-steps span{background:transparent;color:var(--k);font-family:var(--se);font-style:italic;font-weight:400;font-size:1.3rem;margin:0 auto 6px}
+.mock[data-style=elegant] .mk-steps b{font-weight:400;font-size:1rem}
+.mock[data-style=bold] .mk-steps>div{border:3px solid var(--fg);border-radius:0;background:var(--bg);box-shadow:5px 5px 0 var(--k)}
+.mock[data-style=bold] .mk-steps span{border-radius:0;font-family:var(--disp);font-size:1rem;width:34px;height:34px}
+.mock[data-style=neon] .mk-steps>div{background:color-mix(in srgb,var(--fg) 4%,transparent);border:1px solid var(--line);border-radius:16px}
+.mock[data-style=neon] .mk-steps span{background:linear-gradient(135deg,var(--k),#00E5FF);box-shadow:0 0 16px color-mix(in srgb,var(--k) 70%,transparent)}
+
+/* ---------- Προφίλ ---------- */
+.mk-prof{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px;align-items:center;padding:18px;border-radius:calc(var(--r) * 1.6);background:var(--soft)}
+.mp-img{aspect-ratio:1/1.1;border-radius:calc(var(--r) * 1.4);background:linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 45%,#000));background-size:cover;background-position:center}
+.mk-prof small{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--k);font-weight:700}
+.mk-prof b{display:block;font-family:var(--hf);font-weight:var(--hw);font-size:1.2rem;margin:6px 0 2px;text-transform:var(--ht);line-height:1.1}
+.mk-prof .mp-role{display:block;color:var(--mute);font-size:.76rem;margin-bottom:10px}
+.mk-prof ul{list-style:none;display:grid;gap:5px;margin-bottom:14px}
+.mk-prof li{font-size:.74rem;padding-left:16px;position:relative}
+.mk-prof li::before{content:"";position:absolute;left:0;top:.45em;width:7px;height:7px;border-radius:50%;background:var(--k)}
+.mock[data-style=elegant] .mk-prof{background:transparent;border-block:1px solid var(--line);border-radius:0}
+.mock[data-style=elegant] .mp-img{border-radius:999px 999px 0 0;filter:saturate(.85) sepia(.1)}
+.mock[data-style=elegant] .mk-prof b{font-weight:400;font-size:1.45rem}
+.mock[data-style=bold] .mk-prof{border:3px solid var(--fg);border-radius:0;background:var(--bg);box-shadow:8px 8px 0 var(--k)}
+.mock[data-style=bold] .mp-img{border-radius:0;border:3px solid var(--fg);filter:grayscale(1) contrast(1.15)}
+.mock[data-style=neon] .mk-prof{background:color-mix(in srgb,var(--fg) 4%,transparent);border:1px solid var(--line);border-radius:18px}
+.mock[data-style=neon] .mp-img{border-radius:50%;box-shadow:0 0 0 2px var(--k),0 0 30px color-mix(in srgb,var(--k) 60%,transparent)}
+
+/* ---------- Ανακοίνωση ---------- */
+.mk-alert{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:calc(var(--r) * 1.2);background:color-mix(in srgb,var(--k) 13%,var(--bg));border:1px solid color-mix(in srgb,var(--k) 40%,transparent);font-size:.78rem;font-weight:600}
+.mk-alert i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--k);box-shadow:0 0 0 4px color-mix(in srgb,var(--k) 25%,transparent);animation:blink 1.4s infinite}
+.mk-alert span{flex:1;min-width:0}
+.mk-alert button{border:0;background:none;color:var(--k);font:inherit;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.mock[data-style=bold] .mk-alert{background:var(--k);color:#fff;border:3px solid var(--fg);border-radius:0;font-family:var(--disp);text-transform:uppercase;letter-spacing:.03em}
+.mock[data-style=bold] .mk-alert i{background:#fff}
+.mock[data-style=bold] .mk-alert button{color:#fff}
+.mock[data-style=elegant] .mk-alert{background:transparent;border:0;border-block:1px solid var(--k);border-radius:0;justify-content:center;font-family:var(--se);font-weight:400;font-style:italic}
+.mock[data-style=neon] .mk-alert{background:color-mix(in srgb,var(--k) 12%,transparent);border-radius:99px;box-shadow:0 0 24px -8px var(--k)}
+
+/* ---------- Hero: φωτογραφία σε όλο το πλάτος (cover) ή με αναζήτηση (search) ---------- */
+.mk-search{display:none}
+.mock[data-hero=cover] .mk-hero,.mock[data-hero=search] .mk-hero{display:flex!important;flex-direction:column;justify-content:flex-end;min-height:330px;margin:-22px -22px 0;padding:70px 28px 34px;overflow:hidden;color:#fff}
+.mock[data-style=elegant][data-hero=cover] .mk-hero,.mock[data-style=elegant][data-hero=search] .mk-hero{margin:-34px -30px 0;padding:80px 34px 40px;align-items:center;text-align:center}
+.mock[data-style=bold][data-hero=cover] .mk-hero,.mock[data-style=bold][data-hero=search] .mk-hero{margin:-24px -20px 0;padding:70px 24px 34px}
+.mock[data-hero=cover] .mk-pic,.mock[data-hero=search] .mk-pic{position:absolute!important;inset:0;width:auto!important;max-width:none!important;aspect-ratio:auto!important;margin:0!important;transform:none!important;border:0!important;box-shadow:none!important;order:0!important}
+.mock[data-hero=cover] .mk-pic::after,.mock[data-hero=search] .mk-pic::after{display:none!important}
+.mock[data-hero=cover] .mk-pic .art-a,.mock[data-hero=search] .mk-pic .art-a{inset:0!important;border-radius:0!important;box-shadow:none!important}
+.mock[data-hero=cover] .mk-pic .art-ph,.mock[data-hero=search] .mk-pic .art-ph{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;mix-blend-mode:normal!important;filter:none!important}
+.mock[data-hero=cover] .mk-pic .art-ph.ok,.mock[data-hero=search] .mk-pic .art-ph.ok{opacity:1!important}
+.mock[data-hero=cover] .mk-pic .art-b,.mock[data-hero=search] .mk-pic .art-b{inset:0!important;border-radius:0!important;opacity:1!important;mix-blend-mode:normal!important;-webkit-mask:none!important;mask:none!important;animation:none!important;filter:none!important;
+  background:linear-gradient(180deg,rgba(8,10,18,.15) 0%,rgba(8,10,18,.72) 100%)!important}
+.mock[data-style=modern][data-hero=cover] .mk-pic .art-b,.mock[data-style=modern][data-hero=search] .mk-pic .art-b{background:linear-gradient(100deg,rgba(8,10,18,.82) 20%,rgba(8,10,18,.12) 80%)!important}
+.mock[data-style=bold][data-hero=cover] .mk-pic .art-ph,.mock[data-style=bold][data-hero=search] .mk-pic .art-ph{filter:grayscale(1) contrast(1.2)!important}
+.mock[data-style=bold][data-hero=cover] .mk-pic .art-b,.mock[data-style=bold][data-hero=search] .mk-pic .art-b{background:linear-gradient(90deg,color-mix(in srgb,var(--k) 90%,#000) 30%,color-mix(in srgb,var(--k) 20%,transparent) 90%)!important}
+.mock[data-style=neon][data-hero=cover] .mk-pic .art-b,.mock[data-style=neon][data-hero=search] .mk-pic .art-b{background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 25%,transparent),color-mix(in srgb,var(--bg) 92%,transparent) 92%),radial-gradient(60% 60% at 20% 100%,color-mix(in srgb,var(--k) 45%,transparent),transparent)!important}
+.mock[data-hero=cover] .mk-chip,.mock[data-hero=search] .mk-chip,.mock[data-hero=cover] .art-glyph,.mock[data-hero=search] .art-glyph{display:none!important}
+.mock[data-hero=cover] .mk-copy,.mock[data-hero=search] .mk-copy{position:relative;z-index:2;max-width:540px}
+.mock[data-hero=cover]:not([data-style=neon]) .mk-hero .mk-h,.mock[data-hero=search]:not([data-style=neon]) .mk-hero .mk-h{color:#fff;-webkit-text-fill-color:#fff;background:none}
+.mock[data-hero=cover]:not([data-style=neon]) .mk-sub,.mock[data-hero=search]:not([data-style=neon]) .mk-sub,
+.mock[data-hero=cover]:not([data-style=neon]) .mk-hrs,.mock[data-hero=search]:not([data-style=neon]) .mk-hrs{color:rgba(255,255,255,.86)}
+.mock[data-hero=cover]:not([data-style=neon]):not([data-style=bold]) .mk-kicker,.mock[data-hero=search]:not([data-style=neon]):not([data-style=bold]) .mk-kicker{color:#fff;background:rgba(255,255,255,.16)}
+.mock[data-style=elegant][data-hero=cover] .mk-kicker::before,.mock[data-style=elegant][data-hero=search] .mk-kicker::before{background:#fff}
+.mock[data-style=elegant][data-hero=cover] .mk-btn,.mock[data-style=elegant][data-hero=search] .mk-btn{color:#fff;box-shadow:0 0 0 1px #fff inset}
+.mock[data-hero=search] .mk-ctas{display:none}
+.mock[data-hero=search] .mk-search{display:flex;align-items:stretch;gap:4px;margin-top:20px;padding:6px;background:var(--bg);color:var(--fg);border-radius:calc(var(--r) * 1.6 + 4px);box-shadow:0 24px 44px -14px rgba(0,0,0,.6);max-width:600px;width:100%}
+.mock[data-style=elegant][data-hero=search] .mk-search{margin-inline:auto}
+.ms-f{flex:1;min-width:0;text-align:left;border:0;background:transparent;padding:6px 10px;border-right:1px solid var(--line);font:inherit;color:var(--fg);cursor:pointer;display:grid;gap:1px}
+.ms-f:last-of-type{border-right:0}
+.ms-f small{font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.ms-f b{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-f.plate b{justify-self:start;font-family:var(--mono);background:#FFD200;color:#111;padding:1px 7px;border:2px solid #111;border-radius:4px;font-size:.74rem;letter-spacing:.06em}
+.mk-search .ms-go{flex:none;border-radius:calc(var(--r) * 1.6)}
+.mock[data-style=bold] .mk-search{border:3px solid var(--fg);border-radius:0;box-shadow:8px 8px 0 var(--fg)}
+.mock[data-style=elegant] .mk-search{border-radius:0}
+.mock[data-style=neon] .mk-search{background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(12px);border:1px solid color-mix(in srgb,var(--k) 45%,transparent);box-shadow:0 0 40px -12px var(--k)}
+
+@container site (max-width:560px){
+  .mock[data-hero=cover] .mk-hero,.mock[data-hero=search] .mk-hero{margin:-18px -14px 0;padding:60px 16px 26px;min-height:310px}
+  .mock[data-style=elegant][data-hero=cover] .mk-hero,.mock[data-style=elegant][data-hero=search] .mk-hero{margin:-26px -18px 0;padding:70px 18px 30px}
+  .mock[data-style=bold][data-hero=cover] .mk-hero,.mock[data-style=bold][data-hero=search] .mk-hero{margin:-18px -14px 0}
+  .mock[data-hero=search] .mk-search{flex-wrap:wrap}
+  .ms-f{flex:1 1 40%;border-right:0;border-bottom:1px solid var(--line)}
+  .mk-search .ms-go{flex:1 1 100%;margin-top:2px}
+  .mk-cards{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:72%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}
+  .mk-card{scroll-snap-align:start}
+  .mk-tt{grid-template-columns:repeat(5,104px);overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+  .mk-steps{grid-template-columns:1fr}
+  .mk-prof{grid-template-columns:1fr;gap:14px}
+  .mp-img{aspect-ratio:1.7/1}
+  .mock[data-style=elegant] .mp-img{aspect-ratio:1.2/1;width:70%;justify-self:center}
+  .mk-menu{padding:16px}
+  .mock[data-style=elegant] .mk-menu{padding:22px 16px}
+  .blk-bar span{display:none}
+}
+/* «γέφυρα» ώστε το ποντίκι να φτάνει στη γραμμή εργαλείων χωρίς να χάνει το hover */
+.blk-bar::after{content:"";position:absolute;left:-10px;right:-10px;top:100%;height:16px}
+.mock[data-style=elegant][data-hero=search] .mk-search .mk-btn{color:var(--k);box-shadow:0 0 0 1px var(--k) inset}

@@ -23,6 +23,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <button type="button" role="tab" data-g="kind" aria-selected="true">Κλάδος</button>
           <button type="button" role="tab" data-g="mode" aria-selected="false">Τύπος</button>
           <button type="button" role="tab" data-g="style" aria-selected="false">Ύφος</button>
+          <button type="button" role="tab" data-g="blocks" aria-selected="false">Ενότητες</button>
           <button type="button" role="tab" data-g="color" aria-selected="false">Χρώμα</button>
           <button type="button" role="tab" data-g="name" aria-selected="false">Όνομα</button>
           <button type="button" role="tab" data-g="extra" aria-selected="false">Extra</button>
@@ -59,6 +60,11 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
               <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-s={s.id}>{s.label}</button>
             ))}
           </div>
+        </div>
+
+        <div class="cg" data-g="blocks">
+          <span class="lbl" id="lbl-blocks">Input // ενότητες της σελίδας</span>
+          <div class="blk-ctl" id="blkCtl" role="group" aria-labelledby="lbl-blocks"></div>
         </div>
 
         <div class="cg" data-g="color">
@@ -120,14 +126,16 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <div class="mk-body" id="sBody">
             <div class="mk-page" data-page="0">
               <div class="mk-hero">
+                <div class="blk-bar hero-bar"><span>Hero</span><button type="button" data-hero-cycle title="Άλλαξε διάταξη">⇄</button></div>
                 <div class="mk-copy">
                   <span class="mk-kicker" id="sKicker"></span>
-                  <div class="mk-h" id="sHead"></div>
-                  <p class="mk-sub" id="sSub"></p>
+                  <div class="mk-h" id="sHead" contenteditable="true" spellcheck="false" title="Γράψε τον δικό σου τίτλο"></div>
+                  <p class="mk-sub" id="sSub" contenteditable="true" spellcheck="false" title="Γράψε τη δική σου περιγραφή"></p>
                   <div class="mk-ctas">
                     <button type="button" class="mk-btn" id="sCta"></button>
                     <span class="mk-hrs" id="sHoursMini"></span>
                   </div>
+                  <div class="mk-search" id="sSearch"></div>
                 </div>
                 <div class="mk-pic">
                   <i class="art-a"></i><img class="art-ph" id="sPh" alt="" decoding="async" /><i class="art-b"></i>
@@ -137,16 +145,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
                 </div>
               </div>
               <div class="mk-marquee" aria-hidden="true"><div id="sMarq"></div></div>
-              <div class="mk-feats" id="sFeats"></div>
-              <div class="mk-gal" id="sGal"></div>
-              <div class="mk-h mk-h2 mk-h3" id="sPopTitle"></div>
-              <div class="mk-items" id="sPop"></div>
-              <div class="mk-band">
-                <b id="sBandT"></b>
-                <button type="button" class="mk-btn" id="sBandB"></button>
-              </div>
-              <div class="mk-h mk-h2 mk-h3">Συχνές ερωτήσεις</div>
-              <div class="mk-faq" id="sFaq"></div>
+              <div id="sBlocks"></div>
             </div>
             <div class="mk-page" data-page="1" hidden>
               <div class="mk-h mk-h2" id="sItemsTitle"></div>
@@ -219,6 +218,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
         </div>
 
         <span class="swipe-hint mono" id="swipeHint" aria-hidden="true">‹ σύρε το preview για άλλο ύφος ›</span>
+        <span class="build-hint mono" aria-hidden="true">✎ Γράψε πάνω στον τίτλο · μετακίνησε, σβήσε ή πρόσθεσε ενότητες</span>
 
         <!-- Διαχείριση: τι βλέπει ο ιδιοκτήτης -->
         <div class="mock mock-adm hide" id="mAdm" data-style="modern">
@@ -259,7 +259,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 </section>
 
 <script>
-  import { presets, swatches, styles, icons, type Kind } from '../data/simulator';
+  import { presets, swatches, styles, icons, layouts, extras, blockLabels, heroLabels, type Kind, type Block, type Hero } from '../data/simulator';
 
   type Mode = 'site' | 'app' | 'admin';
   type Dev = 'desktop' | 'tablet' | 'phone';
@@ -466,6 +466,144 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     return `<svg class="lg" viewBox="0 0 40 40" aria-hidden="true"><g class="lg-sh">${shapes[h % 4]}</g>${accents[(h >> 3) % 4]}<text class="lg-t${ini.length > 1 ? ' two' : ''}" x="20" y="21.5" text-anchor="middle" dominant-baseline="middle">${esc(ini)}</text></svg>`;
   }
 
+
+  // ---------- Ενότητες (blocks) και builder ----------
+  const allBlocks = Object.keys(blockLabels) as Block[];
+  const lay: Partial<Record<Kind, { hero: Hero; blocks: Block[] }>> = {};
+  const curLay = () => (lay[state.kind] ??= { hero: layouts[state.kind].hero, blocks: [...layouts[state.kind].blocks] });
+  const texts: Partial<Record<Kind, { h?: string; s?: string }>> = {};
+  let addOpen = false;
+  let flashBlk: Block | null = null;
+  const ctaAttr = () => (preset().flow === 'cart' ? 'data-go="1"' : 'data-book="-1"');
+  const bgPh = (i: number) => (photosOn ? ` style="background-image:url(${ph(i)})"` : '');
+
+  function searchHTML() {
+    const ex = extras[state.kind];
+    const d = dayLabels();
+    const val: Record<string, string> = {
+      'Άφιξη': d[0], 'Αναχώρηση': d[2], 'Ημερομηνία': d[0], 'Ώρα': '21:00', 'Ημέρα': d[0], 'Περιοχή': 'Αθήνα',
+      'Τύπος ακινήτου': 'Διαμέρισμα', 'τ.μ.': '60–120', 'Αριθμός κυκλοφορίας': 'ΙΚΧ 1234', 'Μάρκα / μοντέλο': 'Όλες', 'Ζώο': 'Σκύλος', 'Άτομα': '2 άτομα', 'Επισκέπτες': '2 ενήλικες',
+    };
+    const fields = ex.search.map((f) =>
+      `<button type="button" class="ms-f${f.includes('κυκλοφορίας') ? ' plate' : ''}" ${ctaAttr()}><small>${esc(f)}</small><b>${esc(val[f] ?? 'Όλα')}</b></button>`).join('');
+    return `${fields}<button type="button" class="mk-btn ms-go" ${ctaAttr()}>${preset().flow === 'cart' ? 'Αναζήτηση' : 'Διαθεσιμότητα'}</button>`;
+  }
+
+  function blockHTML(b: Block): string {
+    const p = preset();
+    const ex = extras[state.kind];
+    const cart = p.flow === 'cart';
+    const h3 = (t: string) => `<div class="mk-h mk-h2 mk-h3">${esc(t)}</div>`;
+    switch (b) {
+      case 'feats':
+        return `<div class="mk-feats">${p.features.map((f) => `<div><i></i>${esc(f)}</div>`).join('')}</div>`;
+      case 'pop':
+        return h3(cart ? 'Δημοφιλή' : p.itemsTitle) + `<div class="mk-items">${p.items.slice(0, 4).map((it, i) => rowHTML('div', 'mk-item', it, i)).join('')}</div>`;
+      case 'cards':
+        return h3(cart ? 'Νέα στο κατάστημα' : p.itemsTitle) + `<div class="mk-cards">${p.items.slice(0, 3).map((it, i) =>
+          `<article class="mk-card"><div class="mc-img"${bgPh(1 + i)}><span class="mc-badge">${esc(it.m)}</span></div><div class="mc-body"><b>${esc(it.n)}</b><small>${esc(p.label)}</small>${actionBtn(it, i)}</div></article>`).join('')}</div>`;
+      case 'gal':
+        return photosOn
+          ? `<div class="mk-gal">${[1, 2, 3].map((i, n) => `<figure><img src="${ph(i)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ok')"><figcaption>${esc(p.features[n] ?? '')}</figcaption></figure>`).join('')}</div>`
+          : `<div class="mk-gal">${[0, 1, 2].map((n) => `<figure><figcaption>${esc(p.features[n] ?? '')}</figcaption></figure>`).join('')}</div>`;
+      case 'menu':
+        return `<div class="mk-menu">${h3(p.itemsTitle)}${p.items.map((it) => `<div class="mm-row"><b>${esc(it.n)}</b><i></i><small>${esc(it.m)}</small></div>`).join('')}<button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
+      case 'tt': {
+        const days = ['Δευ', 'Τρί', 'Τετ', 'Πέμ', 'Παρ'];
+        return h3('Εβδομαδιαίο πρόγραμμα') + `<div class="mk-tt">${days.map((d, di) => `<div><h4>${d}</h4>${[0, 1].map((j) => {
+          const i = (di + j * 2) % p.items.length;
+          return `<button type="button" data-book="${i}"><small>${slots[(di + j * 3) % slots.length]}</small><b>${esc(p.items[i].n)}</b></button>`;
+        }).join('')}</div>`).join('')}</div>`;
+      }
+      case 'steps':
+        return h3('Πώς δουλεύουμε') + `<div class="mk-steps">${ex.steps.map(([t, d], i) => `<div><span>${i + 1}</span><b>${esc(t)}</b><p>${esc(d)}</p></div>`).join('')}</div>`;
+      case 'prof': {
+        const pr = ex.prof ?? { name: name(), role: p.label, points: p.features };
+        return `<div class="mk-prof"><div class="mp-img"${bgPh(state.kind === 'clinic' ? 0 : 1)}></div><div><small>Γνώρισέ μας</small><b>${esc(pr.name)}</b><span class="mp-role">${esc(pr.role)}</span><ul>${pr.points.map((x) => `<li>${esc(x)}</li>`).join('')}</ul><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div></div>`;
+      }
+      case 'alert':
+        return `<div class="mk-alert"><i></i><span>${esc(ex.alert)}</span><button type="button" data-go="2">Περισσότερα →</button></div>`;
+      case 'band':
+        return `<div class="mk-band"><b>${cart ? 'Παράγγειλε online σε λίγα λεπτά.' : 'Κλείσε online σε λίγα λεπτά.'}</b><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
+      case 'faq':
+        return h3('Συχνές ερωτήσεις') + `<div class="mk-faq">${[
+          [cart ? 'Πώς κάνω παραγγελία;' : `Πώς κάνω ${p.bookTitle.replace('Κλείσε ', '').toLowerCase()};`, 'Online από εδώ, σε λίγα δευτερόλεπτα. Παίρνεις αμέσως επιβεβαίωση με email.'],
+          ['Ποιο είναι το ωράριο;', p.hours],
+          ['Πού θα σας βρω;', 'Οδός Παραδείγματος 12. Δες τον χάρτη στη σελίδα Επικοινωνία.'],
+        ].map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div>`;
+    }
+  }
+  function blockWrap(b: Block, i: number, n: number) {
+    return `<section class="blk${flashBlk === b ? ' flash' : ''}" data-b="${b}"><div class="blk-bar"><span>${esc(blockLabels[b])}</span>` +
+      `<button type="button" data-bmv="-1" data-bi="${i}" title="Πάνω" ${i === 0 ? 'disabled' : ''}>↑</button>` +
+      `<button type="button" data-bmv="1" data-bi="${i}" title="Κάτω" ${i === n - 1 ? 'disabled' : ''}>↓</button>` +
+      `<button type="button" data-bdel="${i}" title="Αφαίρεση" ${n <= 1 ? 'disabled' : ''}>✕</button></div>${blockHTML(b)}</section>`;
+  }
+  function addMenuHTML(cur: Block[]) {
+    const rest = allBlocks.filter((b) => !cur.includes(b));
+    return `<div class="blk-add${addOpen ? ' open' : ''}"><button type="button" class="blk-add-btn" data-badd-open>＋ Πρόσθεσε ενότητα</button><div class="blk-menu">${
+      rest.length ? rest.map((b) => `<button type="button" data-badd="${b}">${esc(blockLabels[b])}</button>`).join('') : '<small>Έχεις βάλει όλες τις ενότητες</small>'}</div></div>`;
+  }
+  function blkCtlHTML(L: { hero: Hero; blocks: Block[] }) {
+    const n = L.blocks.length;
+    return `<button type="button" class="bc-hero" data-hero-cycle>Hero: ${esc(heroLabels[L.hero])} <span aria-hidden="true">⇄</span></button>` +
+      L.blocks.map((b, i) => `<span class="bc"><b>${esc(blockLabels[b])}</b><button type="button" data-bmv="-1" data-bi="${i}" aria-label="Πάνω" ${i === 0 ? 'disabled' : ''}>↑</button><button type="button" data-bmv="1" data-bi="${i}" aria-label="Κάτω" ${i === n - 1 ? 'disabled' : ''}>↓</button><button type="button" data-bdel="${i}" aria-label="Αφαίρεση" ${n <= 1 ? 'disabled' : ''}>✕</button></span>`).join('') +
+      allBlocks.filter((b) => !L.blocks.includes(b)).map((b) => `<button type="button" class="bc-add" data-badd="${b}">＋ ${esc(blockLabels[b])}</button>`).join('');
+  }
+
+  // Ενέργειες του builder (από το preview ή από τα controls)
+  let flashTimer: ReturnType<typeof setTimeout>;
+  function builderAction(t: HTMLElement): boolean {
+    const L = curLay();
+    let el: HTMLElement | null;
+    let msg = '';
+    let focus: Block | null = null;
+    if ((el = t.closest('[data-hero-cycle]'))) {
+      const order: Hero[] = ['split', 'cover', 'search'];
+      L.hero = order[(order.indexOf(L.hero) + 1) % order.length];
+      msg = `hero --${L.hero}`;
+    } else if ((el = t.closest<HTMLElement>('[data-bmv]'))) {
+      const i = Number(el.dataset.bi), j = i + Number(el.dataset.bmv);
+      if (j < 0 || j >= L.blocks.length) return true;
+      [L.blocks[i], L.blocks[j]] = [L.blocks[j], L.blocks[i]];
+      focus = L.blocks[j];
+      msg = `move ${focus} → ${j + 1}`;
+    } else if ((el = t.closest<HTMLElement>('[data-bdel]'))) {
+      if (L.blocks.length <= 1) return true;
+      const [b] = L.blocks.splice(Number(el.dataset.bdel), 1);
+      msg = `remove ${b}`;
+    } else if (t.closest('[data-badd-open]')) {
+      addOpen = !addOpen;
+      paint({ log: false });
+      return true;
+    } else if ((el = t.closest<HTMLElement>('[data-badd]'))) {
+      const b = el.dataset.badd as Block;
+      if (!L.blocks.includes(b)) {
+        const at = L.blocks.indexOf('faq');
+        L.blocks.splice(at >= 0 ? at : L.blocks.length, 0, b);
+      }
+      addOpen = false;
+      focus = b;
+      msg = `add ${b}`;
+    } else return false;
+
+    if (state.mode !== 'site') document.querySelector<HTMLButtonElement>('#mode [data-m="site"]')?.click();
+    flashBlk = focus;
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => { flashBlk = null; }, 1400);
+    buildStatus();
+    paint({ log: false });
+    log([`&gt; layout.${msg}`, '<span class="ok">✓ η σελίδα ξαναστήθηκε</span>']);
+    if (state.page !== 0) { state.page = 0; paint({ log: false }); }
+    requestAnimationFrame(() => {
+      const target = focus ? sBody.querySelector<HTMLElement>(`.blk[data-b="${focus}"]`) : msg.startsWith('hero') ? sBody.querySelector<HTMLElement>('.mk-hero') : null;
+      if (!target) return;
+      const top = target.getBoundingClientRect().top - sBody.getBoundingClientRect().top + sBody.scrollTop - 24;
+      sBody.scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
+    });
+    return true;
+  }
+
   // ---------- Ζωγραφίζει όλο το preview ----------
   let swapTimer: ReturnType<typeof setTimeout>;
   // Πάνω δεξιά: σύντομο «compiling → ready» σε κάθε αλλαγή
@@ -526,30 +664,24 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
         m.style.setProperty('--ph3', `url(${ph(3)})`);
       }
     }
-    setHTML($('sGal'), photosOn
-      ? [1, 2, 3].map((i, n) => `<figure><img src="${ph(i)}" alt="" loading="lazy" decoding="async" onload="this.classList.add('ok')"><figcaption>${esc(p.features[n] ?? '')}</figcaption></figure>`).join('')
-      : '');
 
     // Ιστοσελίδα
     $('url').textContent = slug(n) + '.gr';
     $('sName').textContent = n;
     const lg = logo(n);
     for (const id of ['sMark', 'pMark', 'aMark', 'fMark']) setHTML($(id), lg);
-    $('sHead').textContent = p.headline;
-    $('sSub').textContent = p.sub;
+    const tx = texts[state.kind] ?? {};
+    const L = curLay();
+    if (document.activeElement !== $('sHead')) $('sHead').textContent = tx.h ?? p.headline;
+    if (document.activeElement !== $('sSub')) $('sSub').textContent = tx.s ?? p.sub;
+    mSite.dataset.hero = L.hero;
     $('sItemsTitle').textContent = p.itemsTitle;
-    $('sPopTitle').textContent = cartKind ? 'Δημοφιλή' : p.itemsTitle;
     $('sHours').textContent = p.hours;
     $('sFoot').textContent = `© ${new Date().getFullYear()} ${n}`;
     $('fName').textContent = n;
     $('fTag').textContent = p.sub;
     $('fMail').textContent = `info@${slug(n)}.gr`;
     $('fHours').textContent = p.hours;
-    setHTML($('sFaq'), [
-      [cartKind ? 'Πώς κάνω παραγγελία;' : `Πώς κάνω ${p.bookTitle.replace('Κλείσε ', '').toLowerCase()};`, 'Online από εδώ, σε λίγα δευτερόλεπτα. Παίρνεις αμέσως επιβεβαίωση με email.'],
-      ['Ποιο είναι το ωράριο;', p.hours],
-      ['Πού θα σας βρω;', 'Οδός Παραδείγματος 12. Δες τον χάρτη στη σελίδα Επικοινωνία.'],
-    ].map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join(''));
     $('sGlyph').innerHTML = icons[state.kind];
     $('sKicker').textContent = p.label;
     $('sHoursMini').textContent = p.hours;
@@ -559,20 +691,19 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     setHTML($('sMarq'), `<span>${rep.repeat(3)}</span><span>${rep.repeat(3)}</span>`);
 
     // Το κύριο κουμπί: στο καλάθι/κατάλογο ή σε κράτηση
-    for (const [id, label] of [['sCta', p.cta], ['sBandB', p.cta]] as const) {
-      const b = $(id);
-      b.textContent = label;
-      if (cartKind) { b.setAttribute('data-go', '1'); b.removeAttribute('data-book'); }
-      else { b.removeAttribute('data-go'); b.setAttribute('data-book', '-1'); }
-    }
-    $('sBandT').textContent = cartKind ? 'Παράγγειλε online σε λίγα λεπτά.' : 'Κλείσε online σε λίγα λεπτά.';
+    const b0 = $('sCta');
+    b0.textContent = p.cta;
+    if (cartKind) { b0.setAttribute('data-go', '1'); b0.removeAttribute('data-book'); }
+    else { b0.removeAttribute('data-go'); b0.setAttribute('data-book', '-1'); }
+    setHTML($('sSearch'), searchHTML());
 
     const navLabels = ['Αρχική', p.itemsTitle, 'Επικοινωνία'];
     setHTML($('sNav'), navLabels
       .map((l, i) => `<button type="button" data-go="${i}" aria-pressed="${i === state.page}">${esc(l)}</button>`)
       .join(''));
-    setHTML($('sFeats'), p.features.map((f) => `<div><i></i>${esc(f)}</div>`).join(''));
-    setHTML($('sPop'), p.items.slice(0, 4).map((it, i) => rowHTML('div', 'mk-item', it, i)).join(''));
+    // Ενότητες της αρχικής, με τη σειρά που έχει διαλέξει ο επισκέπτης
+    setHTML($('sBlocks'), L.blocks.map((b, i) => blockWrap(b, i, L.blocks.length)).join('') + addMenuHTML(L.blocks));
+    setHTML($('blkCtl'), blkCtlHTML(L));
     setHTML($('sItems'), p.items.map((it, i) => rowHTML('div', 'mk-item', it, i)).join(''));
     setHTML($('fLinks'), navLabels.map((l, i) => `<button type="button" data-go="${i}">${esc(l)}</button>`).join(''));
     mSite.dataset.dev = dev;
@@ -582,7 +713,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     $('pName').textContent = n;
     $('pHi').textContent = p.greeting;
     $('pCardSmall').textContent = p.hours;
-    $('pCardTitle').textContent = p.headline;
+    $('pCardTitle').textContent = tx.h ?? p.headline;
     const act = $('pAction');
     act.textContent = p.appAction;
     if (cartKind) { act.setAttribute('data-tab-go', '1'); act.removeAttribute('data-book'); }
@@ -687,6 +818,13 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     let el: HTMLElement | null;
 
     if (t.classList.contains('mk-sheet') || q('[data-sheet-close]')) { sheet = null; syncSheet(); return; }
+    if (builderAction(t)) return;
+    // σε οθόνες αφής η γραμμή εργαλείων εμφανίζεται με ένα άγγιγμα στην ενότητα
+    const blk = q('.blk');
+    if (blk && !q('button, a, input, summary, [contenteditable]')) {
+      mSite.querySelectorAll('.blk.hot').forEach((x) => x !== blk && x.classList.remove('hot'));
+      blk.classList.toggle('hot');
+    }
 
     if ((el = q('[data-st]'))) {
       const o = orders.find((x) => x.id === Number(el!.dataset.st));
@@ -768,6 +906,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       t.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' });
     }));
   ctrl.addEventListener('click', (e) => {
+    const bt = (e.target as HTMLElement).closest<HTMLElement>('#blkCtl [data-bmv], #blkCtl [data-bdel], #blkCtl [data-badd], #blkCtl [data-hero-cycle]');
+    if (bt) { builderAction(bt); return; }
     if (!e.isTrusted || !mobile.matches || !(e.target as HTMLElement).closest('.cg button, .cg .sw')) return;
     const view = ctrl.parentElement!.querySelector<HTMLElement>('.view')!;
     const top = view.getBoundingClientRect().top;
@@ -815,6 +955,9 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
         await wait(600, id);
       }
     }
+    // δείχνει τη γραμμή εργαλείων της ενότητας, όπως όταν περνάς το ποντίκι
+    mSite.querySelectorAll('.hot').forEach((x) => x.classList.remove('hot'));
+    el.closest('.blk, .mk-hero')?.classList.add('hot');
     const r = el.getBoundingClientRect();
     if (!r.width || r.top < 0 || r.bottom > innerHeight) { ghost.classList.remove('on'); return; }
     ghost.classList.add('on');
@@ -851,6 +994,18 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     }
     await wait(800, id);
   }
+  async function editText(el: HTMLElement, text: string, id: number) {
+    await point(el, id);
+    el.classList.add('editing');
+    const t = (texts[state.kind] ??= {});
+    for (let i = 1; i <= text.length; i++) {
+      t.h = text.slice(0, i);
+      el.textContent = t.h;
+      await wait(55, id);
+    }
+    el.classList.remove('editing');
+    await wait(700, id);
+  }
   async function book(sheetSel: string, id: number) {
     await tap(inMock(`${sheetSel} [data-day="1"]`), id, 550);
     await tap(inMock(`${sheetSel} [data-slot]:not(:disabled)`), id, 550);
@@ -876,6 +1031,20 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       await tap(inMock('#aList li:first-child [data-st]'), id, 1100);
       await tap(inMock('#aList li:first-child [data-st]'), id, 1300);
       await control('mode', '#mode [data-m="site"]', id);
+    },
+    // Ταβέρνα: ο επισκέπτης «χτίζει» μόνος του τη σελίδα
+    async (id) => {
+      delete lay.restaurant;
+      delete texts.restaurant;
+      await control('kind', '#kinds [data-k="restaurant"]', id);
+      await control('style', '#styles [data-s="elegant"]', id);
+      await editText($('sHead'), 'Θαλασσινά με θέα το λιμάνι.', id);
+      await tap(inMock('.blk[data-b="gal"] [data-bmv="-1"]'), id, 1400);
+      await tap(inMock('[data-badd-open]'), id, 800);
+      await tap(inMock('.blk-menu [data-badd="cards"]'), id, 1600);
+      $('sBody').scrollTo({ top: 0, behavior: 'smooth' });
+      await wait(600, id);
+      await tap(inMock('.mk-hero [data-hero-cycle]'), id, 1700);
     },
     // Γυμναστήριο: κράτηση θέσης, τολμηρό ύφος
     async (id) => {
@@ -922,6 +1091,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   function endAuto() {
     autoRun++;
     ghost.classList.remove('on', 'press');
+    mSite.querySelectorAll('.hot, .editing').forEach((x) => x.classList.remove('hot', 'editing'));
     pill.hidden = true;
     simEl.classList.remove('auto');
   }
@@ -973,16 +1143,39 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
   // ---------- Μέσα στο site: εμφάνιση στο scroll και κίνηση στο hero ----------
   const sBody = $('sBody');
+  const seenBlk = new Set<string>();
+
+  // Ο επισκέπτης γράφει πάνω στον τίτλο και την περιγραφή
+  for (const [id, key] of [['sHead', 'h'], ['sSub', 's']] as const) {
+    const el = $(id);
+    el.addEventListener('input', () => {
+      const t = (texts[state.kind] ??= {});
+      t[key] = (el.textContent ?? '').slice(0, 110);
+      if (key === 'h') $('pCardTitle').textContent = t.h || preset().headline;
+    });
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+    el.addEventListener('paste', (e) => {
+      e.preventDefault();
+      document.execCommand('insertText', false, (e.clipboardData?.getData('text/plain') ?? '').replace(/\s+/g, ' '));
+    });
+    el.addEventListener('blur', () => {
+      const t = texts[state.kind];
+      if (t && !(t[key] ?? '').trim()) { delete t[key]; paint({ log: false }); }
+      log(['&gt; content.edit', '<span class="ok">✓ το κείμενο άλλαξε</span>']);
+    });
+  }
   const revealIO = 'IntersectionObserver' in window && !reduce
     ? new IntersectionObserver((ens) => ens.forEach((en) => {
-        if (en.isIntersecting) { en.target.classList.add('in'); revealIO!.unobserve(en.target); }
+        if (en.isIntersecting) { en.target.classList.add('in'); seenBlk.add((en.target as HTMLElement).dataset.rk ?? ''); revealIO!.unobserve(en.target); }
       }), { root: sBody, threshold: 0.15 })
     : null;
   function armReveal() {
     if (!revealIO) return;
-    sBody.querySelectorAll<HTMLElement>('.mk-feats>div, .mk-gal figure, .mk-item, .mk-band, .mk-faq details, .mk-h3, .mk-foot2>div').forEach((e) => {
-      if (e.classList.contains('rv')) return;
+    sBody.querySelectorAll<HTMLElement>('#sBlocks .blk, .mk-foot2>div').forEach((e) => {
+      const key = state.kind + ':' + (e.dataset.b ?? e.className);
+      if (e.classList.contains('rv') || seenBlk.has(key)) return;
       e.classList.add('rv');
+      e.dataset.rk = key;
       revealIO.observe(e);
     });
   }
@@ -1047,6 +1240,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     const q = new URLSearchParams({
       s: [state.kind, state.style, state.mode, state.color.replace('#', ''), state.flip ? 1 : 0, dev].join('.'),
       ...(nameTouched ? { n: name() } : {}),
+      l: [curLay().hero, ...curLay().blocks].join('-'),
+      ...(texts[state.kind]?.h ? { t: texts[state.kind]!.h! } : {}),
     });
     return `${location.origin}/?${q}#lab`;
   }
@@ -1062,6 +1257,13 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     else if (/^[0-9a-f]{6}$/i.test(c ?? '')) { const hex = '#' + c.toUpperCase(); pickColor(hex, !swatches.includes(hex)); }
     state.flip = f === '1';
     if (d === 'tablet' || d === 'phone') dev = d;
+    const lq = (q.get('l') ?? '').split('-');
+    if (lq[0] && lq[0] in heroLabels) {
+      const bl = lq.slice(1).filter((x): x is Block => x in blockLabels);
+      lay[state.kind] = { hero: lq[0] as Hero, blocks: bl.length ? [...new Set(bl)] : [...layouts[state.kind].blocks] };
+    }
+    const tq = q.get('t');
+    if (tq) (texts[state.kind] ??= {}).h = tq.slice(0, 110);
     const nm = q.get('n');
     if (nm && nm !== presets[state.kind].demo) { input.value = nm.slice(0, 26); nameTouched = true; } else syncDemoName();
     kindBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.k === state.kind)));
