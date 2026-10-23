@@ -53,7 +53,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
         <div class="cg" data-g="style">
           <span class="lbl" id="lbl-style">Input // ύφος</span>
-          <div class="opts opts-3" id="styles" role="group" aria-labelledby="lbl-style">
+          <div class="opts" id="styles" role="group" aria-labelledby="lbl-style">
             {styles.map((s, i) => (
               <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-s={s.id}>{s.label}</button>
             ))}
@@ -83,6 +83,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
         <div class="sim-btns cg" data-g="extra">
           <button type="button" class="btn btn-g sim-random" id="simrandom">Έκπληξη <span class="k" aria-hidden="true">⟳</span></button>
           <button type="button" class="btn btn-g sim-random" id="simflip" aria-pressed="false">Dark / Light <span class="k" aria-hidden="true">◐</span></button>
+          <button type="button" class="btn btn-g sim-random" id="simauto">Auto demo <span class="k" aria-hidden="true">▶</span></button>
         </div>
 
         <div class="sim-console">
@@ -94,6 +95,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       <div class="view">
         <span class="corner mono" style="top:18px;left:22px">Preview // live</span>
         <span class="corner mono" style="top:18px;right:22px" id="res">1440 × 900</span>
+        <button type="button" class="auto-pill mono" id="autoPill" hidden><i></i>Auto demo · πάτα για να το δοκιμάσεις</button>
         <span class="corner mono demo-mark" style="bottom:16px;left:22px">Demo · ενδεικτικό σκίτσο</span>
 
         <!-- Ιστοσελίδα -->
@@ -198,6 +200,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <div class="mk-sheet" id="pSheet" inert><div class="sh"></div></div>
           <div class="mk-toast" id="pToast" role="status" aria-live="polite"></div>
         </div>
+
+        <span class="swipe-hint mono" id="swipeHint" aria-hidden="true">‹ σύρε το preview για άλλο ύφος ›</span>
 
         <div class="sim-cta">
           <button type="button" class="btn btn-p" id="simwant">Θέλω κάτι τέτοιο <span class="k" aria-hidden="true">↗</span></button>
@@ -348,9 +352,25 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
   // ---------- Ζωγραφίζει όλο το preview ----------
   let swapTimer: ReturnType<typeof setTimeout>;
+  // Πάνω δεξιά: σύντομο «compiling → ready» σε κάθε αλλαγή
+  const resText = () => (state.mode === 'site' ? '1440 × 900' : '390 × 844');
+  let statusUntil = 0;
+  let statusTimers: ReturnType<typeof setTimeout>[] = [];
+  function buildStatus() {
+    const res = $('res');
+    statusTimers.forEach(clearTimeout);
+    statusUntil = performance.now() + 1900;
+    res.className = 'corner mono busy';
+    res.textContent = 'compiling…';
+    statusTimers = [
+      setTimeout(() => { res.className = 'corner mono done'; res.textContent = `✓ ready ${(0.18 + Math.random() * 0.3).toFixed(2)}s`; }, 520),
+      setTimeout(() => { res.className = 'corner mono'; res.textContent = resText(); }, 1900),
+    ];
+  }
   // Ομαλή αλλαγή: σβήνει σιγά-σιγά το παλιό, γεμίζει το νέο και το «φέρνει» μέσα με animation
   function render(opts: { log?: boolean; flash?: boolean } = {}) {
     if (!opts.flash || reduce) return paint(opts);
+    buildStatus();
     const el = state.mode === 'site' ? mSite : mApp;
     const other = state.mode === 'site' ? mApp : mSite;
     clearTimeout(swapTimer);
@@ -360,7 +380,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       [mSite, mApp].forEach((m) => m.classList.remove('out', 'in'));
       paint(opts);
       void el.offsetWidth;
-      el.classList.add('in');
+      el.classList.add('in', 'build');
+      setTimeout(() => el.classList.remove('build'), 1000);
       other.classList.remove('in');
       setTimeout(() => el.classList.remove('in'), 600);
     }, 190);
@@ -377,7 +398,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       m.style.setProperty('--k', c);
       m.dataset.style = state.style;
       // το «Τολμηρό» είναι από φύση σκούρο, οπότε εκεί το κουμπί δίνει φωτεινό
-      const dark = state.style === 'bold' ? !state.flip : state.flip;
+      const dark = state.style === 'bold' || state.style === 'neon' ? !state.flip : state.flip;
       m.dataset.mode = dark ? 'dark' : 'light';
     }
 
@@ -437,7 +458,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
     mSite.classList.toggle('hide', state.mode !== 'site');
     mApp.classList.toggle('hide', state.mode !== 'app');
-    $('res').textContent = state.mode === 'site' ? '1440 × 900' : '390 × 844';
+    if (performance.now() > statusUntil) $('res').textContent = resText();
     updateBadges();
     syncSheet();
 
@@ -565,13 +586,181 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       t.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' });
     }));
   ctrl.addEventListener('click', (e) => {
-    if (!mobile.matches || !(e.target as HTMLElement).closest('.cg button, .cg .sw')) return;
+    if (!e.isTrusted || !mobile.matches || !(e.target as HTMLElement).closest('.cg button, .cg .sw')) return;
     const view = ctrl.parentElement!.querySelector<HTMLElement>('.view')!;
     const top = view.getBoundingClientRect().top;
     if (top < -24 || top > 140) {
       scrollTo({ top: scrollY + top - 8, behavior: reduce ? 'auto' : 'smooth' });
     }
   });
+
+  // ---------- Swipe στο κινητό: αλλάζει ύφος ----------
+  const simEl = ctrl.parentElement!;
+  const viewEl = simEl.querySelector<HTMLElement>('.view')!;
+  let sx = 0, sy = 0;
+  viewEl.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  viewEl.addEventListener('touchend', (e) => {
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx, dy = t.clientY - sy;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+    const i = styleBtns.findIndex((b) => b.dataset.s === state.style);
+    styleBtns[(i + (dx < 0 ? 1 : -1) + styleBtns.length) % styleBtns.length].click();
+    $('swipeHint').classList.add('gone');
+  }, { passive: true });
+
+  // ---------- Αυτόματη επίδειξη: ένα «χέρι» δοκιμάζει το site μόνο του ----------
+  const ghost = document.createElement('div');
+  ghost.className = 'ghost';
+  ghost.setAttribute('aria-hidden', 'true');
+  ghost.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 2.5l15 9-6.6 1.7L9 20z"/></svg>';
+  document.body.appendChild(ghost);
+  const pill = $('autoPill');
+  class Stop extends Error {}
+  let autoRun = 0;
+  let userTook = false;
+  const auto = () => simEl.classList.contains('auto');
+  const wait = (ms: number, id: number) =>
+    new Promise<void>((res, rej) => setTimeout(() => (id === autoRun ? res() : rej(new Stop())), ms));
+  const inMock = (sel: string) => (state.mode === 'site' ? mSite : mApp).querySelector<HTMLElement>(sel);
+
+  async function point(el: HTMLElement | null, id: number) {
+    if (!el) return;
+    const body = el.closest<HTMLElement>('.mk-body');
+    if (body) {
+      const br = body.getBoundingClientRect(), r = el.getBoundingClientRect();
+      if (r.top < br.top + 10 || r.bottom > br.bottom - 10) {
+        body.scrollTo({ top: body.scrollTop + r.top - br.top - 70, behavior: 'smooth' });
+        await wait(600, id);
+      }
+    }
+    const r = el.getBoundingClientRect();
+    if (!r.width || r.top < 0 || r.bottom > innerHeight) { ghost.classList.remove('on'); return; }
+    ghost.classList.add('on');
+    ghost.style.transform = `translate(${r.left + r.width * 0.5}px, ${r.top + r.height * 0.55}px)`;
+    await wait(820, id);
+  }
+  async function tap(el: HTMLElement | null, id: number, after = 700) {
+    if (!el) return;
+    await point(el, id);
+    ghost.classList.remove('press');
+    void ghost.offsetWidth;
+    ghost.classList.add('press');
+    el.click();
+    await wait(after, id);
+  }
+  async function control(g: string, sel: string, id: number) {
+    const el = ctrl.querySelector<HTMLElement>(sel);
+    if (!el || el.getAttribute('aria-pressed') === 'true') return;
+    if (mobile.matches) {
+      const t = ctrl.querySelector<HTMLElement>(`.ctabs [data-g="${g}"]`);
+      if (t && t.getAttribute('aria-selected') !== 'true') await tap(t, id, 380);
+    }
+    await tap(el, id, 1150);
+  }
+  async function typeName(text: string, id: number) {
+    if (input.value === text) return;
+    if (mobile.matches) await tap(ctrl.querySelector<HTMLElement>('.ctabs [data-g="name"]'), id, 300);
+    await point(input, id);
+    input.value = '';
+    for (const ch of text) {
+      input.value += ch;
+      input.dispatchEvent(new Event('input'));
+      await wait(75, id);
+    }
+    await wait(800, id);
+  }
+  async function book(sheetSel: string, id: number) {
+    await tap(inMock(`${sheetSel} [data-day="1"]`), id, 550);
+    await tap(inMock(`${sheetSel} [data-slot]:not(:disabled)`), id, 550);
+    await tap(inMock(`${sheetSel} [data-confirm]`), id, 1600);
+    await tap(inMock(`${sheetSel} .sh-done [data-sheet-close]`), id, 700);
+  }
+
+  const scenes: ((id: number) => Promise<void>)[] = [
+    // Φούρνος: e-shop με καλάθι
+    async (id) => {
+      await control('mode', '#mode [data-m="site"]', id);
+      await control('kind', '#kinds [data-k="bakery"]', id);
+      await typeName('Φούρνος Ελένη', id);
+      await control('style', '#styles [data-s="modern"]', id);
+      await tap(inMock('#sNav [data-go="1"]'), id, 900);
+      await tap(inMock('#sItems [data-add="0"]'), id, 650);
+      await tap(inMock('#sItems [data-add="2"]'), id, 650);
+      await tap(inMock('#sCartBtn'), id, 1000);
+      await tap(inMock('#sSheet [data-checkout]'), id, 1600);
+      await tap(inMock('#sSheet .sh-done [data-sheet-close]'), id, 700);
+    },
+    // Γυμναστήριο: κράτηση θέσης, τολμηρό ύφος
+    async (id) => {
+      await control('kind', '#kinds [data-k="gym"]', id);
+      await control('style', '#styles [data-s="bold"]', id);
+      await tap(inMock('#sCta'), id, 900);
+      await book('#sSheet', id);
+    },
+    // Κομμωτήριο: εφαρμογή, κομψό ύφος, δικό του όνομα και χρώμα
+    async (id) => {
+      await control('kind', '#kinds [data-k="beauty"]', id);
+      await typeName('Studio Μαρία', id);
+      await control('style', '#styles [data-s="elegant"]', id);
+      await control('color', '#swatches [data-c="#B5477A"]', id);
+      await control('mode', '#mode [data-m="app"]', id);
+      await tap(inMock('#pTabs [data-tab-go="1"]'), id, 800);
+      await tap(inMock('#pList [data-book="1"]'), id, 900);
+      await book('#pSheet', id);
+      await tap(inMock('#pTabs [data-tab-go="0"]'), id, 700);
+    },
+    // Ξενοδοχείο: νέον ύφος και βόλτα στη σελίδα
+    async (id) => {
+      await control('mode', '#mode [data-m="site"]', id);
+      await control('kind', '#kinds [data-k="hotel"]', id);
+      await control('color', '#swatches [data-c="auto"]', id);
+      await control('style', '#styles [data-s="neon"]', id);
+      await typeName('Aegean Suites', id);
+      ghost.classList.remove('on');
+      const body = $('sBody');
+      body.scrollTo({ top: 520, behavior: 'smooth' });
+      await wait(1900, id);
+      body.scrollTo({ top: 0, behavior: 'smooth' });
+      await wait(1300, id);
+    },
+  ];
+
+  function endAuto() {
+    autoRun++;
+    ghost.classList.remove('on', 'press');
+    pill.hidden = true;
+    simEl.classList.remove('auto');
+  }
+  async function autopilot() {
+    if (auto()) return;
+    const id = ++autoRun;
+    pill.hidden = false;
+    simEl.classList.add('auto');
+    log(['&gt; autopilot --demo', '<span class="ok">✓ ξεκίνησε</span>']);
+    try {
+      for (let loop = 0; loop < 3; loop++) for (const scene of scenes) await scene(id);
+    } catch (e) {
+      if (!(e instanceof Stop)) throw e;
+    }
+    if (id === autoRun) endAuto();
+  }
+  // Με το πρώτο πραγματικό άγγιγμα ο έλεγχος περνά στον επισκέπτη
+  simEl.addEventListener('pointerdown', (e) => {
+    if (e.isTrusted && auto()) { userTook = true; endAuto(); }
+  }, true);
+  addEventListener('keydown', () => { if (auto()) { userTook = true; endAuto(); } });
+  addEventListener('scroll', () => ghost.classList.remove('on'), { passive: true });
+  $('simauto').addEventListener('click', () => { userTook = false; setTimeout(autopilot, 250); });
+  // Ξεκινά μόνο του όταν το preview φανεί στην οθόνη (και σταματά όταν φύγει)
+  let startTimer: ReturnType<typeof setTimeout>;
+  if (!reduce && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([en]) => {
+      const visible = en.isIntersecting && en.intersectionRatio >= 0.35;
+      clearTimeout(startTimer);
+      if (visible && !userTook && !auto()) startTimer = setTimeout(autopilot, 1400);
+      if (!visible && auto()) endAuto();
+    }, { threshold: [0, 0.35, 0.6] }).observe(viewEl);
+  }
 
   mSite.addEventListener('click', onAction);
   mApp.addEventListener('click', onAction);

@@ -117,4 +117,5 @@ export const styles = [
   { id: 'modern', label: 'Μοντέρνο' },
   { id: 'elegant', label: 'Κομψό' },
   { id: 'bold', label: 'Τολμηρό' },
+  { id: 'neon', label: 'Νέον' },
 ] as const;

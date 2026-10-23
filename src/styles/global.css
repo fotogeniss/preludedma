@@ -766,3 +766,94 @@ section[id],header[id]{scroll-margin-top:96px}
   .sim-cta{gap:8px}
   .sim-cta .mono{font-size:.66rem}
 }
+
+/* ---------- NEON: σκούρο, aurora, γυαλί και λάμψη ---------- */
+.mock[data-style=neon][data-mode]{--bg:#06070D;--fg:#EEF0FF;--mute:#8E93AE;--soft:#11131E;--line:#232741;--r:14px;--hf:var(--disp);--hw:600;--ht:none;--hl:-.01em}
+.mock[data-style=neon][data-mode=light]{--bg:#F4F5FF;--fg:#0E1022;--mute:#5E6380;--soft:#E9EBFA;--line:#D5D8EE}
+.mock[data-style=neon]{background:
+  radial-gradient(55% 38% at 12% 0%,color-mix(in srgb,var(--k) 42%,transparent),transparent 70%),
+  radial-gradient(45% 40% at 100% 18%,color-mix(in srgb,var(--k) 25%,rgba(0,229,255,.3)),transparent 70%),
+  radial-gradient(60% 45% at 50% 115%,color-mix(in srgb,var(--k) 30%,transparent),transparent 70%),
+  var(--bg)}
+.mock[data-style=neon] .mk-body{background:
+  linear-gradient(color-mix(in srgb,var(--fg) 5%,transparent) 1px,transparent 1px) 0 0/28px 28px,
+  linear-gradient(90deg,color-mix(in srgb,var(--fg) 5%,transparent) 1px,transparent 1px) 0 0/28px 28px}
+.mock[data-style=neon] .mk-url{background:color-mix(in srgb,var(--fg) 4%,transparent)}
+.mock[data-style=neon] .mk-url span{background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.mock[data-style=neon] .mk-nav{background:color-mix(in srgb,var(--bg) 55%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.mock[data-style=neon] .mk-mark{border-radius:10px;background:linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 45%,#00E5FF));box-shadow:0 0 18px color-mix(in srgb,var(--k) 70%,transparent)}
+.mock[data-style=neon] .mk-links button{border-radius:99px}
+.mock[data-style=neon] .mk-links button[aria-pressed=true]{color:var(--fg);background:color-mix(in srgb,var(--k) 22%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--k) 60%,transparent) inset,0 0 16px color-mix(in srgb,var(--k) 40%,transparent)}
+.mock[data-style=neon] .mk-hero .mk-h{font-size:2.2rem;line-height:1.04;background:linear-gradient(100deg,var(--fg) 30%,color-mix(in srgb,var(--k) 65%,#fff) 68%,#00E5FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mock[data-style=neon][data-mode=light] .mk-hero .mk-h{background-image:linear-gradient(100deg,var(--fg) 30%,var(--k) 80%)}
+.mock[data-style=neon] .mk-kicker{display:inline-flex;align-items:center;gap:8px;padding:5px 11px;border-radius:99px;font-family:var(--mono);font-weight:500;letter-spacing:.12em;color:var(--fg);background:color-mix(in srgb,var(--k) 12%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--k) 50%,transparent) inset}
+.mock[data-style=neon] .mk-kicker::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--k);box-shadow:0 0 10px var(--k);animation:blink 1.6s ease-in-out infinite}
+.mock[data-style=neon] .mk-btn,.mock[data-style=neon] .mk-add,.mock[data-style=neon] .mk-band .mk-btn{border-radius:99px;color:#fff;background:linear-gradient(90deg,var(--k),color-mix(in srgb,var(--k) 50%,#00E5FF));box-shadow:0 0 0 1px rgba(255,255,255,.15) inset,0 8px 26px -6px color-mix(in srgb,var(--k) 80%,transparent)}
+.mock[data-style=neon] .mk-pic{aspect-ratio:1/1;width:100%;max-width:250px;justify-self:center}
+.mock[data-style=neon] .mk-pic .art-a{inset:13%;border-radius:50%;background:
+  radial-gradient(circle at 34% 28%,#fff 0,color-mix(in srgb,var(--k) 35%,#fff) 10%,var(--k) 44%,color-mix(in srgb,var(--k) 35%,#000) 80%);
+  box-shadow:0 0 50px color-mix(in srgb,var(--k) 70%,transparent),0 0 120px color-mix(in srgb,var(--k) 40%,transparent)}
+.mock[data-style=neon] .mk-pic .art-b{border-radius:50%;background:conic-gradient(from 0deg,transparent 0 10%,var(--k) 25%,transparent 40% 55%,#00E5FF 70%,transparent 85%);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px));
+  animation:nspin 6s linear infinite;filter:drop-shadow(0 0 6px var(--k))}
+@keyframes nspin{to{rotate:360deg}}
+.mock[data-style=neon] .mk-pic .art-glyph{width:30%;height:30%;stroke-width:1.3;filter:drop-shadow(0 0 8px rgba(255,255,255,.8))}
+.mock[data-style=neon] .mk-chip{border-radius:12px;color:var(--fg);background:color-mix(in srgb,var(--bg) 55%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 0 0 1px color-mix(in srgb,var(--fg) 14%,transparent) inset,0 10px 30px -10px #000}
+.mock[data-style=neon] .mk-chip.c1{left:-6%;top:4%}
+.mock[data-style=neon] .mk-chip.c2{right:-6%;bottom:6%}
+.mock[data-style=neon] .mk-feats div,.mock[data-style=neon] .mk-item,.mock[data-style=neon] .ap-list li,.mock[data-style=neon] .ap-info{background:color-mix(in srgb,var(--fg) 4%,transparent);border:1px solid var(--line);border-radius:14px;transition:border-color .25s,box-shadow .25s,transform .25s}
+.mock[data-style=neon] .mk-feats div:hover,.mock[data-style=neon] .mk-item:hover{border-color:color-mix(in srgb,var(--k) 70%,transparent);box-shadow:0 0 24px -6px color-mix(in srgb,var(--k) 70%,transparent);transform:translateY(-2px)}
+.mock[data-style=neon] .mk-feats i{width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--k),#00E5FF);box-shadow:0 0 14px color-mix(in srgb,var(--k) 70%,transparent)}
+.mock[data-style=neon] .mk-thumb{border-radius:10px;background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.55),transparent 50%),linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 40%,#00E5FF));box-shadow:0 0 14px color-mix(in srgb,var(--k) 55%,transparent)}
+.mock[data-style=neon] .mk-it small{color:color-mix(in srgb,var(--k) 55%,var(--fg));font-family:var(--mono);font-weight:500;letter-spacing:.04em}
+.mock[data-style=neon] .mk-band{border-radius:18px;color:var(--fg);border:1px solid transparent;
+  background:linear-gradient(color-mix(in srgb,var(--bg) 85%,var(--k)),color-mix(in srgb,var(--bg) 85%,var(--k))) padding-box,linear-gradient(90deg,var(--k),#00E5FF) border-box;
+  box-shadow:0 0 40px -10px color-mix(in srgb,var(--k) 70%,transparent)}
+.mock[data-style=neon] .mk-foot{font-family:var(--mono);letter-spacing:.06em;font-size:.62rem}
+.mock[data-style=neon] .ap-card{border-radius:20px;background:radial-gradient(80% 90% at 100% 0,color-mix(in srgb,var(--k) 40%,#00E5FF),transparent 60%),linear-gradient(135deg,var(--k),color-mix(in srgb,var(--k) 40%,#000));box-shadow:0 14px 40px -12px color-mix(in srgb,var(--k) 80%,transparent)}
+.mock[data-style=neon] .ap-card .mk-btn{background:#fff;color:var(--k);box-shadow:none}
+.mock[data-style=neon] .ap-tabs button[aria-pressed=true] i{box-shadow:0 0 12px var(--k)}
+.mock[data-style=neon] .chip[aria-pressed=true]{box-shadow:0 0 14px color-mix(in srgb,var(--k) 60%,transparent)}
+.mock[data-style=neon] .mk-sheet .sh{background:color-mix(in srgb,var(--bg) 90%,var(--k));box-shadow:0 -1px 0 color-mix(in srgb,var(--k) 55%,transparent)}
+@media (max-width:640px){
+  .mock[data-style=neon] .mk-hero .mk-h{font-size:1.9rem}
+  .mock[data-style=neon] .mk-pic{max-width:210px}
+}
+
+/* ---------- Εφέ «build» σε κάθε αλλαγή ---------- */
+.mock::after{content:"";position:absolute;left:0;right:0;top:-90px;height:90px;z-index:8;pointer-events:none;opacity:0;
+  background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--k) 18%,transparent) 70%,color-mix(in srgb,var(--k) 70%,#fff) 97%,transparent)}
+.mock.build::after{animation:scan .95s cubic-bezier(.4,0,.2,1)}
+@keyframes scan{0%{top:-90px;opacity:1}85%{opacity:1}100%{top:100%;opacity:0}}
+.mock.build .mk-pic,.mock.build .ap-card{animation:popIn .7s .12s cubic-bezier(.2,.9,.25,1.15) both}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+#res{transition:color .2s}
+#res.busy{color:#F5B544!important}
+#res.done{color:#3DF5A6!important}
+
+/* ---------- Αυτόματη επίδειξη ---------- */
+.ghost{position:fixed;left:0;top:0;z-index:65;width:24px;height:24px;pointer-events:none;opacity:0;transform:translate(50vw,60vh);
+  transition:transform .78s cubic-bezier(.45,.05,.2,1),opacity .3s}
+.ghost.on{opacity:1}
+.ghost svg{position:absolute;left:-4px;top:-2px;width:100%;height:100%;fill:#fff;stroke:#0A0B12;stroke-width:1.4;stroke-linejoin:round;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+.ghost::after{content:"";position:absolute;left:-15px;top:-15px;width:30px;height:30px;border-radius:50%;border:2px solid var(--lite);opacity:0}
+.ghost.press::after{animation:gpress .5s ease-out}
+@keyframes gpress{from{opacity:1;transform:scale(.3)}to{opacity:0;transform:scale(1.7)}}
+@media (pointer:coarse){
+  .ghost svg{display:none}
+  .ghost::before{content:"";position:absolute;left:-17px;top:-17px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.3);border:2px solid rgba(255,255,255,.9);box-shadow:0 4px 18px rgba(0,0,0,.45)}
+}
+.auto-pill{position:absolute;z-index:9;top:12px;left:50%;translate:-50% 0;display:inline-flex;align-items:center;gap:8px;padding:7px 12px;
+  border:1px solid color-mix(in srgb,var(--lite) 50%,transparent);background:rgba(9,11,20,.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  color:var(--text);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;white-space:nowrap;animation:pageIn .4s both}
+.auto-pill i{width:7px;height:7px;border-radius:50%;background:#FF4D6D;box-shadow:0 0 10px #FF4D6D;animation:blink 1.2s infinite}
+.auto-pill[hidden]{display:none}
+.sim.auto .view>.corner{opacity:0;transition:opacity .3s}
+.swipe-hint{display:none}
+@media (max-width:1000px){
+  .swipe-hint{display:block;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:-6px;animation:nudge 2.4s ease-in-out infinite}
+  .swipe-hint.gone{display:none}
+  .sim .sim-btns .sim-random{font-size:.62rem;padding:11px 8px;gap:6px}
+  .auto-pill{top:8px;font-size:.56rem;padding:6px 10px}
+}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
