@@ -735,3 +735,34 @@ section[id],header[id]{scroll-margin-top:96px}
 .cc-actions .btn{flex:1;justify-content:center;padding:14px 16px}
 @media (max-width:640px){.cc{left:16px;right:16px;bottom:16px;width:auto}}
 .doc code{font-family:var(--mono);font-size:.85em;color:var(--lite)}
+
+/* ---------- Simulator στο κινητό: preview πάνω, dock επιλογών κάτω ---------- */
+.ctabs{display:none}
+@media (max-width:1000px){
+  .sim{display:flex;flex-direction:column}
+  .sim .view{order:-1;padding:30px 14px 22px;gap:18px}
+  .sim .ctrl{position:sticky;bottom:0;z-index:5;gap:0;padding:0 0 calc(10px + env(safe-area-inset-bottom));
+    border-bottom:0;border-top:1px solid var(--edge-2);
+    background:linear-gradient(180deg,rgba(14,16,28,.97),rgba(7,8,14,.98));box-shadow:0 -18px 40px -10px rgba(0,0,0,.7)}
+  .ctabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding:8px 10px 0;border-bottom:1px solid var(--edge)}
+  .ctabs::-webkit-scrollbar{display:none}
+  .ctabs button{flex:none;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+    background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px 9px;cursor:pointer}
+  .ctabs button[aria-selected=true]{color:#fff;border-bottom-color:var(--lite)}
+  .sim .cg{display:none;padding:12px 12px 2px}
+  .sim .cg.on{display:block}
+  .sim .cg .lbl,.sim .cg>label{display:none}
+  .sim .cg .opts,.sim .cg .opts-3{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;grid-template-columns:none}
+  .sim .cg .opts::-webkit-scrollbar{display:none}
+  .sim .cg .opts button{flex:none;white-space:nowrap;padding:11px 14px;font-size:.7rem}
+  .sim .cg input#biz{font-size:1.05rem;padding:11px 14px}
+  .sim .sim-btns.cg.on{display:flex;flex-wrap:nowrap}
+  .sim .sim-btns .sim-random{flex:1;justify-content:center;padding:11px 12px}
+  .sim .swatches{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .sim .swatches .sw{flex:none}
+  .sim-console{display:none}
+  .mock-site{height:clamp(380px,calc(100svh - 250px),560px)}
+  .mock-app{height:clamp(420px,calc(100svh - 230px),540px)}
+  .sim-cta{gap:8px}
+  .sim-cta .mono{font-size:.66rem}
+}

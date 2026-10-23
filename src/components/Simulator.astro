@@ -18,13 +18,21 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     </div>
 
     <div class="sim">
-      <div class="ctrl">
-        <div>
+      <div class="ctrl" id="simctrl">
+        <div class="ctabs" role="tablist" aria-label="Ρυθμίσεις preview">
+          <button type="button" role="tab" data-g="kind" aria-selected="true">Κλάδος</button>
+          <button type="button" role="tab" data-g="mode" aria-selected="false">Τύπος</button>
+          <button type="button" role="tab" data-g="style" aria-selected="false">Ύφος</button>
+          <button type="button" role="tab" data-g="color" aria-selected="false">Χρώμα</button>
+          <button type="button" role="tab" data-g="name" aria-selected="false">Όνομα</button>
+          <button type="button" role="tab" data-g="extra" aria-selected="false">Extra</button>
+        </div>
+        <div class="cg" data-g="name">
           <label for="biz">Input // όνομα επιχείρησης</label>
           <input id="biz" value="Φούρνος Ελένη" maxlength="26" autocomplete="off" />
         </div>
 
-        <div>
+        <div class="cg on" data-g="kind">
           <span class="lbl" id="lbl-kind">Input // κλάδος</span>
           <div class="opts" id="kinds" role="group" aria-labelledby="lbl-kind">
             {kinds.map(([key, p], i) => (
@@ -33,7 +41,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           </div>
         </div>
 
-        <div class="ctrl-row">
+        <div class="ctrl-row cg" data-g="mode">
           <div>
             <span class="lbl" id="lbl-mode">Output // τύπος</span>
             <div class="opts" id="mode" role="group" aria-labelledby="lbl-mode">
@@ -43,7 +51,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           </div>
         </div>
 
-        <div>
+        <div class="cg" data-g="style">
           <span class="lbl" id="lbl-style">Input // ύφος</span>
           <div class="opts opts-3" id="styles" role="group" aria-labelledby="lbl-style">
             {styles.map((s, i) => (
@@ -52,7 +60,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           </div>
         </div>
 
-        <div>
+        <div class="cg" data-g="color">
           <span class="lbl" id="lbl-color">Input // χρώμα</span>
           <div class="swatches" id="swatches" role="group" aria-labelledby="lbl-color">
             {swatches.map((c, i) => (
@@ -72,12 +80,12 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           </div>
         </div>
 
-        <div class="sim-btns">
+        <div class="sim-btns cg" data-g="extra">
           <button type="button" class="btn btn-g sim-random" id="simrandom">Έκπληξη <span class="k" aria-hidden="true">⟳</span></button>
           <button type="button" class="btn btn-g sim-random" id="simflip" aria-pressed="false">Dark / Light <span class="k" aria-hidden="true">◐</span></button>
         </div>
 
-        <div>
+        <div class="sim-console">
           <span class="lbl">Console</span>
           <div class="log" id="log" aria-live="polite"></div>
         </div>
@@ -547,6 +555,24 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       log(['&gt; order.create', '<span class="ok">✓ η παραγγελία στάλθηκε</span>']);
     }
   }
+  // Κινητό: καρτέλες στο dock και το preview να μένει πάντα στην οθόνη
+  const ctrl = $('simctrl');
+  const mobile = matchMedia('(max-width: 1000px)');
+  ctrl.querySelectorAll<HTMLButtonElement>('.ctabs [data-g]').forEach((t) =>
+    t.addEventListener('click', () => {
+      ctrl.querySelectorAll<HTMLButtonElement>('.ctabs [data-g]').forEach((x) => x.setAttribute('aria-selected', String(x === t)));
+      ctrl.querySelectorAll<HTMLElement>('.cg').forEach((g) => g.classList.toggle('on', g.dataset.g === t.dataset.g));
+      t.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduce ? 'auto' : 'smooth' });
+    }));
+  ctrl.addEventListener('click', (e) => {
+    if (!mobile.matches || !(e.target as HTMLElement).closest('.cg button, .cg .sw')) return;
+    const view = ctrl.parentElement!.querySelector<HTMLElement>('.view')!;
+    const top = view.getBoundingClientRect().top;
+    if (top < -24 || top > 140) {
+      scrollTo({ top: scrollY + top - 8, behavior: reduce ? 'auto' : 'smooth' });
+    }
+  });
+
   mSite.addEventListener('click', onAction);
   mApp.addEventListener('click', onAction);
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet) { sheet = null; syncSheet(); } });
