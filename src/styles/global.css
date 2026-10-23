@@ -857,3 +857,73 @@ section[id],header[id]{scroll-margin-top:96px}
   .auto-pill{top:8px;font-size:.56rem;padding:6px 10px}
 }
 @keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+
+/* ---------- Φωτογραφίες στα preview (public/sim, Unsplash) ---------- */
+.mk-pic .art-ph{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .6s ease}
+.mk-pic .art-ph.ok{opacity:1}
+.mock:not(.photos) .art-ph{display:none}
+.mock.photos .mk-pic .art-glyph{opacity:0}
+.mock[data-style=modern] .mk-pic .art-ph{border-radius:26px;box-shadow:0 30px 60px -24px color-mix(in srgb,var(--k) 70%,#000)}
+.mock.photos[data-style=modern] .mk-pic .art-b{background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.35));mix-blend-mode:normal;opacity:1}
+.mock[data-style=elegant] .mk-pic .art-ph{border-radius:999px 999px 0 0;filter:saturate(.85) sepia(.12)}
+.mock.photos[data-style=elegant] .mk-pic .art-b{background:linear-gradient(180deg,transparent 60%,color-mix(in srgb,var(--k) 60%,transparent))}
+.mock[data-style=bold] .mk-pic .art-ph{filter:grayscale(1) contrast(1.15) brightness(1.2);mix-blend-mode:luminosity}
+.mock.photos[data-style=bold] .mk-pic .art-glyph{opacity:1}
+.mock[data-style=neon] .mk-pic .art-ph{left:13%;top:13%;width:74%;height:74%;border-radius:50%;mix-blend-mode:luminosity}
+.mock[data-style=neon] .mk-pic .art-ph.ok{opacity:.92}
+.mock.photos[data-style=neon] .mk-pic::after{content:"";position:absolute;inset:13%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.5),transparent 34%),radial-gradient(circle at 50% 50%,transparent 58%,color-mix(in srgb,var(--k) 55%,transparent))}
+
+/* γκαλερί */
+.mk-gal{display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:118px 118px;gap:10px;margin-top:22px}
+.mk-gal:empty{display:none}
+.mk-gal figure{position:relative;margin:0;overflow:hidden;border-radius:calc(var(--r) * 1.4);background:var(--soft)}
+.mk-gal figure:first-child{grid-row:span 2}
+.mk-gal img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transform:scale(1.05);transition:opacity .6s,transform 1.2s cubic-bezier(.2,.7,.2,1),filter .4s}
+.mk-gal img.ok{opacity:1;transform:none}
+.mk-gal figure:hover img{transform:scale(1.06)}
+.mk-gal figcaption{position:absolute;left:10px;bottom:9px;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.88);color:#14151B;font-size:.64rem;font-weight:700}
+.mock[data-style=modern] .mk-gal figure{border-radius:18px}
+.mock[data-style=elegant] .mk-gal{grid-template-columns:repeat(3,1fr);grid-template-rows:none;gap:16px;margin-top:34px}
+.mock[data-style=elegant] .mk-gal figure{grid-row:auto;border-radius:0;background:transparent}
+.mock[data-style=elegant] .mk-gal img{height:auto;aspect-ratio:3/3.9;filter:saturate(.85)}
+.mock[data-style=elegant] .mk-gal figure:nth-child(2) img{border-radius:999px 999px 0 0}
+.mock[data-style=elegant] .mk-gal figcaption{position:static;display:block;text-align:center;background:none;color:var(--fg);font-family:var(--se);font-style:italic;font-weight:400;font-size:.84rem;padding:9px 0 0}
+.mock[data-style=bold] .mk-gal{grid-template-columns:repeat(3,1fr);grid-template-rows:150px;gap:16px;margin-top:26px}
+.mock[data-style=bold] .mk-gal figure{grid-row:auto;border-radius:0;border:3px solid var(--fg);box-shadow:6px 6px 0 var(--k)}
+.mock[data-style=bold] .mk-gal figure:nth-child(1){rotate:-1.5deg}
+.mock[data-style=bold] .mk-gal figure:nth-child(3){rotate:1.5deg}
+.mock[data-style=bold] .mk-gal img{filter:grayscale(1) contrast(1.2)}
+.mock[data-style=bold] .mk-gal figure:hover img{filter:none}
+.mock[data-style=bold] .mk-gal figcaption{left:0;bottom:0;border-radius:0;background:var(--k);color:#fff;font-family:var(--disp);text-transform:uppercase;letter-spacing:.06em}
+.mock[data-style=neon] .mk-gal figure{border-radius:16px;box-shadow:0 0 0 1px var(--line),0 0 30px -12px color-mix(in srgb,var(--k) 70%,transparent)}
+.mock[data-style=neon] .mk-gal figure::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 45%,color-mix(in srgb,var(--bg) 85%,transparent))}
+.mock[data-style=neon] .mk-gal figcaption{z-index:1;background:color-mix(in srgb,var(--bg) 45%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--fg);font-family:var(--mono);font-weight:500;letter-spacing:.06em;box-shadow:0 0 0 1px color-mix(in srgb,var(--fg) 18%,transparent) inset}
+
+/* φωτογραφίες στις λίστες, στην κάρτα της εφαρμογής και στη ζώνη CTA */
+.mk-thumb.ph{background-size:cover!important;background-position:center!important;box-shadow:none}
+.mk-thumb.ph svg{display:none}
+.mock[data-style=modern] .mk-thumb.ph,.mock[data-style=neon] .mk-thumb.ph{width:46px;height:46px}
+.ap-list .mk-thumb.ph{width:38px!important;height:38px!important}
+.mock.photos .ap-card{min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;
+  background-image:linear-gradient(165deg,color-mix(in srgb,var(--k) 50%,transparent) 0%,rgba(0,0,0,.78) 100%),var(--ph,none);background-size:cover;background-position:center}
+.mock.photos[data-style=modern] .mk-band,.mock.photos[data-style=bold] .mk-band{
+  background-image:linear-gradient(100deg,color-mix(in srgb,var(--k) 94%,#000) 35%,color-mix(in srgb,var(--k) 25%,transparent)),var(--ph3,none);background-size:cover;background-position:center}
+
+@media (max-width:640px){
+  .mk-gal{grid-template-columns:1fr 1fr;grid-template-rows:150px 104px}
+  .mk-gal figure:first-child{grid-column:span 2;grid-row:auto}
+  .mock[data-style=elegant] .mk-gal{grid-template-columns:repeat(3,1fr);gap:8px}
+  .mock[data-style=elegant] .mk-gal figure:first-child{grid-column:auto}
+  .mock[data-style=elegant] .mk-gal figcaption{font-size:.7rem}
+  .mock[data-style=bold] .mk-gal{grid-template-columns:repeat(3,1fr);grid-template-rows:104px;gap:10px}
+  .mock[data-style=bold] .mk-gal figure:first-child{grid-column:auto}
+  .mock[data-style=bold] .mk-gal figcaption{font-size:.52rem;padding:3px 6px}
+}
+@media (max-width:640px){
+  .mock.photos:not([data-style=bold]) .mk-hero .mk-pic{order:-1}
+  .mock.photos[data-style=modern] .mk-pic{aspect-ratio:1.6/1}
+  .mock.photos[data-style=elegant] .mk-pic{width:62%;aspect-ratio:3/3.2;margin-top:8px}
+  .mock.photos[data-style=neon] .mk-pic{max-width:190px}
+  .mock.photos .mk-hero{gap:18px}
+}
