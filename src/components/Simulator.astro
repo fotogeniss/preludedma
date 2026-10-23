@@ -102,13 +102,23 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <div class="mk-body" id="sBody">
             <div class="mk-page" data-page="0">
               <div class="mk-hero">
-                <div>
+                <div class="mk-copy">
+                  <span class="mk-kicker" id="sKicker"></span>
                   <div class="mk-h" id="sHead"></div>
                   <p class="mk-sub" id="sSub"></p>
-                  <button type="button" class="mk-btn" id="sCta"></button>
+                  <div class="mk-ctas">
+                    <button type="button" class="mk-btn" id="sCta"></button>
+                    <span class="mk-hrs" id="sHoursMini"></span>
+                  </div>
                 </div>
-                <div class="mk-pic"><svg viewBox="0 0 24 24" id="sGlyph" aria-hidden="true"></svg></div>
+                <div class="mk-pic">
+                  <i class="art-a"></i><i class="art-b"></i>
+                  <svg viewBox="0 0 24 24" class="art-glyph" id="sGlyph" aria-hidden="true"></svg>
+                  <span class="mk-chip c1" id="sChip1"></span>
+                  <span class="mk-chip c2" id="sChip2"></span>
+                </div>
               </div>
+              <div class="mk-marquee" aria-hidden="true"><div id="sMarq"></div></div>
               <div class="mk-feats" id="sFeats"></div>
               <div class="mk-h mk-h2 mk-h3" id="sPopTitle"></div>
               <div class="mk-items" id="sPop"></div>
@@ -257,7 +267,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       : `<button type="button" class="mk-add mk-add-t" data-book="${i}">Κλείσε</button>`;
   }
   function rowHTML(tag: 'div' | 'li', cls: string, it: { n: string; m: string }, i: number) {
-    return `<${tag} class="${cls}"><span class="mk-thumb">${glyph(state.kind)}</span><div class="mk-it"><b>${esc(it.n)}</b><small>${esc(it.m)}</small></div>${actionBtn(it, i)}</${tag}>`;
+    return `<${tag} class="${cls}"><span class="mk-n">${String(i + 1).padStart(2, '0')}</span><span class="mk-thumb">${glyph(state.kind)}</span><div class="mk-it"><b>${esc(it.n)}</b><small>${esc(it.m)}</small></div>${actionBtn(it, i)}</${tag}>`;
   }
 
   // ---------- Φύλλα (καλάθι / κράτηση) ----------
@@ -374,6 +384,12 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     $('sHours').textContent = p.hours;
     $('sFoot').textContent = `© ${n}`;
     $('sGlyph').innerHTML = icons[state.kind];
+    $('sKicker').textContent = p.label;
+    $('sHoursMini').textContent = p.hours;
+    $('sChip1').innerHTML = `<i></i>${esc(p.items[0].m)} · ${esc(p.items[0].n)}`;
+    $('sChip2').textContent = p.hours;
+    const rep = p.features.map(esc).join(' ✦ ') + ' ✦ ';
+    setHTML($('sMarq'), `<span>${rep.repeat(3)}</span><span>${rep.repeat(3)}</span>`);
 
     // Το κύριο κουμπί: στο καλάθι/κατάλογο ή σε κράτηση
     for (const [id, label] of [['sCta', p.cta], ['sBandB', p.cta]] as const) {
@@ -389,7 +405,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       .map((l, i) => `<button type="button" data-go="${i}" aria-pressed="${i === state.page}">${esc(l)}</button>`)
       .join(''));
     setHTML($('sFeats'), p.features.map((f) => `<div><i></i>${esc(f)}</div>`).join(''));
-    setHTML($('sPop'), p.items.slice(0, 3).map((it, i) => rowHTML('div', 'mk-item', it, i)).join(''));
+    setHTML($('sPop'), p.items.slice(0, 4).map((it, i) => rowHTML('div', 'mk-item', it, i)).join(''));
     setHTML($('sItems'), p.items.map((it, i) => rowHTML('div', 'mk-item', it, i)).join(''));
     showPage(mSite, 'page', state.page);
 

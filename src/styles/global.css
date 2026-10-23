@@ -321,7 +321,7 @@ footer{border-top:1px solid var(--edge);padding:44px 0 70px;background:rgba(4,5,
 
 /* 3D υδρόγειος πιο διακριτική στο κινητό, ώστε να διαβάζονται τα κείμενα */
 @media (max-width:1000px){
-  #gl{opacity:.5}
+  #gl{opacity:.42}
 }
 
 /* =========================================================
@@ -376,8 +376,12 @@ section[id],header[id]{scroll-margin-top:96px}
 
 @media (max-width:1000px){
   .nav{padding:14px 22px}
-  .nav.scrolled{top:10px;left:10px;right:10px;padding:10px 10px 10px 16px}
-  .nav.scrolled .mtoggle{padding:10px 12px 10px 14px}
+  /* με το scroll, στο κινητό μένει ΜΟΝΟ το κουμπί MENU (πάνω δεξιά), χωρίς μπάρα και λογότυπο */
+  .nav.scrolled{top:12px;left:auto;right:12px;width:auto;padding:0;pointer-events:none}
+  .nav.scrolled::before,.nav.scrolled::after,.nav.scrolled .nav-prog{display:none}
+  .nav.scrolled .logo{display:none}
+  .nav.scrolled .mtoggle{pointer-events:auto;padding:11px 13px 11px 15px;background:rgba(7,9,17,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 0 0 1px var(--edge-2) inset,0 10px 30px -8px #000}
+  html.menu-open .nav.scrolled{left:12px;justify-content:flex-end}
   html.menu-open .nav::before,html.menu-open .nav .nav-prog{opacity:0}
   .hero{padding-top:130px}
 }
