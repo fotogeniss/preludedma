@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  name: 'Επικοινωνία',
+  url: `${site.url}/epikoinonia/`,
+  about: { '@id': `${site.url}/#business` },
+};
+---
+<Base
+  title="Επικοινωνία | Prelude Digital Marketing Agency"
+  description={`Επικοινώνησε με την Prelude για ιστοσελίδα, e-shop ή εφαρμογή. Τηλέφωνο ${site.phoneDisplay}, email ${site.email}. Πρόταση μέσα σε 24 ώρες.`}
+>
+  <div class="wrap">
+    <Nav />
+    <header class="sp-hero sp-hero-sm">
+      <nav class="crumbs mono" aria-label="Πλοήγηση"><a href="/">Αρχική</a><span aria-hidden="true">/</span><span aria-current="page">Επικοινωνία</span></nav>
+      <span class="kicker-h1"><span class="live"></span>Επικοινωνία</span>
+      <h1 class="sp-title">Πες μας τι θέλεις να φτιάξουμε</h1>
+      <div class="sp-meta mono">
+        <a href={`tel:${site.phone}`}>Τηλέφωνο <b>{site.phoneDisplay}</b></a>
+        <a href={`mailto:${site.email}`}>Email <b>{site.email}</b></a>
+        <span>Απάντηση <b>σε 24 ώρες</b></span>
+      </div>
+    </header>
+  </div>
+  <Contact />
+  <Footer />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(ld)} />
+</Base>

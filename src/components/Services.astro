@@ -1,5 +1,7 @@
 ---
 import { services } from '../data/services';
+// κάρτες με δική τους σελίδα
+const pageFor: Record<string, string> = { web: '/istoselides/', shop: '/e-shop/', app: '/efarmoges/' };
 
 const icons: Record<string, string> = {
   web: '<rect x="4" y="8" width="40" height="30" rx="2"/><path d="M4 15h40M14 44h20M24 38v6"/><path d="M18 24l-4 4 4 4M30 24l4 4-4 4M26 22l-4 12"/>',
@@ -29,6 +31,7 @@ const icons: Record<string, string> = {
           <h3>{s.title}</h3>
           <p>{s.text}</p>
           <div class="spec"><span class="mono">{s.stack}</span><span class="mono"><b>{s.time}</b></span></div>
+          {pageFor[s.icon] && <a href={pageFor[s.icon]} class="mod-more mono">Μάθε περισσότερα <span aria-hidden="true">↗</span></a>}
         </div>
       ))}
     </div>

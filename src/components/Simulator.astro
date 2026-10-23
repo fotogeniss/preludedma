@@ -236,8 +236,6 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <div class="mk-toast" id="pToast" role="status" aria-live="polite"></div>
         </div>
 
-        <span class="swipe-hint mono" id="swipeHint" aria-hidden="true">‹ σύρε το preview για άλλο ύφος ›</span>
-        <span class="build-hint mono" aria-hidden="true">✎ Πάτα σε οποιοδήποτε κείμενο για να το αλλάξεις · μετακίνησε, σβήσε ή πρόσθεσε ενότητες</span>
 
         <!-- Διαχείριση: τι βλέπει ο ιδιοκτήτης -->
         <div class="mock mock-adm hide" id="mAdm" data-style="modern">
@@ -267,6 +265,9 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           </div>
           <div class="mk-toast" id="aToast" role="status" aria-live="polite"></div>
         </div>
+
+        <span class="swipe-hint mono" id="swipeHint" aria-hidden="true">‹ σύρε το preview για άλλο ύφος ›</span>
+        <span class="build-hint mono" aria-hidden="true">✎ Πάτα σε οποιοδήποτε κείμενο για να το αλλάξεις · μετακίνησε, σβήσε ή πρόσθεσε ενότητες</span>
 
         <div class="sim-cta">
           <button type="button" class="btn btn-p" id="simwant">Θέλω κάτι τέτοιο <span class="k" aria-hidden="true">↗</span></button>
@@ -1294,7 +1295,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       ...(state.font !== 'auto' || state.corner !== 'auto' ? { f: `${state.font}.${state.corner}` } : {}),
       ...(texts[state.kind]?.h ? { t: texts[state.kind]!.h! } : {}),
     });
-    return `${location.origin}/?${q}#lab`;
+    return `${location.origin}${location.pathname}?${q}#lab`;
   }
   function applyShared(): boolean {
     const q = new URLSearchParams(location.search);

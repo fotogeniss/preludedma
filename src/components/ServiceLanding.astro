@@ -1,0 +1,151 @@
+---
+// Κοινό template για τις σελίδες υπηρεσιών. Κάθε σελίδα έχει δικό της τίτλο, κείμενα και ερωτήσεις,
+// ώστε η Google να τη βρίσκει ξεχωριστά (π.χ. «κατασκευή e-shop») και να μπορεί να δείχνει sitelinks.
+import Base from '../layouts/Base.astro';
+import Nav from './Nav.astro';
+import Pipeline from './Pipeline.astro';
+import Contact from './Contact.astro';
+import Footer from './Footer.astro';
+import { site } from '../data/site';
+import { servicePages, type ServicePage } from '../data/pages';
+
+interface Props { page: ServicePage }
+const { page } = Astro.props;
+const url = `${site.url}/${page.slug}/`;
+const others = servicePages.filter((p) => p.slug !== page.slug);
+
+const icons: Record<string, string> = {
+  web: '<rect x="4" y="8" width="40" height="30" rx="2"/><path d="M4 15h40M14 44h20M24 38v6"/><path d="M18 24l-4 4 4 4M30 24l4 4-4 4M26 22l-4 12"/>',
+  app: '<rect x="13" y="3" width="22" height="42" rx="4"/><path d="M21 39h6"/><circle cx="24" cy="20" r="5"/>',
+  shop: '<path d="M6 8h6l5 22h21l4-14H14"/><circle cx="20" cy="38" r="3"/><circle cx="35" cy="38" r="3"/>',
+};
+
+const ld = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'Service', name: page.kicker, description: page.description, url, areaServed: 'GR', provider: { '@id': `${site.url}/#business` } },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Αρχική', item: `${site.url}/` },
+        { '@type': 'ListItem', position: 2, name: page.menu, item: url },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: page.faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ],
+};
+---
+<Base title={page.seoTitle} description={page.description}>
+  <div class="wrap">
+    <Nav />
+    <header class="sp-hero">
+      <nav class="crumbs mono" aria-label="Πλοήγηση"><a href="/">Αρχική</a><span aria-hidden="true">/</span><span aria-current="page">{page.menu}</span></nav>
+      <span class="kicker-h1"><span class="live"></span>{page.kicker}</span>
+      <h1 class="sp-title">{page.title}</h1>
+      <div class="hero-sub">
+        <p>{page.intro}</p>
+        <div class="ctas">
+          <a href="#contact" class="btn btn-p">Ζήτα πρόταση <span class="k" aria-hidden="true">↗</span></a>
+          <a href="/simulator/" class="btn btn-g">Δοκίμασε το simulator</a>
+        </div>
+      </div>
+      <div class="sp-meta mono">
+        <span>Χρόνος παράδοσης <b>{page.time}</b></span>
+        <span>Πρόταση <b>σε 24 ώρες</b></span>
+        <span>Σχεδιασμός <b>από το μηδέν</b></span>
+      </div>
+    </header>
+  </div>
+
+  <section class="s" id="services" style="padding-top:40px">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="mono"><b>[ SYS.01 ]</b> Τι παίρνεις</span>
+          <h2 class="h2">Τα βασικά<br />πλεονεκτήματα</h2>
+        </div>
+        <p>{page.description}</p>
+      </div>
+      <div class="mods sp-feats">
+        {page.features.map((f, i) => (
+          <div class="mod">
+            <div class="top">
+              {i === 0
+                ? <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" set:html={icons[page.icon] ?? icons.web}></svg>
+                : <span class="sp-num mono">{String(i + 1).padStart(2, '0')}</span>}
+              <span class="mono">MOD/{String(i + 1).padStart(2, '0')}</span>
+            </div>
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="s" style="padding-top:0">
+    <div class="wrap">
+      <div class="sp-inc">
+        <div>
+          <span class="mono"><b>[ SYS.02 ]</b> Τι περιλαμβάνει</span>
+          <h2 class="h2">Όλα όσα<br />χρειάζεσαι</h2>
+          <p>Η τελική λίστα στήνεται μαζί σου, ανάλογα με την επιχείρησή σου. Ξεκινάμε συνήθως από αυτά:</p>
+        </div>
+        <ul>
+          {page.includes.map((x) => <li>{x}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <Pipeline />
+
+  <section class="s" id="faq" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <span class="mono"><b>[ SYS.04 ]</b> FAQ</span>
+          <h2 class="h2">Συχνές<br />ερωτήσεις</h2>
+        </div>
+        <p>Όσα ρωτούν συνήθως πριν ξεκινήσουμε. Για οτιδήποτε άλλο, γράψε μας.</p>
+      </div>
+      <div class="faq-wrap">
+        <div class="faq">
+          {page.faq.map((item, i) => (
+            <details open={i === 0}>
+              <summary><h3 style="font:inherit">{item.q}</h3></summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="s" style="padding-top:0">
+    <div class="wrap">
+      <span class="mono"><b>[ SYS.05 ]</b> Δες επίσης</span>
+      <div class="sp-more">
+        {others.map((o) => (
+          <a href={`/${o.slug}/`} class="sp-link">
+            <span class="mono">{o.kicker}</span>
+            <b>{o.title}</b>
+            <span class="k" aria-hidden="true">↗</span>
+          </a>
+        ))}
+        <a href="/simulator/" class="sp-link">
+          <span class="mono">Simulator</span>
+          <b>Δες το site σου πριν υπάρξει</b>
+          <span class="k" aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <Contact />
+  <Footer />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(ld)} />
+</Base>

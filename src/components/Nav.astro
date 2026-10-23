@@ -1,15 +1,20 @@
 ---
-import { sections, site } from '../data/site';
-const links = sections.filter((s) => !['top', 'contact'].includes(s.id));
-const mobileLinks = sections.filter((s) => s.id !== 'top');
+import { site, navLinks, mobileNavLinks, pagesWithContact } from '../data/site';
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+const isHome = path === '/';
+const here = (href: string) => (href === path ? 'page' : undefined);
+// «Ξεκίνα project»: στη φόρμα της ίδιας σελίδας αν υπάρχει, αλλιώς στη σελίδα επικοινωνίας
+const ctaHref = isHome ? '/#contact' : pagesWithContact.includes(path) ? '#contact' : '/epikoinonia/';
+const links = navLinks;
+const mobileLinks = mobileNavLinks;
 ---
 <header class="nav" id="nav">
   <a href="/" class="logo" aria-label="Prelude, αρχική"><svg aria-hidden="true"><use href="#st" /></svg>PRELUDE</a>
   <nav class="links" aria-label="Κύριο μενού">
-    {links.map((l) => <a href={`/#${l.id}`} data-sec={l.id}>{l.label}</a>)}
+    {links.map((l) => <a href={l.href} data-sec={isHome && l.sec ? l.sec : undefined} aria-current={here(l.href)} class:list={{ here: here(l.href) }}>{l.label}</a>)}
     <span class="nav-ind" id="navind" aria-hidden="true"></span>
   </nav>
-  <a href="/#contact" class="btn btn-p nav-cta"><span class="t">Ξεκίνα project</span><span class="k" aria-hidden="true">↗</span></a>
+  <a href={ctaHref} class="btn btn-p nav-cta"><span class="t">Ξεκίνα project</span><span class="k" aria-hidden="true">↗</span></a>
 
   <!-- Κουμπί mobile μενού -->
   <button class="mtoggle" id="mtoggle" type="button" aria-expanded="false" aria-controls="mmenu" aria-label="Άνοιγμα μενού">
@@ -33,7 +38,7 @@ const mobileLinks = sections.filter((s) => s.id !== 'top');
       <ol class="mm-list">
         {mobileLinks.map((l, i) => (
           <li style={`--i:${i}`}>
-            <a href={`/#${l.id}`} data-close>
+            <a href={l.href} data-close aria-current={here(l.href)}>
               <span class="mm-idx mono">{String(i + 1).padStart(2, '0')}</span>
               <span class="mm-lbl" data-label={l.label}>{l.label}</span>
               <span class="mm-arr" aria-hidden="true">↗</span>
@@ -44,10 +49,10 @@ const mobileLinks = sections.filter((s) => s.id !== 'top');
     </nav>
 
     <div class="mm-foot" style={`--i:${mobileLinks.length}`}>
-      <a href="/#contact" class="btn btn-p" data-close>Ξεκίνα project <span class="k" aria-hidden="true">↗</span></a>
+      <a href={ctaHref} class="btn btn-p" data-close>Ξεκίνα project <span class="k" aria-hidden="true">↗</span></a>
       <div class="mm-contact">
-        <a href={`mailto:${site.email}`}>{site.email}</a>
-        <a href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
+        <a href={`mailto:${site.email}`} data-close>{site.email}</a>
+        <a href={`tel:${site.phone}`} data-close>{site.phoneDisplay}</a>
       </div>
       <div class="mm-meta mono" aria-hidden="true">
         <span>37.98°N 23.72°E</span>
@@ -130,9 +135,11 @@ const mobileLinks = sections.filter((s) => s.id !== 'top');
   menu.querySelectorAll<HTMLAnchorElement>('[data-close]').forEach((a) =>
     a.addEventListener('click', (e) => {
       const href = a.getAttribute('href') || '';
-      const m = href.match(/^\/#([\w-]+)$/);
-      const target = m && location.pathname === '/' ? document.getElementById(m[1]) : null;
+      const m = href.match(/^\/?#([\w-]+)$/);
+      const target = m && (location.pathname === '/' || href.startsWith('#')) ? document.getElementById(m[1]) : null;
       setOpen(false);
+      // ασφάλεια: αν για οποιονδήποτε λόγο δεν έκλεισε (π.χ. κάποιοι browsers κινητού), το κλείνουμε με το ζόρι
+      setTimeout(() => { if (open) setOpen(false); html.classList.remove('menu-open'); }, 150);
       if (!target) return; // άλλη σελίδα: κανονική πλοήγηση
       e.preventDefault();
       history.replaceState(null, '', href);
@@ -141,6 +148,9 @@ const mobileLinks = sections.filter((s) => s.id !== 'top');
       );
     }),
   );
+  // όταν αλλάζει η διεύθυνση (hash) ή ξαναεμφανίζεται η σελίδα από το «πίσω», το μενού κλείνει πάντα
+  addEventListener('hashchange', () => { if (open) setOpen(false); });
+  addEventListener('pageshow', () => { if (open) setOpen(false); });
   addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && open) setOpen(false);
     // κρατά το Tab μέσα στο μενού όσο είναι ανοιχτό

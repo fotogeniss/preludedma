@@ -1273,7 +1273,9 @@ section[id],header[id]{scroll-margin-top:96px}
 .mock[data-style=modern][data-hero=cover] .mk-pic .art-b,.mock[data-style=modern][data-hero=search] .mk-pic .art-b{background:linear-gradient(100deg,rgba(8,10,18,.82) 20%,rgba(8,10,18,.12) 80%)!important}
 .mock[data-style=bold][data-hero=cover] .mk-pic .art-ph,.mock[data-style=bold][data-hero=search] .mk-pic .art-ph{filter:grayscale(1) contrast(1.2)!important}
 .mock[data-style=bold][data-hero=cover] .mk-pic .art-b,.mock[data-style=bold][data-hero=search] .mk-pic .art-b{background:linear-gradient(90deg,color-mix(in srgb,var(--k) 90%,#000) 30%,color-mix(in srgb,var(--k) 20%,transparent) 90%)!important}
-.mock[data-style=neon][data-hero=cover] .mk-pic .art-b,.mock[data-style=neon][data-hero=search] .mk-pic .art-b{background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 25%,transparent),color-mix(in srgb,var(--bg) 92%,transparent) 92%),radial-gradient(60% 60% at 20% 100%,color-mix(in srgb,var(--k) 45%,transparent),transparent)!important}
+.mock[data-style=neon][data-hero=cover] .mk-pic .art-b,.mock[data-style=neon][data-hero=search] .mk-pic .art-b{background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 5%,transparent) 0%,color-mix(in srgb,var(--bg) 35%,transparent) 45%,color-mix(in srgb,var(--bg) 88%,transparent) 100%),radial-gradient(70% 70% at 15% 100%,color-mix(in srgb,var(--k) 40%,transparent),transparent 70%)!important}
+.mock[data-style=neon][data-hero=cover] .mk-pic .art-ph,.mock[data-style=neon][data-hero=search] .mk-pic .art-ph{filter:saturate(1.15) contrast(1.05)!important}
+.mock[data-style=neon][data-hero=cover] .mk-pic .art-a,.mock[data-style=neon][data-hero=search] .mk-pic .art-a{box-shadow:none!important;background:linear-gradient(135deg,color-mix(in srgb,var(--k) 50%,#000),#000)!important}
 .mock[data-hero=cover] .mk-chip,.mock[data-hero=search] .mk-chip,.mock[data-hero=cover] .art-glyph,.mock[data-hero=search] .art-glyph{display:none!important}
 .mock[data-hero=cover] .mk-copy,.mock[data-hero=search] .mk-copy{position:relative;z-index:2;max-width:540px}
 .mock[data-hero=cover]:not([data-style=neon]) .mk-hero .mk-h,.mock[data-hero=search]:not([data-style=neon]) .mk-hero .mk-h{color:#fff;-webkit-text-fill-color:#fff;background:none}
@@ -1522,3 +1524,48 @@ section[id],header[id]{scroll-margin-top:96px}
 }
 .mock[data-style=minimal] .mk-chip.c1{left:3%;top:8%}
 .mock[data-style=minimal] .mk-chip.c2{right:3%;bottom:8%}
+
+/* =========================================================
+   Σελίδες υπηρεσιών, simulator, επικοινωνία
+   ========================================================= */
+.sp-hero{padding:170px 0 40px}
+.sp-hero-sm{padding-bottom:10px}
+.crumbs{display:flex;gap:10px;align-items:center;margin-bottom:28px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.crumbs a{color:var(--lite)}
+.crumbs a:hover{color:var(--text)}
+.sp-title{font-family:var(--disp);font-weight:800;text-transform:uppercase;line-height:.98;letter-spacing:-.01em;font-size:clamp(2.3rem,6vw,5.2rem);max-width:15ch;overflow-wrap:break-word}
+.sp-meta{display:flex;flex-wrap:wrap;gap:12px 34px;margin-top:44px;padding-top:22px;border-top:1px solid var(--edge);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.sp-meta b{color:var(--text);font-weight:500;margin-left:6px}
+.sp-meta a:hover b{color:var(--lite)}
+.sp-feats{grid-template-columns:repeat(4,1fr)}
+.sp-feats .mod .top{margin-bottom:40px}
+.sp-num{font-size:1.6rem!important;color:var(--lite)!important;font-weight:700}
+.sp-inc{display:grid;grid-template-columns:.9fr 1.1fr;gap:50px;align-items:start;padding:44px;background:var(--glass);backdrop-filter:blur(14px);border:1px solid var(--edge);clip-path:polygon(24px 0,100% 0,100% calc(100% - 24px),calc(100% - 24px) 100%,0 100%,0 24px)}
+.sp-inc .h2{margin:16px 0 18px}
+.sp-inc p{color:var(--dim);font-weight:300}
+.sp-inc ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}
+.sp-inc li{position:relative;padding:12px 0 12px 30px;border-bottom:1px solid var(--edge);font-size:.98rem}
+.sp-inc li::before{content:"";position:absolute;left:0;top:17px;width:14px;height:8px;border-left:2px solid var(--lite);border-bottom:2px solid var(--lite);transform:rotate(-45deg)}
+.sp-more{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+.sp-link{position:relative;display:flex;flex-direction:column;gap:12px;padding:26px 54px 26px 26px;border:1px solid var(--edge);background:var(--glass);backdrop-filter:blur(12px);clip-path:var(--cut);transition:border-color .3s,background .3s}
+.sp-link b{font-family:var(--disp);font-weight:600;text-transform:uppercase;font-size:1.02rem;line-height:1.2}
+.sp-link .k{position:absolute;right:22px;top:24px;color:var(--lite);font-size:1.2rem}
+.sp-link:hover{border-color:var(--lite);background:color-mix(in srgb,var(--brand) 12%,transparent)}
+.mod-more{display:inline-flex;gap:8px;margin-top:18px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--lite)!important}
+.mod-more:hover{color:var(--text)!important}
+.links a.here{color:var(--text)}
+.links a.here::after{content:"";position:absolute;left:14px;right:14px;bottom:4px;height:2px;background:var(--lite);box-shadow:0 0 10px var(--glow)}
+.mm-list a[aria-current=page] .mm-lbl{color:var(--lite)}
+.foot-pages{opacity:.85}
+@media (max-width:1000px){
+  .sp-hero{padding:130px 0 30px}
+  .sp-feats{grid-template-columns:1fr 1fr}
+  .sp-inc{grid-template-columns:1fr;gap:26px;padding:30px 22px}
+  .sp-more{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .sp-feats{grid-template-columns:1fr}
+  .sp-inc ul{grid-template-columns:1fr}
+  .sp-meta{gap:10px 20px;font-size:.66rem}
+}
+.links a{position:relative}

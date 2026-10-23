@@ -37,3 +37,21 @@ export const sections = [
   { id: 'faq', label: 'Ερωτήσεις' },
   { id: 'contact', label: 'Επικοινωνία' },
 ];
+
+// Μενού: πραγματικές σελίδες (βοηθούν τη Google να δείχνει sitelinks).
+// sec: η ενότητα της αρχικής που αντιστοιχεί, για τον δείκτη του μενού όταν κάνεις scroll στην αρχική.
+export const navLinks = [
+  { href: '/istoselides/', label: 'Ιστοσελίδες', sec: 'services' },
+  { href: '/e-shop/', label: 'E-shops', sec: '' },
+  { href: '/efarmoges/', label: 'Εφαρμογές', sec: '' },
+  { href: '/simulator/', label: 'Simulator', sec: 'lab' },
+  { href: '/#faq', label: 'Ερωτήσεις', sec: 'faq' },
+];
+export const mobileNavLinks = [
+  ...navLinks.slice(0, 4),
+  { href: '/#process', label: 'Pipeline', sec: 'process' },
+  navLinks[4],
+  { href: '/epikoinonia/', label: 'Επικοινωνία', sec: 'contact' },
+];
+// σελίδες που έχουν φόρμα επικοινωνίας στο κάτω μέρος
+export const pagesWithContact = ['/', '/istoselides/', '/e-shop/', '/efarmoges/', '/simulator/', '/epikoinonia/'];
