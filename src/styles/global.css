@@ -1539,3 +1539,179 @@ section[id],header[id]{scroll-margin-top:96px}
   .mock-adm{height:clamp(440px,calc(100svh - 215px),680px)}
   .mock-app{height:clamp(440px,calc(100svh - 210px),620px)}
 }
+
+/* =========================================================
+   Simulator v9: εργαλεία preview, λογότυπο, βοηθός, γλώσσα,
+   εκτίμηση, «Στείλε μου το σχέδιο», πλήρης οθόνη
+   ========================================================= */
+/* εργαλεία πάνω δεξιά */
+.vw-tools{position:absolute;z-index:8;top:12px;right:14px;display:flex;gap:2px;padding:3px;border:1px solid var(--edge-2);background:rgba(9,11,20,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.vw-tools button{display:grid;place-items:center;width:32px;height:28px;border:0;background:transparent;color:var(--dim);font:inherit;font-size:1rem;cursor:pointer;transition:background .2s,color .2s}
+.vw-tools button:hover:not(:disabled){color:#fff;background:color-mix(in srgb,var(--brand) 40%,transparent)}
+.vw-tools button:disabled{opacity:.3;cursor:default}
+.vw-tools .fs-off,.sim.fs .vw-tools .fs-on{display:none}
+.sim.fs .vw-tools .fs-off{display:inline}
+.sim.auto .vw-tools{opacity:.35}
+@media (max-width:1000px){
+  .vw-tools{top:8px;right:8px}
+  .vw-tools button{width:30px;height:26px}
+  #res{display:none}
+}
+
+/* «Στείλε μου το σχέδιο» δίπλα στο «Θέλω κάτι τέτοιο» */
+.sim-cta #simsend{padding:14px 18px}
+@media (max-width:640px){.sim-cta #simsend{width:100%;justify-content:center}}
+
+/* λογότυπο του επισκέπτη */
+.mock .mk-mark.has-img{width:auto;max-width:120px;height:32px}
+.mock .mk-mark.has-img img{display:block;height:100%;width:auto;max-width:120px;object-fit:contain}
+.mock .ad-side .mk-mark.has-img{max-width:110px}
+
+/* μεταφόρτωση */
+.brand-ups{display:flex;flex-wrap:wrap;gap:6px}
+.up-btn{position:relative;display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border:1px dashed var(--edge-2);font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);cursor:pointer;transition:border-color .2s,color .2s}
+.up-btn:hover{color:#fff;border-color:var(--lite)}
+.up-btn.done{border-style:solid;border-color:var(--lite);color:#fff;background:color-mix(in srgb,var(--brand) 20%,transparent)}
+.up-btn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;padding:0;border:0;clip-path:none!important}
+.up-clear{border:0;background:none;color:var(--dim);font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.up-clear[hidden]{display:none}
+.up-note{display:block;margin-top:8px;font-size:.72rem;color:var(--dim);line-height:1.45}
+
+/* εκτίμηση */
+.spec-box{border:1px solid var(--edge-2);background:rgba(255,255,255,.02);padding:14px 16px}
+.spec-wk{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--edge);margin-bottom:10px}
+.spec-wk small{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.spec-wk b{font-family:var(--disp);font-size:1.15rem;color:#fff;white-space:nowrap}
+.spec-box ul{list-style:none;display:grid;gap:5px}
+.spec-box li{position:relative;padding-left:18px;font-size:.82rem;color:var(--text)}
+.spec-box li::before{content:"";position:absolute;left:2px;top:.42em;width:8px;height:5px;border-left:1.5px solid var(--lite);border-bottom:1.5px solid var(--lite);transform:rotate(-45deg)}
+.spec-note{display:block;margin-top:10px;font-size:.68rem;color:var(--dim)}
+@media (max-width:1000px){
+  .sim .cg[data-g=spec] .spec-box{max-height:30vh;overflow:auto;padding:10px 12px}
+  .sim .cg[data-g=brand] .up-note{font-size:.62rem;margin-top:6px}
+}
+
+/* διακόπτης γλώσσας μέσα στο site */
+.mk-lang{flex:none;display:inline-flex;align-items:center;gap:3px;border:1px solid var(--line);background:transparent;color:var(--mute);font:inherit;font-size:.62rem;font-weight:700;letter-spacing:.06em;padding:5px 8px;border-radius:99px;cursor:pointer}
+.mk-lang span{opacity:.4}
+.mock[data-lang=el] .mk-lang .l-el,.mock[data-lang=en] .mk-lang .l-en{color:var(--k)}
+.mk-nav .mk-lang{margin-left:auto}
+.mk-nav .mk-lang + .mk-cart{margin-left:6px}
+.mock[data-style=bold] .mk-lang{border:2px solid var(--fg);border-radius:0;color:var(--fg)}
+
+/* AI βοηθός */
+.mk-bot{position:absolute;z-index:6;right:14px;bottom:14px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none}
+.mock.no-bot .mk-bot{display:none}
+.mk-bot>*{pointer-events:auto}
+.bot-btn{position:relative;display:grid;place-items:center;width:46px;height:46px;border:0;border-radius:50%;background:var(--k);color:#fff;cursor:pointer;box-shadow:0 10px 26px -8px color-mix(in srgb,var(--k) 80%,#000);transition:transform .2s}
+.bot-btn:hover{transform:scale(1.07)}
+.bot-btn svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bot-btn i{position:absolute;top:2px;right:2px;width:11px;height:11px;border-radius:50%;background:#FF4D6D;border:2px solid var(--bg);animation:blink 1.4s infinite}
+.mk-bot.seen .bot-btn i{display:none}
+.bot-panel{width:min(300px,calc(100cqw - 28px));max-height:min(380px,70%);display:flex;flex-direction:column;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:calc(var(--r) * 1.4 + 4px);box-shadow:0 24px 50px -18px rgba(0,0,0,.55);overflow:hidden;animation:pageIn .3s both}
+.bot-panel[hidden]{display:none}
+.mock-site{container-type:inline-size}
+.bot-head{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--k);color:#fff}
+.bot-head .mk-mark{width:28px;height:28px}
+.bot-head .lg-sh>*{fill:#fff}
+.bot-head .lg-t{fill:var(--k)}
+.bot-head div{flex:1;min-width:0;display:grid}
+.bot-head b{font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bot-head small{display:flex;align-items:center;gap:5px;font-size:.62rem;opacity:.85}
+.bot-head small i{width:6px;height:6px;border-radius:50%;background:#3DF5A6}
+.bot-head .sh-x{background:rgba(255,255,255,.2);color:#fff}
+.bot-log{flex:1;min-height:90px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:.76rem;line-height:1.45}
+.bm{max-width:88%;padding:8px 11px;border-radius:14px 14px 14px 4px;background:var(--soft);align-self:flex-start}
+.bm.me{align-self:flex-end;background:var(--k);color:#fff;border-radius:14px 14px 4px 14px}
+.bm .bot-cta{display:block;margin-top:8px;font-size:.7rem;padding:7px 12px}
+.bm.typing{display:flex;gap:4px;padding:11px 12px}
+.bm.typing i{width:6px;height:6px;border-radius:50%;background:var(--mute);animation:blink 1s infinite}
+.bm.typing i:nth-child(2){animation-delay:.15s}.bm.typing i:nth-child(3){animation-delay:.3s}
+.bot-quick{display:flex;gap:6px;overflow-x:auto;padding:0 12px 8px;scrollbar-width:none}
+.bot-quick button{flex:none;border:1px solid var(--line);background:transparent;color:var(--fg);font:inherit;font-size:.68rem;padding:6px 10px;border-radius:99px;cursor:pointer}
+.bot-quick button:hover{border-color:var(--k);color:var(--k)}
+.bot-form{display:flex;gap:6px;padding:8px 10px 10px;border-top:1px solid var(--line)}
+.bot-form input{flex:1;min-width:0;font:inherit;font-size:.74rem;padding:8px 10px;border:1px solid var(--line);border-radius:99px;background:var(--bg);color:var(--fg);outline:none}
+.bot-form input:focus{border-color:var(--k)}
+.bot-form button{flex:none;width:32px;height:32px;border:0;border-radius:50%;background:var(--k);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.mock[data-style=bold] :is(.bot-btn,.bot-panel,.bm,.bot-quick button,.bot-form input,.bot-form button){border-radius:0}
+.mock[data-style=bold] .bot-panel{border:3px solid var(--fg);box-shadow:6px 6px 0 var(--k)}
+.mock[data-style=neon] .bot-btn{background:linear-gradient(135deg,var(--k),#00E5FF);box-shadow:0 0 24px color-mix(in srgb,var(--k) 70%,transparent)}
+.mock[data-style=neon] .bot-panel{background:color-mix(in srgb,var(--bg) 92%,var(--k));border-color:color-mix(in srgb,var(--k) 45%,transparent)}
+.mock[data-style=luxury] .bot-head,.mock[data-style=luxury] .bm.me,.mock[data-style=luxury] .bot-btn,.mock[data-style=luxury] .bot-form button{background:var(--gold);color:#0D0C0A}
+.mock[data-style=playful] .bot-btn{border:2px solid var(--fg);box-shadow:3px 3px 0 var(--fg)}
+.mock[data-style=playful] .bot-panel{border:2px solid var(--fg);box-shadow:5px 5px 0 var(--fg)}
+.mock-site[data-dev=phone] .bot-panel{width:calc(100cqw - 24px)}
+
+/* «Στείλε μου το σχέδιο» */
+.sd-modal{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:20px;background:rgba(3,4,10,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:pageIn .25s both}
+.sd-modal[hidden]{display:none}
+.sd-box{position:relative;width:min(760px,100%);max-height:calc(100dvh - 40px);overflow:auto;padding:34px;background:linear-gradient(180deg,rgba(18,20,34,.96),rgba(8,9,16,.98));border:1px solid var(--edge-2);box-shadow:0 0 60px -20px var(--glow),0 40px 80px -30px #000;clip-path:polygon(24px 0,100% 0,100% calc(100% - 24px),calc(100% - 24px) 100%,0 100%,0 24px)}
+.sd-x{position:absolute;top:14px;right:16px;width:34px;height:34px;border:1px solid var(--edge-2);background:transparent;color:var(--text);font-size:1.2rem;cursor:pointer}
+.sd-x:hover{border-color:var(--lite)}
+.sd-title{font-family:var(--disp);font-weight:700;text-transform:uppercase;font-size:clamp(1.5rem,3.4vw,2.1rem);margin:14px 0 10px}
+.sd-lead{color:var(--dim);font-weight:300;max-width:56ch;margin-bottom:22px}
+.sd-grid{display:grid;grid-template-columns:1fr 210px;gap:28px;align-items:start}
+.sd-form{display:grid;gap:8px}
+.sd-form label{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.sd-form input{width:100%;font:inherit;font-size:1rem;color:var(--text);background:rgba(255,255,255,.03);border:1px solid var(--edge-2);padding:12px 14px;outline:none;clip-path:var(--cut)}
+.sd-form input:focus{border-color:var(--lite);box-shadow:0 0 20px var(--glow)}
+.sd-form .btn{margin-top:8px;justify-content:center}
+.sd-form .hp{position:absolute;left:-9999px}
+.sd-spec .spec-box{margin:6px 0 2px;font-size:.9em}
+.sd-form .status{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;min-height:1em}
+.sd-form .status.ok{color:#3DF5A6}.sd-form .status.err{color:#FF6B8B}
+.sd-legal{font-size:.7rem;color:var(--dim)}
+.sd-legal a{color:var(--lite)}
+.sd-qr{display:grid;gap:10px;justify-items:center;text-align:center}
+.sd-qr .qr{width:180px;height:180px;padding:10px;background:#fff;display:grid;place-items:center}
+.sd-qr .qr svg{width:100%;height:100%;display:block}
+.sd-qr .qr small{color:#333}
+.sd-qr>small{font-size:.72rem;color:var(--dim);line-height:1.4}
+.sd-qr .btn{padding:11px 14px;font-size:.7rem}
+html.sim-fs{overflow:hidden}
+@media (max-width:700px){
+  .sd-box{padding:26px 20px}
+  .sd-grid{grid-template-columns:1fr}
+  .sd-qr{order:-1}
+  .sd-qr .qr{width:150px;height:150px}
+}
+
+/* πλήρης οθόνη */
+.sim.fs{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;clip-path:none!important}
+.sim.fs .view{position:fixed!important;inset:0!important;z-index:90;height:100dvh!important;max-height:none!important;min-height:0!important;top:0!important;
+  background:radial-gradient(80% 60% at 50% 0,color-mix(in srgb,var(--brand) 18%,transparent),transparent 70%),#05060C;padding:56px 24px 18px!important;gap:12px!important;overflow:hidden}
+.sim.fs .mock-site,.sim.fs .mock-adm{max-width:min(1240px,100%);height:calc(100dvh - 140px)!important;transform:none!important}
+.sim.fs .mock-site[data-dev=tablet]{max-width:820px}
+.sim.fs .mock-site[data-dev=phone]{max-width:400px}
+.sim.fs .mock-app{height:calc(100dvh - 130px)!important;width:min(360px,92vw)}
+.sim.fs .swipe-hint,.sim.fs .build-hint{display:none}
+.sim.fs .ctrl{visibility:hidden}
+/* το preview δεν «βγάζει» στοιχεία πάνω από τη μπάρα επιλογών του κινητού */
+.mock{isolation:isolate}
+/* στενό site: το κουμπί γλώσσας δείχνει μόνο την άλλη γλώσσα */
+@container site (max-width:560px){
+  .mk-lang{padding:4px 7px;font-size:.6rem}
+  .mk-lang span,.mock[data-lang=el] .mk-lang .l-el,.mock[data-lang=en] .mk-lang .l-en{display:none}
+  .mock[data-lang=el] .mk-lang .l-en,.mock[data-lang=en] .mk-lang .l-el{color:var(--fg)}
+  .mk-nav .mk-lang{margin-left:4px}
+  .bot-panel{max-height:min(340px,78%)}
+}
+@container site (max-width:400px){
+  .mock .mk-links button{font-size:.62rem;padding:5px 5px;letter-spacing:0}
+  .mock .mk-nav{gap:6px;padding-inline:10px}
+  .mock[data-style=bold] .mk-links button{font-size:.54rem;padding:3px 4px}
+  .mock[data-style=elegant] .mk-links button{font-size:.5rem;padding:5px 3px;letter-spacing:.02em}
+}
+@container site (max-width:400px){
+  .mock[data-style=bold] .mk-links button{font-size:.5rem;padding:3px 3px}
+  .mock[data-style=minimal] .mk-links button,.mock[data-style=luxury] .mk-links button{font-size:.5rem;letter-spacing:.03em;padding:4px 3px}
+  .mock[data-style=minimal] .mk-nav,.mock[data-style=luxury] .mk-nav{padding:14px 10px}
+  .mock[data-style=playful] .mk-nav{margin:8px 6px 0;padding:6px 8px}
+  .mock[data-style=playful] .mk-links button{font-size:.58rem;padding:4px 5px}
+  .mock .mk-lang{padding:4px 6px}
+}
+@container site (max-width:400px){
+  .mock[data-style=nature] .mk-nav{padding:14px 10px}
+  .mock[data-style=nature] .mk-links button{font-size:.6rem;padding:4px 5px}
+}

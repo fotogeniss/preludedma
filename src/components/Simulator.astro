@@ -23,10 +23,12 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <button type="button" role="tab" data-g="kind" aria-selected="true">Κλάδος</button>
           <button type="button" role="tab" data-g="mode" aria-selected="false">Τύπος</button>
           <button type="button" role="tab" data-g="style" aria-selected="false">Ύφος</button>
+          <button type="button" role="tab" data-g="brand" aria-selected="false">Λογότυπο</button>
           <button type="button" role="tab" data-g="font" aria-selected="false">Font & γωνίες</button>
           <button type="button" role="tab" data-g="blocks" aria-selected="false">Ενότητες</button>
           <button type="button" role="tab" data-g="color" aria-selected="false">Χρώμα</button>
           <button type="button" role="tab" data-g="name" aria-selected="false">Όνομα</button>
+          <button type="button" role="tab" data-g="spec" aria-selected="false">Εκτίμηση</button>
           <button type="button" role="tab" data-g="extra" aria-selected="false">Extra</button>
         </div>
         <div class="cg" data-g="name">
@@ -63,6 +65,16 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           </div>
         </div>
 
+        <div class="cg" data-g="brand">
+          <span class="lbl" id="lbl-brand">Input // το λογότυπο & η φωτογραφία σου</span>
+          <div class="brand-ups" role="group" aria-labelledby="lbl-brand">
+            <label class="up-btn" id="upLogoL"><input type="file" id="upLogo" accept="image/*" /><span id="upLogoT">＋ Λογότυπο</span></label>
+            <label class="up-btn" id="upPhotoL"><input type="file" id="upPhoto" accept="image/*" /><span id="upPhotoT">＋ Φωτογραφία</span></label>
+            <button type="button" class="up-clear" id="upClear" hidden>Αφαίρεση</button>
+          </div>
+          <small class="up-note">Μένουν μόνο στον browser σου, δεν ανεβαίνουν πουθενά. Το χρώμα του site παίρνεται από το λογότυπο.</small>
+        </div>
+
         <div class="cg" data-g="font">
           <span class="lbl sub" id="lbl-font">Input // γραμματοσειρά</span>
           <div class="opts chips" id="fonts" role="group" aria-labelledby="lbl-font">
@@ -84,6 +96,11 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
         <div class="cg" data-g="blocks">
           <span class="lbl" id="lbl-blocks">Input // ενότητες της σελίδας</span>
           <div class="blk-ctl" id="blkCtl" role="group" aria-labelledby="lbl-blocks"></div>
+        </div>
+
+        <div class="cg" data-g="spec">
+          <span class="lbl">Output // εκτίμηση</span>
+          <div class="spec-box" id="specBox" aria-live="polite"></div>
         </div>
 
         <div class="cg" data-g="color">
@@ -111,6 +128,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <button type="button" class="btn btn-g sim-random" id="simflip" aria-pressed="false">Dark / Light <span class="k" aria-hidden="true">◐</span></button>
           <button type="button" class="btn btn-g sim-random" id="simauto">Auto demo <span class="k" aria-hidden="true">▶</span></button>
           <button type="button" class="btn btn-g sim-random" id="simshare">Link σχεδίου <span class="k" aria-hidden="true">⧉</span></button>
+          <button type="button" class="btn btn-g sim-random" id="simbot" aria-pressed="true">AI chatbot <span class="k" aria-hidden="true">✦</span></button>
         </div>
 
         <div class="sim-console">
@@ -121,7 +139,12 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
       <div class="view">
         <span class="corner mono" style="top:18px;left:22px">Preview // live</span>
-        <span class="corner mono" style="top:18px;right:22px" id="res">1440 × 900</span>
+        <span class="corner mono" style="bottom:16px;right:22px" id="res">1440 × 900</span>
+        <div class="vw-tools" role="group" aria-label="Εργαλεία preview">
+          <button type="button" id="simUndo" title="Αναίρεση (Ctrl+Z)" aria-label="Αναίρεση" disabled>↶</button>
+          <button type="button" id="simRedo" title="Επανάληψη (Ctrl+Y)" aria-label="Επανάληψη" disabled>↷</button>
+          <button type="button" id="simFs" title="Πλήρης οθόνη" aria-label="Πλήρης οθόνη" aria-pressed="false"><span class="fs-on">⤢</span><span class="fs-off">✕</span></button>
+        </div>
         <div class="dev-sw" id="devSw" role="group" aria-label="Συσκευή">
           <button type="button" data-dev="desktop" aria-pressed="true" title="Desktop" aria-label="Desktop"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg></button>
           <button type="button" data-dev="tablet" aria-pressed="false" title="Tablet" aria-label="Tablet"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M11 18h2"/></svg></button>
@@ -137,6 +160,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <div class="mk-nav">
             <span class="mk-brand"><span class="mk-mark" id="sMark"></span><b id="sName"></b></span>
             <nav class="mk-links" id="sNav"></nav>
+            <button type="button" class="mk-lang" data-lang-toggle title="Ελληνικά / English" aria-label="Αλλαγή γλώσσας"><b class="l-el">EL</b><span>/</span><b class="l-en">EN</b></button>
             <button type="button" class="mk-cart" id="sCartBtn" data-cart-open aria-label="Καλάθι" hidden>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2 11h11l2-8H6"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>
               <b id="sCartN">0</b>
@@ -171,28 +195,47 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
               <div class="mk-items" id="sItems"></div>
             </div>
             <div class="mk-page" data-page="2" hidden>
-              <div class="mk-h mk-h2">Επικοινωνία</div>
+              <div class="mk-h mk-h2" data-i18n="contact">Επικοινωνία</div>
               <div class="mk-contact">
                 <div class="mk-map"><span></span></div>
                 <div>
-                  <p><b>Ωράριο</b><br /><span id="sHours"></span></p>
-                  <p><b>Διεύθυνση</b><br />Οδός Παραδείγματος 12</p>
+                  <p><b data-i18n="hours">Ωράριο</b><br /><span id="sHours"></span></p>
+                  <p><b data-i18n="address">Διεύθυνση</b><br /><span data-i18n="street">Οδός Παραδείγματος 12</span></p>
                 </div>
               </div>
               <form class="mk-form" id="sForm" novalidate>
-                <input type="text" placeholder="Όνομα" aria-label="Όνομα (demo)" autocomplete="off" />
-                <input type="text" placeholder="Τηλέφωνο" aria-label="Τηλέφωνο (demo)" autocomplete="off" />
-                <button type="submit" class="mk-btn">Αποστολή</button>
-                <p class="mk-ok" id="sFormOk" hidden>Στάλθηκε! (Είναι demo, δεν έφυγε τίποτα.)</p>
+                <input type="text" placeholder="Όνομα" data-i18n-ph="name" aria-label="Όνομα (demo)" autocomplete="off" />
+                <input type="text" placeholder="Τηλέφωνο" data-i18n-ph="phone" aria-label="Τηλέφωνο (demo)" autocomplete="off" />
+                <button type="submit" class="mk-btn" data-i18n="send">Αποστολή</button>
+                <p class="mk-ok" id="sFormOk" hidden data-i18n="formOk">Στάλθηκε! (Είναι demo, δεν έφυγε τίποτα.)</p>
               </form>
             </div>
             <footer class="mk-foot2">
               <div class="mf-brand"><span class="mk-brand"><span class="mk-mark" id="fMark"></span><b id="fName"></b></span><p id="fTag" data-ed="ft" contenteditable="true" spellcheck="false"></p></div>
-              <div class="mf-col"><small>Σελίδες</small><span id="fLinks"></span></div>
-              <div class="mf-col"><small>Επικοινωνία</small><span>210 000 0000</span><span id="fMail"></span><span id="fHours"></span></div>
-              <div class="mf-col mf-news"><small>Newsletter</small><div><input type="text" placeholder="Το email σου" aria-label="Email (demo)" autocomplete="off" /><button type="button" class="mk-btn" data-news>OK</button></div></div>
+              <div class="mf-col"><small data-i18n="pages">Σελίδες</small><span id="fLinks"></span></div>
+              <div class="mf-col"><small data-i18n="contact">Επικοινωνία</small><span>210 000 0000</span><span id="fMail"></span><span id="fHours"></span></div>
+              <div class="mf-col mf-news"><small>Newsletter</small><div><input type="text" placeholder="Το email σου" data-i18n-ph="yourEmail" aria-label="Email (demo)" autocomplete="off" /><button type="button" class="mk-btn" data-news>OK</button></div></div>
             </footer>
             <div class="mk-foot"><span id="sFoot"></span><span>Made by Prelude</span></div>
+          </div>
+          <!-- AI βοηθός (demo) -->
+          <div class="mk-bot" id="sBot">
+            <div class="bot-panel" id="botPanel" hidden>
+              <div class="bot-head">
+                <span class="mk-mark" id="botMark"></span>
+                <div><b id="botName"></b><small><i></i><span id="botSub">AI βοηθός · online</span></small></div>
+                <button type="button" class="sh-x" data-bot-close aria-label="Κλείσιμο">×</button>
+              </div>
+              <div class="bot-log" id="botLog" aria-live="polite"></div>
+              <div class="bot-quick" id="botQuick"></div>
+              <form class="bot-form" id="botForm">
+                <input id="botIn" autocomplete="off" maxlength="120" placeholder="Γράψε μια ερώτηση…" aria-label="Ερώτηση στον βοηθό (demo)" />
+                <button type="submit" aria-label="Αποστολή">↑</button>
+              </form>
+            </div>
+            <button type="button" class="bot-btn" data-bot-open aria-label="Άνοιγμα βοηθού">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01"/></svg><i></i>
+            </button>
           </div>
           <div class="mk-sheet" id="sSheet" inert><div class="sh"></div></div>
           <div class="mk-toast" id="sToast" role="status" aria-live="polite"></div>
@@ -215,7 +258,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
               <b id="pCardTitle"></b>
               <button type="button" class="mk-btn" id="pAction"></button>
             </div>
-            <div class="ap-sub">Δημοφιλή</div>
+            <div class="ap-sub" data-i18n="popular">Δημοφιλή</div>
             <ul class="ap-list" id="pTop"></ul>
           </div>
           <div class="ap-screen" data-tab="1" hidden>
@@ -225,7 +268,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
           <div class="ap-screen" data-tab="2" hidden>
             <div class="ap-sub">Πληροφορίες</div>
             <div class="ap-info"><b>Ωράριο</b><span id="pHours"></span></div>
-            <div class="ap-info"><b>Διεύθυνση</b><span>Οδός Παραδείγματος 12</span></div>
+            <div class="ap-info"><b data-i18n="address">Διεύθυνση</b><span data-i18n="street">Οδός Παραδείγματος 12</span></div>
           </div>
           <div class="ap-tabs" id="pTabs">
             <button type="button" data-tab-go="0" aria-pressed="true"><i class="t-home"></i>Αρχική</button>
@@ -271,7 +314,35 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
         <div class="sim-cta">
           <button type="button" class="btn btn-p" id="simwant">Θέλω κάτι τέτοιο <span class="k" aria-hidden="true">↗</span></button>
+          <button type="button" class="btn btn-g" id="simsend">Στείλε μου το σχέδιο <span class="k" aria-hidden="true">✉</span></button>
           <span class="mono">Συμπληρώνει τη φόρμα με τις επιλογές σου</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sd-modal" id="sdModal" hidden>
+    <div class="sd-box" role="dialog" aria-modal="true" aria-labelledby="sdTitle">
+      <button type="button" class="sd-x" data-sd-close aria-label="Κλείσιμο">×</button>
+      <span class="mono"><b>[ SIM ]</b> Το σχέδιό σου</span>
+      <h3 class="sd-title" id="sdTitle">Στείλε μου το σχέδιο</h3>
+      <p class="sd-lead">Άφησε το email σου και θα σου στείλουμε το σχέδιό σου, μαζί με μια πρώτη πρόταση, μέσα σε 24 ώρες.</p>
+      <div class="sd-grid">
+        <form class="sd-form" id="sdForm" novalidate>
+          <label for="sdName">Όνομα</label>
+          <input id="sdName" autocomplete="name" maxlength="120" />
+          <label for="sdEmail">Email</label>
+          <input id="sdEmail" type="email" autocomplete="email" maxlength="160" required />
+          <div class="hp" aria-hidden="true"><input id="sdWeb" tabindex="-1" autocomplete="off" /></div>
+          <div class="sd-spec" id="sdSpec"></div>
+          <button type="submit" class="btn btn-p">Στείλε μου το σχέδιο <span class="k" aria-hidden="true">↗</span></button>
+          <span class="status" id="sdStatus" role="status"></span>
+          <small class="sd-legal">Χρησιμοποιούμε το email σου μόνο για να σου απαντήσουμε. <a href="/aporrito/">Πολιτική απορρήτου</a></small>
+        </form>
+        <div class="sd-qr">
+          <div class="qr" id="sdQr" aria-label="QR code με τον σύνδεσμο του σχεδίου"></div>
+          <small>Σκάναρε με το κινητό σου για να ανοίξεις το σχέδιο εκεί</small>
+          <button type="button" class="btn btn-g" id="sdCopy">Αντιγραφή link <span class="k" aria-hidden="true">⧉</span></button>
         </div>
       </div>
     </div>
@@ -280,11 +351,12 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
 <script>
   import { presets, swatches, styles, icons, layouts, extras, blockLabels, heroLabels, type Kind, type Block, type Hero } from '../data/simulator';
+  import { en, ui } from '../data/simulatorEn';
 
   type Mode = 'site' | 'app' | 'admin';
   type Dev = 'desktop' | 'tablet' | 'phone';
   let dev: Dev = 'desktop';
-  const state = { kind: 'bakery' as Kind, mode: 'site' as Mode, style: 'modern', color: 'auto', page: 0, tab: 0, flip: false, font: 'auto', corner: 'auto' };
+  const state = { kind: 'bakery' as Kind, mode: 'site' as Mode, style: 'modern', color: 'auto', page: 0, tab: 0, flip: false, font: 'auto', corner: 'auto', lang: 'el' as 'el' | 'en', bi: false, bot: true };
   // Λειτουργίες μέσα στο preview: καλάθι, κράτηση, φόρμες
   const cart = new Map<number, number>();
   const booking = { item: -1, day: 0, slot: -1 };
@@ -326,9 +398,28 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   const initials = (n: string) => n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'P';
   const color = () => (state.color === 'auto' ? presets[state.kind].color : state.color);
   const styleLabel = () => styles.find((s) => s.id === state.style)?.label ?? '';
+  // Γλώσσα του preview: τα ελληνικά ή τα αγγλικά κείμενα του κλάδου
+  const U = () => ui[state.lang];
+  const tk = () => (state.lang === 'en' ? state.kind + ':en' : state.kind);
+  const langBase = () => {
+    const b = presets[state.kind];
+    if (state.lang !== 'en') return b;
+    const e = en[state.kind];
+    return {
+      ...b, label: e.label, headline: e.headline, sub: e.sub, cta: e.cta, itemsTitle: e.itemsTitle,
+      items: e.items.map(([n, m]) => ({ n, m })), features: [...e.features], greeting: e.greeting, appAction: e.appAction,
+      hours: e.hours, bookTitle: e.bookTitle, bookOk: e.bookOk,
+    };
+  };
+  const exx = () => {
+    const x = extras[state.kind];
+    if (state.lang !== 'en') return x;
+    const e = en[state.kind];
+    return { steps: e.steps, alert: e.alert, search: e.search, prof: x.prof && e.prof ? { name: x.prof.name, role: e.prof.role, points: e.prof.points } : undefined };
+  };
   const preset = () => {
-    const base = presets[state.kind];
-    const t = texts[state.kind];
+    const base = langBase();
+    const t = texts[tk()];
     if (!t) return base;
     return {
       ...base,
@@ -337,8 +428,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     };
   };
   // Κείμενα που άλλαξε ο επισκέπτης (ανά κλάδο)
-  const texts: Partial<Record<Kind, Record<string, string>>> = {};
-  const T = (key: string, def: string) => texts[state.kind]?.[key] ?? def;
+  const texts: Partial<Record<string, Record<string, string>>> = {};
+  const T = (key: string, def: string) => texts[tk()]?.[key] ?? def;
   const edA = (key: string) => ` data-ed="${key}" contenteditable="true" spellcheck="false"`;
 
   // Κονσόλα
@@ -374,8 +465,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   const glyph = (k: Kind) => `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[k]}</svg>`;
   function actionBtn(it: { n: string }, i: number) {
     return preset().flow === 'cart'
-      ? `<button type="button" class="mk-add" data-add="${i}" aria-label="Προσθήκη στο καλάθι: ${esc(it.n)}">+</button>`
-      : `<button type="button" class="mk-add mk-add-t" data-book="${i}">Κλείσε</button>`;
+      ? `<button type="button" class="mk-add" data-add="${i}" aria-label="${U().add}: ${esc(it.n)}">+</button>`
+      : `<button type="button" class="mk-add mk-add-t" data-book="${i}">${U().book}</button>`;
   }
   function rowHTML(tag: 'div' | 'li', cls: string, it: { n: string; m: string }, i: number) {
     const th = photosOn ? ` ph" style="background-image:url(${ph(1 + (i % 3))})` : '';
@@ -388,7 +479,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     Array.from({ length: 5 }, (_, i) => {
       const d = new Date();
       d.setDate(d.getDate() + i + 1);
-      return d.toLocaleDateString('el-GR', { weekday: 'short', day: 'numeric' });
+      return d.toLocaleDateString(U().locale, { weekday: 'short', day: 'numeric' });
     });
   // «πιασμένες» ώρες, πάντα ίδιες για τον ίδιο κλάδο ώστε να φαίνεται ρεαλιστικό
   const taken = (d: number, s: number) => (d * 7 + s * 3 + state.kind.length) % 4 === 0;
@@ -398,12 +489,12 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     const p = preset();
     const head = (t: string) => `<div class="sh-head"><b>${esc(t)}</b><button type="button" class="sh-x" data-sheet-close aria-label="Κλείσιμο">×</button></div>`;
     if (sheet === 'done') {
-      return `${head('')}<div class="sh-done"><span class="sh-ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><b>${esc(doneText)}</b><small>Είναι demo, δεν στάλθηκε τίποτα.</small><button type="button" class="mk-btn" data-sheet-close>Εντάξει</button></div>`;
+      return `${head('')}<div class="sh-done"><span class="sh-ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><b>${esc(doneText)}</b><small>${U().demoNote}</small><button type="button" class="mk-btn" data-sheet-close>${U().ok}</button></div>`;
     }
     if (sheet === 'cart') {
       const rows = [...cart.entries()].map(([i, q]) =>
         `<div class="sh-row"><span>${esc(p.items[i].n)}</span><span class="sh-qty"><button type="button" data-qty="${i}" data-d="-1" aria-label="Λιγότερα">−</button><b>${q}</b><button type="button" data-qty="${i}" data-d="1" aria-label="Περισσότερα">+</button></span></div>`).join('');
-      return `${head('Καλάθι')}${rows || '<p class="sh-empty">Το καλάθι είναι άδειο. Πρόσθεσε κάτι με το «+».</p>'}<button type="button" class="mk-btn sh-go" data-checkout ${cart.size ? '' : 'disabled'}>Ολοκλήρωση παραγγελίας</button>`;
+      return `${head(U().cart)}${rows || `<p class="sh-empty">${U().emptyCart}</p>`}<button type="button" class="mk-btn sh-go" data-checkout ${cart.size ? '' : 'disabled'}>${U().checkout}</button>`;
     }
     if (sheet === 'book') {
       const days = dayLabels().map((l, i) => `<button type="button" class="chip" data-day="${i}" aria-pressed="${i === booking.day}">${esc(l)}</button>`).join('');
@@ -412,7 +503,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
         return `<button type="button" class="chip" data-slot="${i}" aria-pressed="${i === booking.slot}" ${off ? 'disabled title="Δεν υπάρχει διαθεσιμότητα"' : ''}>${t}</button>`;
       }).join('');
       const it = booking.item >= 0 ? `<p class="sh-item">${esc(p.items[booking.item].n)}</p>` : '';
-      return `${head(p.bookTitle)}${it}<div class="sh-lbl">Ημέρα</div><div class="sh-chips">${days}</div><div class="sh-lbl">Ώρα</div><div class="sh-chips">${sl}</div><button type="button" class="mk-btn sh-go" data-confirm ${booking.slot < 0 ? 'disabled' : ''}>Επιβεβαίωση</button>`;
+      return `${head(p.bookTitle)}${it}<div class="sh-lbl">${U().day}</div><div class="sh-chips">${days}</div><div class="sh-lbl">${U().time}</div><div class="sh-chips">${sl}</div><button type="button" class="mk-btn sh-go" data-confirm ${booking.slot < 0 ? 'disabled' : ''}>${U().confirm}</button>`;
     }
     return '';
   }
@@ -486,6 +577,43 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     booking.item = -1; booking.day = 0; booking.slot = -1;
     sheet = null;
     seedOrders();
+    botReset();
+  }
+
+  // ---------- Λογότυπο / φωτογραφία του επισκέπτη (μένουν μόνο στον browser) ----------
+  let userLogo: string | null = null;
+  let userPhoto: string | null = null;
+  // Παίρνει το κυρίαρχο «ζωντανό» χρώμα του λογότυπου
+  async function logoColor(url: string): Promise<string | null> {
+    try {
+      const img = new Image();
+      img.src = url;
+      await img.decode();
+      const c = document.createElement('canvas');
+      c.width = c.height = 48;
+      const x = c.getContext('2d', { willReadFrequently: true })!;
+      x.drawImage(img, 0, 0, 48, 48);
+      const d = x.getImageData(0, 0, 48, 48).data;
+      const buckets = new Map<number, { w: number; r: number; g: number; b: number }>();
+      for (let i = 0; i < d.length; i += 4) {
+        const [r, g, b, a] = [d[i], d[i + 1], d[i + 2], d[i + 3]];
+        if (a < 140) continue;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        const l = (max + min) / 510;
+        const sat = max === min ? 0 : (max - min) / (255 - Math.abs(max + min - 255));
+        if (l > 0.93 || l < 0.07 || sat < 0.22) continue;
+        const key = ((r >> 5) << 6) | ((g >> 5) << 3) | (b >> 5);
+        const e = buckets.get(key) ?? { w: 0, r: 0, g: 0, b: 0 };
+        const w = 0.5 + sat;
+        e.w += w; e.r += r * w; e.g += g * w; e.b += b * w;
+        buckets.set(key, e);
+      }
+      let best: { w: number; r: number; g: number; b: number } | null = null;
+      for (const e of buckets.values()) if (!best || e.w > best.w) best = e;
+      if (!best || best.w < 8) return null;
+      const hex = (v: number) => Math.round(v / best!.w).toString(16).padStart(2, '0');
+      return `#${hex(best.r)}${hex(best.g)}${hex(best.b)}`.toUpperCase();
+    } catch { return null; }
   }
 
   // ---------- Λογότυπο από το όνομα ----------
@@ -513,29 +641,32 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   const bgPh = (i: number) => (photosOn ? ` style="background-image:url(${ph(i)})"` : '');
 
   function searchHTML() {
-    const ex = extras[state.kind];
+    const ex = exx();
     const d = dayLabels();
     const val: Record<string, string> = {
       'Άφιξη': d[0], 'Αναχώρηση': d[2], 'Ημερομηνία': d[0], 'Ώρα': '21:00', 'Ημέρα': d[0], 'Περιοχή': 'Αθήνα',
       'Τύπος ακινήτου': 'Διαμέρισμα', 'τ.μ.': '60–120', 'Αριθμός κυκλοφορίας': 'ΙΚΧ 1234', 'Μάρκα / μοντέλο': 'Όλες', 'Ζώο': 'Σκύλος', 'Άτομα': '2 άτομα', 'Επισκέπτες': '2 ενήλικες',
+      'Check-in': d[0], 'Check-out': d[2], 'Date': d[0], 'Time': '21:00', 'Day': d[0], 'Guests': state.kind === 'hotel' ? '2 adults' : '2 people',
+      'Area': 'Athens', 'Property type': 'Apartment', 'm²': '60–120', 'Licence plate': 'IKX 1234', 'Make / model': 'All', 'Pet': 'Dog',
     };
     const fields = ex.search.map((f) =>
-      `<button type="button" class="ms-f${f.includes('κυκλοφορίας') ? ' plate' : ''}" ${ctaAttr()}><small>${esc(f)}</small><b>${esc(val[f] ?? 'Όλα')}</b></button>`).join('');
-    return `${fields}<button type="button" class="mk-btn ms-go" ${ctaAttr()}>${preset().flow === 'cart' ? 'Αναζήτηση' : 'Διαθεσιμότητα'}</button>`;
+      `<button type="button" class="ms-f${f.includes('κυκλοφορίας') || f.includes('plate') ? ' plate' : ''}" ${ctaAttr()}><small>${esc(f)}</small><b>${esc(val[f] ?? U().all)}</b></button>`).join('');
+    return `${fields}<button type="button" class="mk-btn ms-go" ${ctaAttr()}>${preset().flow === 'cart' ? U().search : U().avail}</button>`;
   }
 
   function blockHTML(b: Block): string {
     const p = preset();
-    const ex = extras[state.kind];
+    const ex = exx();
+    const u = U();
     const cart = p.flow === 'cart';
     const h3 = (key: string, def: string) => `<div class="mk-h mk-h2 mk-h3"${edA(key)}>${esc(T(key, def))}</div>`;
     switch (b) {
       case 'feats':
         return `<div class="mk-feats">${p.features.map((f, i) => `<div><i></i><span${edA('f' + i)}>${esc(f)}</span></div>`).join('')}</div>`;
       case 'pop':
-        return h3('popT', cart ? 'Δημοφιλή' : p.itemsTitle) + `<div class="mk-items">${p.items.slice(0, 4).map((it, i) => rowHTML('div', 'mk-item', it, i)).join('')}</div>`;
+        return h3('popT', cart ? u.popular : p.itemsTitle) + `<div class="mk-items">${p.items.slice(0, 4).map((it, i) => rowHTML('div', 'mk-item', it, i)).join('')}</div>`;
       case 'cards':
-        return h3('cardsT', cart ? 'Νέα στο κατάστημα' : p.itemsTitle) + `<div class="mk-cards">${p.items.slice(0, 3).map((it, i) =>
+        return h3('cardsT', cart ? u.newIn : p.itemsTitle) + `<div class="mk-cards">${p.items.slice(0, 3).map((it, i) =>
           `<article class="mk-card"><div class="mc-img"${bgPh(1 + i)}><span class="mc-badge">${esc(it.m)}</span></div><div class="mc-body"><b${edA('i' + i)}>${esc(it.n)}</b><small>${esc(p.label)}</small>${actionBtn(it, i)}</div></article>`).join('')}</div>`;
       case 'gal':
         return photosOn
@@ -544,27 +675,27 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       case 'menu':
         return `<div class="mk-menu">${h3('menuT', p.itemsTitle)}${p.items.map((it, i) => `<div class="mm-row"><b${edA('i' + i)}>${esc(it.n)}</b><i></i><small>${esc(it.m)}</small></div>`).join('')}<button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
       case 'tt': {
-        const days = ['Δευ', 'Τρί', 'Τετ', 'Πέμ', 'Παρ'];
-        return h3('ttT', 'Εβδομαδιαίο πρόγραμμα') + `<div class="mk-tt">${days.map((d, di) => `<div><h4>${d}</h4>${[0, 1].map((j) => {
+        const days = state.lang === 'en' ? ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] : ['Δευ', 'Τρί', 'Τετ', 'Πέμ', 'Παρ'];
+        return h3('ttT', u.schedule) + `<div class="mk-tt">${days.map((d, di) => `<div><h4>${d}</h4>${[0, 1].map((j) => {
           const i = (di + j * 2) % p.items.length;
           return `<button type="button" data-book="${i}"><small>${slots[(di + j * 3) % slots.length]}</small><b>${esc(p.items[i].n)}</b></button>`;
         }).join('')}</div>`).join('')}</div>`;
       }
       case 'steps':
-        return h3('stT', 'Πώς δουλεύουμε') + `<div class="mk-steps">${ex.steps.map(([t, d], i) => `<div><span>${i + 1}</span><b${edA('s' + i + 't')}>${esc(T('s' + i + 't', t))}</b><p${edA('s' + i + 'd')}>${esc(T('s' + i + 'd', d))}</p></div>`).join('')}</div>`;
+        return h3('stT', u.how) + `<div class="mk-steps">${ex.steps.map(([t, d], i) => `<div><span>${i + 1}</span><b${edA('s' + i + 't')}>${esc(T('s' + i + 't', t))}</b><p${edA('s' + i + 'd')}>${esc(T('s' + i + 'd', d))}</p></div>`).join('')}</div>`;
       case 'prof': {
         const pr = ex.prof ?? { name: name(), role: p.label, points: p.features };
-        return `<div class="mk-prof"><div class="mp-img"${bgPh(state.kind === 'clinic' ? 0 : 1)}></div><div><small>Γνώρισέ μας</small><b${edA('pN')}>${esc(T('pN', pr.name))}</b><span class="mp-role"${edA('pR')}>${esc(T('pR', pr.role))}</span><ul>${pr.points.map((x, i) => `<li${edA('pP' + i)}>${esc(T('pP' + i, x))}</li>`).join('')}</ul><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div></div>`;
+        return `<div class="mk-prof"><div class="mp-img"${bgPh(state.kind === 'clinic' ? 0 : 1)}></div><div><small>${u.meet}</small><b${edA('pN')}>${esc(T('pN', pr.name))}</b><span class="mp-role"${edA('pR')}>${esc(T('pR', pr.role))}</span><ul>${pr.points.map((x, i) => `<li${edA('pP' + i)}>${esc(T('pP' + i, x))}</li>`).join('')}</ul><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div></div>`;
       }
       case 'alert':
-        return `<div class="mk-alert"><i></i><span${edA('al')}>${esc(T('al', ex.alert))}</span><button type="button" data-go="2">Περισσότερα →</button></div>`;
+        return `<div class="mk-alert"><i></i><span${edA('al')}>${esc(T('al', ex.alert))}</span><button type="button" data-go="2">${u.more}</button></div>`;
       case 'band':
-        return `<div class="mk-band"><b${edA('bd')}>${esc(T('bd', cart ? 'Παράγγειλε online σε λίγα λεπτά.' : 'Κλείσε online σε λίγα λεπτά.'))}</b><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
+        return `<div class="mk-band"><b${edA('bd')}>${esc(T('bd', cart ? u.bandCart : u.bandBook))}</b><button type="button" class="mk-btn" ${ctaAttr()}>${esc(p.cta)}</button></div>`;
       case 'faq':
-        return h3('fqT', 'Συχνές ερωτήσεις') + `<div class="mk-faq">${[
-          [cart ? 'Πώς κάνω παραγγελία;' : `Πώς κάνω ${p.bookTitle.replace('Κλείσε ', '').toLowerCase()};`, 'Online από εδώ, σε λίγα δευτερόλεπτα. Παίρνεις αμέσως επιβεβαίωση με email.'],
-          ['Ποιο είναι το ωράριο;', p.hours],
-          ['Πού θα σας βρω;', 'Οδός Παραδείγματος 12. Δες τον χάρτη στη σελίδα Επικοινωνία.'],
+        return h3('fqT', u.faqT) + `<div class="mk-faq">${[
+          [cart ? u.faq[0][0] : (state.lang === 'en' ? u.faq[0][1] : `Πώς κάνω ${p.bookTitle.replace('Κλείσε ', '').toLowerCase()};`), u.faq[1]],
+          [u.faq[2], p.hours],
+          [u.faq[3], u.faq[4]],
         ].map(([q, a], i) => `<details${i === 0 ? ' open' : ''}><summary><span${edA('q' + i)}>${esc(T('q' + i, q))}</span></summary><p${edA('a' + i)}>${esc(T('a' + i, a))}</p></details>`).join('')}</div>`;
     }
   }
@@ -589,6 +720,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   // Ενέργειες του builder (από το preview ή από τα controls)
   let flashTimer: ReturnType<typeof setTimeout>;
   function builderAction(t: HTMLElement): boolean {
+    if (t.closest('[data-hero-cycle], [data-bmv], [data-bdel], [data-badd]')) pushHist();
     const L = curLay();
     let el: HTMLElement | null;
     let msg = '';
@@ -693,22 +825,35 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       m.dataset.corner = state.corner;
     }
 
-    // Φωτογραφίες
-    if (photosOn) {
-      setImg($('sPh') as HTMLImageElement, ph(0));
+    // Φωτογραφίες (η δική του φωτογραφία, αν ανέβασε, μπαίνει στο hero)
+    if (photosOn || userPhoto) {
+      const hero = userPhoto ?? ph(0);
+      setImg($('sPh') as HTMLImageElement, hero);
       for (const m of mocks) {
         m.classList.add('photos');
-        m.style.setProperty('--ph', `url(${ph(0)})`);
-        m.style.setProperty('--ph3', `url(${ph(3)})`);
+        m.style.setProperty('--ph', `url("${hero}")`);
+        if (photosOn) m.style.setProperty('--ph3', `url(${ph(3)})`);
       }
     }
 
     // Ιστοσελίδα
     $('url').textContent = slug(n) + '.gr';
     $('sName').textContent = n;
-    const lg = logo(n);
-    for (const id of ['sMark', 'pMark', 'aMark', 'fMark']) setHTML($(id), lg);
-    const tx = texts[state.kind] ?? {};
+    const lg = userLogo ? `<img src="${userLogo}" alt="">` : logo(n);
+    for (const id of ['sMark', 'pMark', 'aMark', 'fMark', 'botMark']) {
+      setHTML($(id), lg);
+      $(id).classList.toggle('has-img', !!userLogo);
+    }
+
+    // Γλώσσα: στατικά κείμενα του preview
+    const u = U();
+    for (const m of [mSite, mApp]) {
+      m.querySelectorAll<HTMLElement>('[data-i18n]').forEach((e) => { e.textContent = (u as Record<string, unknown>)[e.dataset.i18n!] as string; });
+      m.querySelectorAll<HTMLInputElement>('[data-i18n-ph]').forEach((e) => { e.placeholder = (u as Record<string, unknown>)[e.dataset.i18nPh!] as string; });
+    }
+    mSite.dataset.lang = state.lang;
+    paintBot();
+    const tx = texts[tk()] ?? {};
     const L = curLay();
     if (document.activeElement !== $('sHead')) $('sHead').textContent = tx.h ?? p.headline;
     if (document.activeElement !== $('sSub')) $('sSub').textContent = tx.s ?? p.sub;
@@ -735,7 +880,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     else { b0.removeAttribute('data-go'); b0.setAttribute('data-book', '-1'); }
     setHTML($('sSearch'), searchHTML());
 
-    const navLabels = ['Αρχική', p.itemsTitle, 'Επικοινωνία'];
+    const navLabels = [U().home, p.itemsTitle, U().contact];
     setHTML($('sNav'), navLabels
       .map((l, i) => `<button type="button" data-go="${i}" aria-pressed="${i === state.page}">${esc(l)}</button>`)
       .join(''));
@@ -792,6 +937,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
 
     mocks.forEach((m) => m.classList.toggle('hide', m !== curMock()));
     simEl.dataset.mode = state.mode;
+    setHTML($('specBox'), specHTML());
+    updHist();
     if (state.mode === 'admin') { const nt = $('ownNote'); nt.classList.remove('on'); nt.hidden = true; }
     if (performance.now() > statusUntil) $('res').textContent = resText();
     updateBadges();
@@ -814,6 +961,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     const buttons = [...document.querySelectorAll<HTMLButtonElement>(`#${id} > button`)];
     buttons.forEach((b) =>
       b.addEventListener('click', () => {
+        if (b.getAttribute('aria-pressed') !== 'true') pushHist();
         buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
         onPick(b);
         render({ flash: true });
@@ -837,13 +985,15 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     customLabel.classList.toggle('on', fromCustom);
     if (fromCustom) customLabel.style.setProperty('--sw', c);
   }
-  swBtns.forEach((b) => b.addEventListener('click', () => { pickColor(b.dataset.c!); render(); }));
+  swBtns.forEach((b) => b.addEventListener('click', () => { pushHist(); pickColor(b.dataset.c!); render(); }));
+  customLabel.addEventListener('pointerdown', () => pushHist());
   custom.addEventListener('input', () => { pickColor(custom.value, true); render({ log: false }); });
   custom.addEventListener('change', () => render());
 
   // Dark / Light
   const flipBtn = $('simflip');
   flipBtn.addEventListener('click', () => {
+    pushHist();
     state.flip = !state.flip;
     flipBtn.setAttribute('aria-pressed', String(state.flip));
     paint({ log: false });
@@ -858,6 +1008,19 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     let el: HTMLElement | null;
 
     if (q('[contenteditable]')) { if (q('summary')) e.preventDefault(); return; }
+    if (q('[data-lang-toggle]')) {
+      pushHist();
+      state.lang = state.lang === 'el' ? 'en' : 'el';
+      state.bi = true;
+      botReset();
+      render({ flash: true });
+      log([`&gt; i18n --${state.lang}`, '<span class="ok">✓ δίγλωσσο site</span>']);
+      return;
+    }
+    if (q('[data-bot-open]')) { botOpen = !botOpen; botSeen = true; paintBot(); if (botOpen) log(['&gt; ai.chat --open', '<span class="ok">✓</span>']); return; }
+    if (q('[data-bot-close]')) { botOpen = false; paintBot(); return; }
+    if ((el = q('[data-bot-q]'))) { botAsk(el.textContent ?? '', el.dataset.botQ); return; }
+    if (q('.bot-cta')) { botOpen = false; paintBot(); }
     if (t.classList.contains('mk-sheet') || q('[data-sheet-close]')) { sheet = null; syncSheet(); return; }
     if (builderAction(t)) return;
     // σε οθόνες αφής η γραμμή εργαλείων εμφανίζεται με ένα άγγιγμα στην ενότητα
@@ -891,7 +1054,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       const i = Number(el.dataset.add);
       cart.set(i, (cart.get(i) ?? 0) + 1);
       updateBadges();
-      toast(`Προστέθηκε: ${p.items[i].n}`);
+      toast(`${U().added}: ${p.items[i].n}`);
       log([`&gt; cart.add <span class="hl">"${esc(p.items[i].n)}"</span>`, `<span class="ok">✓ ${cartCount()} προϊόντα στο καλάθι</span>`]);
       return;
     }
@@ -929,7 +1092,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     }
     if (q('[data-checkout]')) {
       addOrder([...cart.entries()].map(([i, k]) => `${p.items[i].n} ×${k}`).join(', '), 'τώρα');
-      doneText = 'Η παραγγελία στάλθηκε';
+      doneText = U().orderSent;
       sheet = 'done';
       cart.clear();
       updateBadges();
@@ -960,9 +1123,23 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   // ---------- Swipe στο κινητό: αλλάζει ύφος ----------
   const simEl = ctrl.parentElement!;
   const viewEl = simEl.querySelector<HTMLElement>('.view')!;
-  let sx = 0, sy = 0;
-  viewEl.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  let sx = 0, sy = 0, noSwipe = false;
+  // Αν το άγγιγμα ξεκίνησε μέσα σε κάτι που κυλάει οριζόντια (π.χ. «Νέα στο κατάστημα»), δεν αλλάζουμε ύφος
+  const inHScroll = (el: Element | null) => {
+    for (let n = el as HTMLElement | null; n && n !== viewEl; n = n.parentElement) {
+      if (n.scrollWidth > n.clientWidth + 2) {
+        const ox = getComputedStyle(n).overflowX;
+        if (ox === 'auto' || ox === 'scroll') return true;
+      }
+    }
+    return false;
+  };
+  viewEl.addEventListener('touchstart', (e) => {
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    noSwipe = e.touches.length > 1 || inHScroll(e.target as Element);
+  }, { passive: true });
   viewEl.addEventListener('touchend', (e) => {
+    if (noSwipe) return;
     const t = e.changedTouches[0];
     const dx = t.clientX - sx, dy = t.clientY - sy;
     if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
@@ -1038,7 +1215,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   async function editText(el: HTMLElement, text: string, id: number) {
     await point(el, id);
     el.classList.add('editing');
-    const t = (texts[state.kind] ??= {});
+    const t = (texts[tk()] ??= {});
     for (let i = 1; i <= text.length; i++) {
       t.h = text.slice(0, i);
       el.textContent = t.h;
@@ -1113,6 +1290,12 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       await control('color', '#swatches [data-c="auto"]', id);
       await control('style', '#styles [data-s="neon"]', id);
       await typeName('Aegean Suites', id);
+      // AI βοηθός και αγγλικά
+      await tap(inMock('[data-bot-open]'), id, 900);
+      await tap(inMock('#botQuick [data-bot-q="book"]'), id, 1700);
+      await tap(inMock('[data-bot-close]'), id, 600);
+      await tap(inMock('[data-lang-toggle]'), id, 1800);
+      await tap(inMock('[data-lang-toggle]'), id, 900);
       // το ίδιο site σε tablet και κινητό
       const dsw = $('devSw');
       if (dsw.getBoundingClientRect().width > 0) {
@@ -1133,6 +1316,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     autoRun++;
     ghost.classList.remove('on', 'press');
     mSite.querySelectorAll('.hot, .editing').forEach((x) => x.classList.remove('hot', 'editing'));
+    if (botOpen) { botOpen = false; paintBot(); }
+    if (userTook) { past.length = 0; future.length = 0; updHist(); }
     pill.hidden = true;
     simEl.classList.remove('auto');
   }
@@ -1175,6 +1360,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   // ---------- Desktop / Tablet / Κινητό ----------
   const devBtns = [...document.querySelectorAll<HTMLButtonElement>('#devSw [data-dev]')];
   devBtns.forEach((b) => b.addEventListener('click', () => {
+    if (dev !== b.dataset.dev) pushHist();
     dev = b.dataset.dev as Dev;
     devBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     buildStatus();
@@ -1192,8 +1378,8 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     m.addEventListener('input', (e) => {
       const el = edOf(e);
       if (!el) return;
-      (texts[state.kind] ??= {})[el.dataset.ed!] = (el.textContent ?? '').slice(0, 140);
-      if (el.dataset.ed === 'h') $('pCardTitle').textContent = T('h', presets[state.kind].headline);
+      (texts[tk()] ??= {})[el.dataset.ed!] = (el.textContent ?? '').slice(0, 140);
+      if (el.dataset.ed === 'h') $('pCardTitle').textContent = T('h', langBase().headline);
     });
     m.addEventListener('keydown', (e) => {
       const el = edOf(e);
@@ -1207,7 +1393,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     m.addEventListener('focusout', (e) => {
       const el = edOf(e);
       if (!el) return;
-      const t = texts[state.kind];
+      const t = texts[tk()];
       const k = el.dataset.ed!;
       if (t && !(t[k] ?? '').trim()) delete t[k];
       // περνάει την αλλαγή παντού (λίστες, κάρτες, εφαρμογή, admin)
@@ -1259,6 +1445,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   // Έκπληξη: τυχαίος κλάδος, ύφος και χρώμα
   const pick = <T,>(a: T[]) => a[(Math.random() * a.length) | 0];
   $('simrandom').addEventListener('click', () => {
+    pushHist();
     const kb = pick(kindBtns.filter((b) => b.dataset.k !== state.kind));
     const sb = pick(styleBtns);
     kindBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === kb)));
@@ -1280,6 +1467,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     const text =
       `Γεια σας! Θα ήθελα ${what} για «${name()}» (${preset().label}).\n` +
       `Από το simulator μου άρεσε το ύφος «${styleLabel()}» με χρώμα ${color()}.\n` +
+      `${specText()}\n` +
       `Το σχέδιο: ${shareURL()}`;
     if (msg) msg.value = text;
     document.getElementById('contact')?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
@@ -1293,7 +1481,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
       ...(nameTouched ? { n: name() } : {}),
       l: [curLay().hero, ...curLay().blocks].join('-'),
       ...(state.font !== 'auto' || state.corner !== 'auto' ? { f: `${state.font}.${state.corner}` } : {}),
-      ...(texts[state.kind]?.h ? { t: texts[state.kind]!.h! } : {}),
+      ...(texts[tk()]?.h ? { t: texts[tk()]!.h! } : {}),
     });
     return `${location.origin}${location.pathname}?${q}#lab`;
   }
@@ -1320,7 +1508,7 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
     fontBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === state.font)));
     cornerBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.r === state.corner)));
     const tq = q.get('t');
-    if (tq) (texts[state.kind] ??= {}).h = tq.slice(0, 110);
+    if (tq) (texts[tk()] ??= {}).h = tq.slice(0, 110);
     const nm = q.get('n');
     if (nm && nm !== presets[state.kind].demo) { input.value = nm.slice(0, 26); nameTouched = true; } else syncDemoName();
     kindBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.k === state.kind)));
@@ -1332,20 +1520,364 @@ const kinds = Object.entries(presets) as [Kind, (typeof presets)[Kind]][];
   }
   const shareBtn = $('simshare');
   const shareLabel = shareBtn.innerHTML;
-  shareBtn.addEventListener('click', async () => {
-    const url = shareURL();
-    let ok = false;
-    try { await navigator.clipboard.writeText(url); ok = true; } catch {
+  async function copyText(url: string) {
+    try { await navigator.clipboard.writeText(url); return true; } catch {
       const t = document.createElement('textarea');
       t.value = url; document.body.appendChild(t); t.select();
+      let ok = false;
       try { ok = document.execCommand('copy'); } catch { ok = false; }
       t.remove();
+      return ok;
     }
+  }
+  shareBtn.addEventListener('click', async () => {
+    const url = shareURL();
+    const ok = await copyText(url);
     shareBtn.innerHTML = ok ? 'Αντιγράφηκε <span class="k" aria-hidden="true">✓</span>' : 'Δεν αντιγράφηκε';
     setTimeout(() => (shareBtn.innerHTML = shareLabel), 1800);
     log(['&gt; share.link', `<span class="ok">✓ ${ok ? 'αντιγράφηκε στο πρόχειρο' : 'αντέγραψε από τη γραμμή διευθύνσεων'}</span>`]);
     if (!ok) history.replaceState(null, '', url);
   });
+
+  // ---------- AI βοηθός (demo με έτοιμες απαντήσεις) ----------
+  type BotMsg = { me: boolean; html: string };
+  let botMsgs: BotMsg[] = [];
+  let botOpen = false;
+  let botTyping = false;
+  let botSeen = false;
+  const norm = (t: string) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const botGreet = () => (state.lang === 'en'
+    ? `Hi! I'm the assistant of ${name()}. How can I help?`
+    : `Γεια σου! Είμαι ο βοηθός του «${name()}». Πώς μπορώ να βοηθήσω;`);
+  function botReset() { botMsgs = [{ me: false, html: esc(botGreet()) }]; botTyping = false; }
+  function botQuick(): [string, string][] {
+    const cartK = preset().flow === 'cart';
+    return state.lang === 'en'
+      ? [['hours', 'Opening hours'], ['book', cartK ? 'Place an order' : 'Book now'], ['where', 'Where are you?'], ['offer', cartK ? 'What do you have?' : 'Services']]
+      : [['hours', 'Ωράριο'], ['book', cartK ? 'Θέλω να παραγγείλω' : 'Θέλω να κλείσω'], ['where', 'Πού βρίσκεστε;'], ['offer', cartK ? 'Τι έχετε;' : 'Υπηρεσίες']];
+  }
+  function botReply(q: string): string {
+    const p = preset();
+    const isEn = state.lang === 'en';
+    const t = norm(q);
+    const cartK = p.flow === 'cart';
+    const btn = `<button type="button" class="mk-btn bot-cta" ${cartK ? 'data-go="1"' : 'data-book="-1"'}>${esc(p.cta)}</button>`;
+    if (/(ωραρ|ωρες|ανοιχτ|κλειστ|hour|open|clos)/.test(t)) return isEn ? `We're open ${esc(p.hours)}.` : `Είμαστε ανοιχτά ${esc(p.hours)}.`;
+    if (/(κρατ|ραντεβ|κλεισ|παραγγ|θεση|book|order|reserv|appoint)/.test(t)) return (isEn ? 'Sure! You can do it online in a few seconds:' : 'Βεβαίως! Γίνεται online σε λίγα δευτερόλεπτα:') + btn;
+    if (/(που |που;|που$|διευθ|βρισκ|parking|where|address|locat)/.test(t)) return isEn ? '12 Example Street. There is a map on the Contact page.' : 'Οδός Παραδείγματος 12. Θα βρεις χάρτη στη σελίδα Επικοινωνία.';
+    if (/(τιμ|κοστ|ποσο|price|cost)/.test(t)) return isEn ? 'For prices, have a look at our list or ask us via the contact form.' : 'Για τιμές, δες τον κατάλογό μας ή ρώτα μας από τη φόρμα επικοινωνίας.';
+    if (/(τι |τι;|εχετε|προσφερ|υπηρεσ|καταλογ|μενου|menu|servic|offer|what)/.test(t)) return (isEn ? 'Here is what we offer: ' : 'Να τι προσφέρουμε: ') + p.items.slice(0, 4).map((i) => `<b>${esc(i.n)}</b>`).join(', ') + '.';
+    if (/(γεια|καλημερ|καλησπερ|hello|^hi|hey)/.test(t)) return esc(botGreet());
+    if (/(ευχαριστ|thank)/.test(t)) return isEn ? 'You are welcome! 😊' : 'Να είσαι καλά! 😊';
+    return isEn
+      ? 'I can help with opening hours, bookings and our services. For anything else, write to us via the contact form.'
+      : 'Μπορώ να βοηθήσω με ωράριο, κρατήσεις και υπηρεσίες. Για κάτι άλλο, γράψε μας στη φόρμα επικοινωνίας.';
+  }
+  let botTimer: ReturnType<typeof setTimeout>;
+  function botAsk(label: string, key?: string) {
+    botMsgs.push({ me: true, html: esc(label) });
+    botTyping = true;
+    paintBot();
+    clearTimeout(botTimer);
+    botTimer = setTimeout(() => {
+      botTyping = false;
+      botMsgs.push({ me: false, html: botReply(key ?? label) });
+      if (botMsgs.length > 14) botMsgs = botMsgs.slice(-14);
+      paintBot();
+    }, 750);
+    log([`&gt; ai.chat <span class="hl">"${esc(label)}"</span>`, '<span class="ok">✓ απάντηση</span>']);
+  }
+  function paintBot() {
+    mSite.classList.toggle('no-bot', !state.bot);
+    $('botName').textContent = name();
+    $('botSub').textContent = state.lang === 'en' ? 'AI assistant · online' : 'AI βοηθός · online';
+    ($('botIn') as HTMLInputElement).placeholder = state.lang === 'en' ? 'Ask a question…' : 'Γράψε μια ερώτηση…';
+    setHTML($('botLog'), botMsgs.map((m) => `<div class="bm${m.me ? ' me' : ''}">${m.html}</div>`).join('') + (botTyping ? '<div class="bm typing"><i></i><i></i><i></i></div>' : ''));
+    setHTML($('botQuick'), botQuick().map(([k, l]) => `<button type="button" data-bot-q="${k}">${esc(l)}</button>`).join(''));
+    $('botPanel').hidden = !botOpen;
+    $('sBot').classList.toggle('open', botOpen);
+    $('sBot').classList.toggle('seen', botSeen);
+    const lg = $('botLog');
+    lg.scrollTop = lg.scrollHeight;
+  }
+
+  // ---------- Εκτίμηση χρόνου και λειτουργιών (χωρίς τιμές) ----------
+  function specInfo() {
+    const p = presets[state.kind];
+    const L = curLay();
+    const cartK = p.flow === 'cart';
+    const feats = ['Σχεδιασμός από το μηδέν', 'Responsive: κινητό, tablet, desktop', 'SEO, Google Analytics & Search Console'];
+    if (cartK) feats.push('Καλάθι & online πληρωμές', 'Αποστολές (courier, BoxNow)');
+    else feats.push('Online κρατήσεις με ημερολόγιο');
+    feats.push('Διαχείριση παραγγελιών/κρατήσεων (admin)');
+    if (state.mode === 'app') feats.push('Εφαρμογή για iPhone & Android', 'Ειδοποιήσεις push');
+    if (state.bot) feats.push('AI βοηθός (chatbot)');
+    if (state.bi || state.lang === 'en') feats.push('Δίγλωσσο site (EL / EN)');
+    if (userLogo) feats.push('Το λογότυπό σου και τα χρώματά του');
+    feats.push(`${L.blocks.length} ενότητες στην αρχική`);
+    let lo = cartK ? 5 : 3, hi = cartK ? 8 : 5;
+    if (state.mode === 'app') { lo = 8; hi = 12; }
+    if (state.bot) { lo += 1; hi += 1; }
+    if (state.bi || state.lang === 'en') { lo += 1; hi += 1; }
+    if (L.blocks.length > 6) hi += 1;
+    return { lo, hi, feats };
+  }
+  function specHTML() {
+    const { lo, hi, feats } = specInfo();
+    return `<div class="spec-wk"><small>Εκτίμηση χρόνου</small><b>${lo}–${hi} εβδομάδες</b></div><ul>${feats.map((f) => `<li>${esc(f)}</li>`).join('')}</ul><small class="spec-note">Ενδεικτικό, χωρίς δέσμευση. Το ακριβές χρονοδιάγραμμα το συμφωνούμε μαζί.</small>`;
+  }
+  function specText() {
+    const { lo, hi, feats } = specInfo();
+    return `Εκτίμηση: ${lo}–${hi} εβδομάδες\nΛειτουργίες: ${feats.join(', ')}`;
+  }
+
+  // ---------- Αναίρεση / επανάληψη ----------
+  const past: string[] = [];
+  const future: string[] = [];
+  const snapshot = () => JSON.stringify({ st: { ...state, page: 0, tab: 0 }, lay, texts, n: input.value, nt: nameTouched, dev });
+  function pushSnap(sn: string) {
+    if (past[past.length - 1] === sn) return;
+    past.push(sn);
+    if (past.length > 80) past.shift();
+    future.length = 0;
+    updHist();
+  }
+  const pushHist = () => pushSnap(snapshot());
+  function updHist() {
+    ($('simUndo') as HTMLButtonElement).disabled = !past.length;
+    ($('simRedo') as HTMLButtonElement).disabled = !future.length;
+  }
+  function restoreSnap(sn: string) {
+    const o = JSON.parse(sn);
+    const kindChanged = o.st.kind !== state.kind;
+    Object.assign(state, o.st);
+    for (const k of Object.keys(lay)) delete (lay as Record<string, unknown>)[k];
+    Object.assign(lay, o.lay);
+    for (const k of Object.keys(texts)) delete texts[k];
+    Object.assign(texts, o.texts);
+    input.value = o.n;
+    nameTouched = o.nt;
+    dev = o.dev;
+    if (kindChanged) resetFlow();
+    syncControls();
+    render({ flash: true });
+  }
+  function undo() {
+    if (!past.length) return;
+    future.push(snapshot());
+    restoreSnap(past.pop()!);
+    updHist();
+    log(['&gt; history.undo', '<span class="ok">✓ αναίρεση</span>']);
+  }
+  function redo() {
+    if (!future.length) return;
+    past.push(snapshot());
+    restoreSnap(future.pop()!);
+    updHist();
+    log(['&gt; history.redo', '<span class="ok">✓ επανάληψη</span>']);
+  }
+  function syncControls() {
+    kindBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.k === state.kind)));
+    styleBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.s === state.style)));
+    fontBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.f === state.font)));
+    cornerBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.r === state.corner)));
+    document.querySelectorAll<HTMLButtonElement>('#mode > button').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.m === state.mode)));
+    devBtns.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.dev === dev)));
+    flipBtn.setAttribute('aria-pressed', String(state.flip));
+    $('simbot').setAttribute('aria-pressed', String(state.bot));
+    if (state.color === 'auto') pickColor('auto');
+    else pickColor(state.color, !swatches.includes(state.color));
+  }
+  $('simUndo').addEventListener('click', undo);
+  $('simRedo').addEventListener('click', redo);
+  // Κείμενα: ένα βήμα αναίρεσης για κάθε επεξεργασία
+  let editSnap = '';
+  for (const m of [mSite, mApp]) {
+    m.addEventListener('focusin', (e) => { if (edOf(e)) editSnap = snapshot(); });
+    m.addEventListener('focusout', (e) => { if (edOf(e) && editSnap) { const sn = editSnap; editSnap = ''; setTimeout(() => { if (snapshot() !== sn) pushSnap(sn); }, 0); } });
+  }
+  let nameSnap = '';
+  input.addEventListener('focus', () => { nameSnap = snapshot(); });
+  input.addEventListener('change', () => { if (nameSnap) pushSnap(nameSnap); nameSnap = ''; });
+
+  // ---------- Πλήρης οθόνη ----------
+  function toggleFs(on = !simEl.classList.contains('fs')) {
+    simEl.classList.toggle('fs', on);
+    document.documentElement.classList.toggle('sim-fs', on);
+    const b = $('simFs');
+    b.setAttribute('aria-pressed', String(on));
+    b.setAttribute('aria-label', on ? 'Έξοδος από πλήρη οθόνη' : 'Πλήρης οθόνη');
+    b.title = on ? 'Έξοδος (Esc)' : 'Πλήρης οθόνη';
+    log([`&gt; view --${on ? 'fullscreen' : 'normal'}`, '<span class="ok">✓</span>']);
+  }
+  $('simFs').addEventListener('click', () => toggleFs());
+
+  // ---------- Λογότυπο / φωτογραφία ----------
+  const upLogo = $('upLogo') as HTMLInputElement;
+  const upPhoto = $('upPhoto') as HTMLInputElement;
+  function okImg(f: File | undefined): f is File {
+    if (!f) return false;
+    if (!f.type.startsWith('image/') || f.size > 12e6) {
+      log(['&gt; upload', '<span class="hl">✕ μόνο εικόνες έως 12MB</span>']);
+      return false;
+    }
+    return true;
+  }
+  function brandUi() {
+    $('upLogoT').textContent = userLogo ? '✓ Λογότυπο' : '＋ Λογότυπο';
+    $('upPhotoT').textContent = userPhoto ? '✓ Φωτογραφία' : '＋ Φωτογραφία';
+    $('upLogoL').classList.toggle('done', !!userLogo);
+    $('upPhotoL').classList.toggle('done', !!userPhoto);
+    $('upClear').hidden = !userLogo && !userPhoto;
+  }
+  upLogo.addEventListener('change', async () => {
+    const f = upLogo.files?.[0];
+    upLogo.value = '';
+    if (!okImg(f)) return;
+    pushHist();
+    if (userLogo) URL.revokeObjectURL(userLogo);
+    userLogo = URL.createObjectURL(f);
+    const c = await logoColor(userLogo);
+    if (c) { pickColor(c, true); custom.value = c.toLowerCase(); }
+    brandUi();
+    render({ flash: true });
+    log(['&gt; brand.logo', `<span class="ok">✓ λογότυπο${c ? ` · χρώμα ${c}` : ''}</span>`]);
+  });
+  upPhoto.addEventListener('change', () => {
+    const f = upPhoto.files?.[0];
+    upPhoto.value = '';
+    if (!okImg(f)) return;
+    if (userPhoto) URL.revokeObjectURL(userPhoto);
+    userPhoto = URL.createObjectURL(f);
+    ($('sPh') as HTMLImageElement).removeAttribute('src');
+    brandUi();
+    render({ flash: true });
+    log(['&gt; brand.photo', '<span class="ok">✓ η φωτογραφία σου στο hero</span>']);
+  });
+  $('upClear').addEventListener('click', () => {
+    if (userLogo) URL.revokeObjectURL(userLogo);
+    if (userPhoto) URL.revokeObjectURL(userPhoto);
+    userLogo = userPhoto = null;
+    ($('sPh') as HTMLImageElement).removeAttribute('src');
+    if (!swatches.includes(state.color)) pickColor('auto');
+    brandUi();
+    render({ flash: true });
+  });
+
+  // ---------- AI βοηθός: κουμπί on/off και ερωτήσεις ----------
+  $('simbot').addEventListener('click', () => {
+    pushHist();
+    state.bot = !state.bot;
+    botOpen = false;
+    $('simbot').setAttribute('aria-pressed', String(state.bot));
+    paint({ log: false });
+    log([`&gt; ai.chatbot --${state.bot ? 'on' : 'off'}`, '<span class="ok">✓</span>']);
+  });
+  $('botForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const inp = $('botIn') as HTMLInputElement;
+    const v = inp.value.trim();
+    if (!v) return;
+    inp.value = '';
+    botAsk(v);
+  });
+
+  // ---------- «Στείλε μου το σχέδιο» ----------
+  const sd = $('sdModal');
+  let qrLoad: Promise<void> | null = null;
+  const loadQR = () => (qrLoad ??= new Promise<void>((res, rej) => {
+    const sc = document.createElement('script');
+    sc.src = '/vendor/qrcode.js';
+    sc.onload = () => res();
+    sc.onerror = () => { qrLoad = null; rej(new Error('qr')); };
+    document.head.appendChild(sc);
+  }));
+  async function drawQR() {
+    const box = $('sdQr');
+    try {
+      await loadQR();
+      const qr = (window as unknown as { qrcode: (t: number, e: string) => { addData: (s: string) => void; make: () => void; createSvgTag: (o: object) => string } }).qrcode(0, 'L');
+      qr.addData(shareURL());
+      qr.make();
+      box.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+    } catch { box.innerHTML = '<small>Το QR δεν φόρτωσε.</small>'; }
+  }
+  function openSd() {
+    sd.hidden = false;
+    document.documentElement.classList.add('sim-fs');
+    setHTML($('sdSpec'), specHTML());
+    $('sdStatus').textContent = '';
+    drawQR();
+    setTimeout(() => ($('sdEmail') as HTMLInputElement).focus(), 60);
+  }
+  function closeSd() {
+    sd.hidden = true;
+    if (!simEl.classList.contains('fs')) document.documentElement.classList.remove('sim-fs');
+  }
+  $('simsend').addEventListener('click', openSd);
+  sd.addEventListener('click', (e) => { if (e.target === sd || (e.target as HTMLElement).closest('[data-sd-close]')) closeSd(); });
+  $('sdCopy').addEventListener('click', async () => {
+    const ok = await copyText(shareURL());
+    $('sdCopy').innerHTML = ok ? 'Αντιγράφηκε <span class="k" aria-hidden="true">✓</span>' : 'Δεν αντιγράφηκε';
+    setTimeout(() => ($('sdCopy').innerHTML = 'Αντιγραφή link <span class="k" aria-hidden="true">⧉</span>'), 1800);
+  });
+  ($('sdForm') as HTMLFormElement).addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const st = $('sdStatus');
+    const email = ($('sdEmail') as HTMLInputElement).value.trim();
+    const nm = ($('sdName') as HTMLInputElement).value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      st.className = 'status err';
+      st.textContent = 'Γράψε ένα σωστό email.';
+      return;
+    }
+    const btn = ($('sdForm') as HTMLFormElement).querySelector('button[type=submit]') as HTMLButtonElement;
+    btn.disabled = true;
+    st.className = 'status';
+    st.textContent = 'Αποστολή…';
+    const fd = new FormData();
+    fd.append('name', nm || 'Επισκέπτης simulator');
+    fd.append('contact', email);
+    fd.append('website', ($('sdWeb') as HTMLInputElement).value);
+    fd.append('message',
+      `Ζήτησε το σχέδιό του από τον simulator.\n\n` +
+      `Επιχείρηση: ${name()} (${presets[state.kind].label})\n` +
+      `Τύπος: ${state.mode === 'app' ? 'Εφαρμογή' : state.mode === 'admin' ? 'Ιστοσελίδα + διαχείριση' : 'Ιστοσελίδα'}\n` +
+      `Ύφος: ${styleLabel()} · Χρώμα: ${color()}${state.font !== 'auto' ? ` · Font: ${state.font}` : ''}${state.corner !== 'auto' ? ` · Γωνίες: ${state.corner}` : ''}\n` +
+      `Ενότητες: ${curLay().blocks.map((b) => blockLabels[b]).join(', ')}\n` +
+      `${specText()}\n\nΣύνδεσμος σχεδίου: ${shareURL()}`);
+    try {
+      const res = await fetch('/contact.php', { method: 'POST', body: fd });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || 'send_failed');
+      st.className = 'status ok';
+      st.textContent = 'Στάλθηκε! Θα σου στείλουμε το σχέδιο και μια πρώτη πρόταση μέσα σε 24 ώρες.';
+      log(['&gt; lead.send', '<span class="ok">✓ το σχέδιο στάλθηκε</span>']);
+    } catch {
+      st.className = 'status err';
+      st.textContent = 'Δεν στάλθηκε. Δοκίμασε ξανά ή γράψε μας στο info@preludedma.gr.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // Πλήκτρα: Esc, Ctrl+Z / Ctrl+Y
+  addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (!sd.hidden) { closeSd(); return; }
+      if (simEl.classList.contains('fs')) { toggleFs(false); return; }
+    }
+    if (!(e.ctrlKey || e.metaKey)) return;
+    const a = document.activeElement as HTMLElement | null;
+    if (a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))) return;
+    const r = simEl.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;
+    const k = e.key.toLowerCase();
+    if (k === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+    else if ((k === 'z' && e.shiftKey) || k === 'y') { e.preventDefault(); redo(); }
+  });
+
+  botReset();
 
   seedOrders();
   if (applyShared()) userTook = true;
