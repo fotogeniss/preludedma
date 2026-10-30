@@ -98,7 +98,7 @@ const jsonLd = {
       rel="stylesheet"
     />
     <!-- Ομαλή εμφάνιση στο scroll: ενεργοποιείται μόνο αν τρέχει JS και δεν έχει ζητηθεί λιγότερη κίνηση -->
-    <script is:inline>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('rv-on')</script>
+    <script is:inline>if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('sr-on')</script>
   </head>
   <body>
     <!-- Σύμβολο αστερίσκου, χρησιμοποιείται με <svg><use href="#st"/></svg> -->
@@ -196,19 +196,19 @@ const jsonLd = {
         '#lab .sim-note', '.cta .wrap > *', '.foot > *',
       ].join(',');
       const root = document.documentElement;
-      if (root.classList.contains('rv-on') && 'IntersectionObserver' in window) {
+      if (root.classList.contains('sr-on') && 'IntersectionObserver' in window) {
         const els = [...document.querySelectorAll<HTMLElement>(RV)];
         const groups = new Map<Element, number>();
         els.forEach((el) => {
           const p = el.parentElement!;
           const i = groups.get(p) ?? 0;
           groups.set(p, i + 1);
-          el.style.setProperty('--rv-d', `${Math.min(i, 5) * 90}ms`);
-          el.classList.add('rv');
+          el.style.setProperty('--sr-d', `${Math.min(i, 5) * 90}ms`);
+          el.classList.add('sr');
         });
         const done = (el: HTMLElement) => {
-          el.classList.add('rv-in');
-          const end = () => { el.classList.remove('rv', 'rv-in'); el.style.removeProperty('--rv-d'); };
+          el.classList.add('sr-in');
+          const end = () => { el.classList.remove('sr', 'sr-in'); el.style.removeProperty('--sr-d'); };
           setTimeout(end, 1500);
         };
         const ro = new IntersectionObserver((ens) => ens.forEach((e) => {
@@ -218,8 +218,8 @@ const jsonLd = {
         }), { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
         els.forEach((el) => ro.observe(el));
         // Ασφάλεια: αν για οποιονδήποτε λόγο δεν εμφανιστεί κάτι (π.χ. άλμα με link), το δείχνουμε
-        addEventListener('hashchange', () => els.forEach((el) => el.classList.contains('rv') && !el.classList.contains('rv-in') && el.getBoundingClientRect().top < innerHeight && done(el)));
-      } else root.classList.remove('rv-on');
+        addEventListener('hashchange', () => els.forEach((el) => el.classList.contains('sr') && !el.classList.contains('sr-in') && el.getBoundingClientRect().top < innerHeight && done(el)));
+      } else root.classList.remove('sr-on');
 
       // ---------- FAQ: ομαλό άνοιγμα/κλείσιμο ----------
       if (!reduce) document.querySelectorAll<HTMLDetailsElement>('.faq details').forEach((d) => {
