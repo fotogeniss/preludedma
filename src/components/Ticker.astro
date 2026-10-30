@@ -10,7 +10,7 @@ const items = [...stack, ...stack].map((name) => ({ name, icons: iconsFor(name) 
       <span>
         {s.icons.length
           ? <i class="tk-ic">{s.icons.map((ic) => (
-              <svg viewBox="0 0 24 24" class={ic.stroke ? 'ln' : undefined}><path d={ic.d} /></svg>
+              <svg viewBox={ic.vb} set:html={ic.html} />
             ))}</i>
           : <b>●</b>}
         {s.name}
