@@ -1,10 +1,20 @@
 ---
 import { stack } from '../data/services';
+import { iconsFor } from '../data/stackIcons';
 // Η λίστα επαναλαμβάνεται δύο φορές για να κυλάει χωρίς κενό
-const items = [...stack, ...stack];
+const items = [...stack, ...stack].map((name) => ({ name, icons: iconsFor(name) }));
 ---
 <div class="ticker" aria-hidden="true">
   <div class="t">
-    {items.map((s) => <span><b>●</b> {s}</span>)}
+    {items.map((s) => (
+      <span>
+        {s.icons.length
+          ? <i class="tk-ic">{s.icons.map((ic) => (
+              <svg viewBox="0 0 24 24" class={ic.stroke ? 'ln' : undefined}><path d={ic.d} /></svg>
+            ))}</i>
+          : <b>●</b>}
+        {s.name}
+      </span>
+    ))}
   </div>
 </div>
